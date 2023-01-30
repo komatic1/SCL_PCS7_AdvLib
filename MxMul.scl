@@ -1,0 +1,317 @@
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+//==========================================================================
+ 
+TYPE "Matrix15"
+// Description:
+//      UDT for matrix operations
+//      max. dimension of all Matrix-Functions Mx... is defined here, default 15x15
+//
+ 
+ 
+  STRUCT    
+   zeilenzahl : INT ;   
+   spaltenzahl : INT ;   
+   elemente : ARRAY  [1 .. 15, 1 .. 15 ] OF REAL ;   
+  END_STRUCT ;   
+END_TYPE
+ 
+//==========================================================================
+ 
+TYPE "StcMatrix15"
+// Description:
+//      UDT for matrix operations
+//      max. dimension of all Matrix-Functions Mx... is defined here, default 15x15
+//
+ 
+ 
+  STRUCT    
+   zeilenzahl : INT ;   
+   spaltenzahl : INT ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem11 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem12 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem13 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem14 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem15 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem16 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem17 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem18 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem19 : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1A : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1B : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1C : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1D : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1E : REAL ;    //elemente: ARRAY[1..15,1..15] OF REAL;
+   elem1F : REAL ;   
+   elem21 : REAL ;   
+   elem22 : REAL ;   
+   elem23 : REAL ;   
+   elem24 : REAL ;   
+   elem25 : REAL ;   
+   elem26 : REAL ;   
+   elem27 : REAL ;   
+   elem28 : REAL ;   
+   elem29 : REAL ;   
+   elem2A : REAL ;   
+   elem2B : REAL ;   
+   elem2C : REAL ;   
+   elem2D : REAL ;   
+   elem2E : REAL ;   
+   elem2F : REAL ;   
+   elem31 : REAL ;   
+   elem32 : REAL ;   
+   elem33 : REAL ;   
+   elem34 : REAL ;   
+   elem35 : REAL ;   
+   elem36 : REAL ;   
+   elem37 : REAL ;   
+   elem38 : REAL ;   
+   elem39 : REAL ;   
+   elem3A : REAL ;   
+   elem3B : REAL ;   
+   elem3C : REAL ;   
+   elem3D : REAL ;   
+   elem3E : REAL ;   
+   elem3F : REAL ;   
+   elem41 : REAL ;   
+   elem42 : REAL ;   
+   elem43 : REAL ;   
+   elem44 : REAL ;   
+   elem45 : REAL ;   
+   elem46 : REAL ;   
+   elem47 : REAL ;   
+   elem48 : REAL ;   
+   elem49 : REAL ;   
+   elem4A : REAL ;   
+   elem4B : REAL ;   
+   elem4C : REAL ;   
+   elem4D : REAL ;   
+   elem4E : REAL ;   
+   elem4F : REAL ;   
+   elem51 : REAL ;   
+   elem52 : REAL ;   
+   elem53 : REAL ;   
+   elem54 : REAL ;   
+   elem55 : REAL ;   
+   elem56 : REAL ;   
+   elem57 : REAL ;   
+   elem58 : REAL ;   
+   elem59 : REAL ;   
+   elem5A : REAL ;   
+   elem5B : REAL ;   
+   elem5C : REAL ;   
+   elem5D : REAL ;   
+   elem5E : REAL ;   
+   elem5F : REAL ;   
+   elem61 : REAL ;   
+   elem62 : REAL ;   
+   elem63 : REAL ;   
+   elem64 : REAL ;   
+   elem65 : REAL ;   
+   elem66 : REAL ;   
+   elem67 : REAL ;   
+   elem68 : REAL ;   
+   elem69 : REAL ;   
+   elem6A : REAL ;   
+   elem6B : REAL ;   
+   elem6C : REAL ;   
+   elem6D : REAL ;   
+   elem6E : REAL ;   
+   elem6F : REAL ;   
+   elem71 : REAL ;   
+   elem72 : REAL ;   
+   elem73 : REAL ;   
+   elem74 : REAL ;   
+   elem75 : REAL ;   
+   elem76 : REAL ;   
+   elem77 : REAL ;   
+   elem78 : REAL ;   
+   elem79 : REAL ;   
+   elem7A : REAL ;   
+   elem7B : REAL ;   
+   elem7C : REAL ;   
+   elem7D : REAL ;   
+   elem7E : REAL ;   
+   elem7F : REAL ;   
+   elem81 : REAL ;   
+   elem82 : REAL ;   
+   elem83 : REAL ;   
+   elem84 : REAL ;   
+   elem85 : REAL ;   
+   elem86 : REAL ;   
+   elem87 : REAL ;   
+   elem88 : REAL ;   
+   elem89 : REAL ;   
+   elem8A : REAL ;   
+   elem8B : REAL ;   
+   elem8C : REAL ;   
+   elem8D : REAL ;   
+   elem8E : REAL ;   
+   elem8F : REAL ;   
+   elem91 : REAL ;   
+   elem92 : REAL ;   
+   elem93 : REAL ;   
+   elem94 : REAL ;   
+   elem95 : REAL ;   
+   elem96 : REAL ;   
+   elem97 : REAL ;   
+   elem98 : REAL ;   
+   elem99 : REAL ;   
+   elem9A : REAL ;   
+   elem9B : REAL ;   
+   elem9C : REAL ;   
+   elem9D : REAL ;   
+   elem9E : REAL ;   
+   elem9F : REAL ;   
+   elemA1 : REAL ;   
+   elemA2 : REAL ;   
+   elemA3 : REAL ;   
+   elemA4 : REAL ;   
+   elemA5 : REAL ;   
+   elemA6 : REAL ;   
+   elemA7 : REAL ;   
+   elemA8 : REAL ;   
+   elemA9 : REAL ;   
+   elemAA : REAL ;   
+   elemAB : REAL ;   
+   elemAC : REAL ;   
+   elemAD : REAL ;   
+   elemAE : REAL ;   
+   elemAF : REAL ;   
+   elemB1 : REAL ;   
+   elemB2 : REAL ;   
+   elemB3 : REAL ;   
+   elemB4 : REAL ;   
+   elemB5 : REAL ;   
+   elemB6 : REAL ;   
+   elemB7 : REAL ;   
+   elemB8 : REAL ;   
+   elemB9 : REAL ;   
+   elemBA : REAL ;   
+   elemBB : REAL ;   
+   elemBC : REAL ;   
+   elemBD : REAL ;   
+   elemBE : REAL ;   
+   elemBF : REAL ;   
+   elemC1 : REAL ;   
+   elemC2 : REAL ;   
+   elemC3 : REAL ;   
+   elemC4 : REAL ;   
+   elemC5 : REAL ;   
+   elemC6 : REAL ;   
+   elemC7 : REAL ;   
+   elemC8 : REAL ;   
+   elemC9 : REAL ;   
+   elemCA : REAL ;   
+   elemCB : REAL ;   
+   elemCC : REAL ;   
+   elemCD : REAL ;   
+   elemCE : REAL ;   
+   elemCF : REAL ;   
+   elemD1 : REAL ;   
+   elemD2 : REAL ;   
+   elemD3 : REAL ;   
+   elemD4 : REAL ;   
+   elemD5 : REAL ;   
+   elemD6 : REAL ;   
+   elemD7 : REAL ;   
+   elemD8 : REAL ;   
+   elemD9 : REAL ;   
+   elemDA : REAL ;   
+   elemDB : REAL ;   
+   elemDC : REAL ;   
+   elemDD : REAL ;   
+   elemDE : REAL ;   
+   elemDF : REAL ;   
+   elemE1 : REAL ;   
+   elemE2 : REAL ;   
+   elemE3 : REAL ;   
+   elemE4 : REAL ;   
+   elemE5 : REAL ;   
+   elemE6 : REAL ;   
+   elemE7 : REAL ;   
+   elemE8 : REAL ;   
+   elemE9 : REAL ;   
+   elemEA : REAL ;   
+   elemEB : REAL ;   
+   elemEC : REAL ;   
+   elemED : REAL ;   
+   elemEE : REAL ;   
+   elemEF : REAL ;   
+   elemF1 : REAL ;   
+   elemF2 : REAL ;   
+   elemF3 : REAL ;   
+   elemF4 : REAL ;   
+   elemF5 : REAL ;   
+   elemF6 : REAL ;   
+   elemF7 : REAL ;   
+   elemF8 : REAL ;   
+   elemF9 : REAL ;   
+   elemFA : REAL ;   
+   elemFB : REAL ;   
+   elemFC : REAL ;   
+   elemFD : REAL ;   
+   elemFE : REAL ;   
+   elemFF : REAL ;   
+  END_STRUCT ;   
+END_TYPE
+ 
+//==========================================================================
+ 
+FUNCTION FC1469 : VOID // "MxMul" : VOID
+TITLE =''
+AUTHOR : AdvLib90
+FAMILY : System
+NAME : MxMul
+VERSION : '5.0'
+ 
+ 
+VAR_INPUT
+  StcMxA : "StcMatrix15";    
+  StcMxA_aux AT StcMxA : "Matrix15";
+  StcMxB : "StcMatrix15";
+  StcMxB_aux AT StcMxB : "Matrix15"; 
+END_VAR
+VAR_OUTPUT
+  StcMxC : "StcMatrix15";     
+  StcMxC_aux AT StcMxC : "Matrix15"; 
+END_VAR
+VAR_TEMP
+  zeileA : INT ;    //Laufindizes
+  spalteA : INT ;    //Laufindizes
+  spalteB : INT ;    //Laufindizes
+  summe : REAL ;    //Hilfsvariablen
+  produkt : REAL ;    //Hilfsvariablen
+END_VAR
+BEGIN
+ 
+IF (StcMxA.spaltenzahl = StcMxB.zeilenzahl) THEN
+    StcMxC.zeilenzahl:=StcMxA.zeilenzahl;
+    StcMxC.spaltenzahl:=StcMxB.spaltenzahl;
+    FOR zeileA:=1 TO StcMxA_aux.zeilenzahl BY 1 DO
+        FOR spalteB:=1 TO StcMxB_aux.spaltenzahl BY 1 DO
+            summe:=0;
+            FOR spalteA:=1 TO StcMxA_aux.spaltenzahl BY 1 DO
+                produkt:=StcMxA_aux.elemente[zeileA,spalteA]*StcMxB_aux.elemente[spalteA,spalteB];
+                summe:=produkt+summe;
+            END_FOR;
+            StcMxC_aux.elemente[zeileA,spalteB]:=summe;
+        END_FOR;
+    END_FOR;
+ELSE
+    StcMxC.zeilenzahl:=0;
+    StcMxC.spaltenzahl:=0;
+END_IF;
+ 
+END_FUNCTION
