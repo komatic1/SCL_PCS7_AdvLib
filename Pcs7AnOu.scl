@@ -1,0 +1,371 @@
+// Name: FB1870
+// Symbolic Name: Pcs7AnOu
+// Symbol Comment: Analog output driver
+// Family: Channel
+// Version: 8.7
+// Author: AdvLib82
+// Last modified: 12/09/2015
+// Use: UDT15,UDT16,UDT18
+// Size: 10878 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.03_02.01.00.01 release
+
+FUNCTION_BLOCK FB11870
+TITLE ='Analog output driver'
+{ S7_driver := 'chn'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLib82
+FAMILY : Channel
+NAME : Pcs7AnOu
+VERSION : '8.7'
+ 
+ 
+VAR_INPUT
+  PV_In : STRUCT     //process value incl. ST
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  Scale { S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Range of process value
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  PV_InUnit { S7_edit := 'para'; S7_enum := 'true' }: INT  := 1342;    //Unit of process value
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //1 = Start Value
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //1 = Condition Monitoring
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //Reserved
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL  := TRUE;    //1 = Output lowest value at a block-external simulation
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+  ScaleOff { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //1= Scale limits off
+  SimOn { S7_edit := 'para' }: STRUCT     //1=Simulation active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimPV_In { S7_edit := 'para' }: STRUCT     //Simulation value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  StartVal : REAL ;    //Start value (phy.value e.g.mA or V)
+  MS_Release { S7_visible := 'true' }: STRUCT     //Maintenance release
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS : DWORD ;    //Maintenance state
+  MS_Ext { S7_link := 'true' }: DWORD ;    //External Maintenance state
+  TextRef { S7_link := 'true' }: WORD ;    //Text reference external messages
+  FlutEn { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //1=Fluttersupress enable
+  FlutTmIn { S7_edit := 'para'; S7_visible := 'false' }: INT ;    //Fluttersupress time
+END_VAR
+VAR_OUTPUT
+  Bad : STRUCT     //1=Bad process value
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_Out { S7_edit := 'signal' }: WORD ;    //Output value
+  PV_ChnST : STRUCT     //Value and state of PV_Out
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_OutUnit : INT ;    //Unit of process value
+  ScaleOut : STRUCT     //Range of process value
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  PV_HiAct { S7_visible := 'false' }: STRUCT     //1=Input value high limit failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_LoAct { S7_visible := 'false' }: STRUCT     //1=Input value low limit failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimAct { S7_visible := 'false' }: STRUCT     //1=Simulation active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  ModErr { S7_visible := 'false' }: STRUCT     //1=higher level failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  ErrorNum { S7_visible := 'false' }: INT  := -1;    //Parameter error
+  OosAct { S7_dynamic := 'true' }: STRUCT     //Field device out of service, maintenance in pogress
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS_Req : STRUCT     //Maintenance request
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS_Dev : DWORD ;    //Maintenance State 
+END_VAR
+VAR_IN_OUT
+  Mode : DWORD ;    //Quality and mode
+  DataXchg : DWORD ;    //Data exchange
+  DataXchg1 : DWORD ;    //Data exchange
+  MS_Xchg : DWORD ;    //Maintenance State exchange
+END_VAR
+VAR
+  _r : ARRAY  [0 .. 7 ] OF BYTE ;   
+  SxFirstStart : BOOL  := TRUE;    //First start
+  LastByQuality : BYTE ;   
+END_VAR
+VAR_TEMP
+  Status : BOOL ;    //Status
+  StartOn : BOOL ;    //true = Startwert im Anlauf aktiv
+  StatusM : BOOL ;    //Status Messbereichkodierung
+  xFeatValueAtSim : BOOL ;    //1=Output de-energize value at a block-external simulation
+  Value : REAL ;    //Wert intern
+  Mba : REAL ;    //MeЯbereichsanpassung
+  Mbaa : REAL ;    //MeЯbereichsanpassung bei Anlauf
+  ByQuality : BYTE ;   
+  FactPh : REAL ;    //Faktor Rohwertberechnung
+  FactPha : REAL ;    //Faktor Rohwertberechnung in Anlauf
+  MaxVal : REAL ;    //Breichsmaximum
+  MinVal : REAL ;    //Breichsminimum
+  FlutTm : DWORD ;    //Flatterunterdrьckungszeit
+  MS_AS : DWORD ;    //Maintenance State AS
+  xConditionMonitoring : BOOL ;    //1=ConditionMonitoring
+END_VAR
+BEGIN
+ 
+IF SxFirstStart THEN
+    SxFirstStart:=FALSE;
+    ErrorNum:=0;
+END_IF;
+ 
+xConditionMonitoring:=Feature.Bit10;
+ScaleOut.High:=Scale.High;
+ScaleOut.Low:=Scale.Low;
+PV_OutUnit:=PV_InUnit;
+Bad.Value:=FALSE;
+OosAct.Value:=((MS AND DW#16#F000000)=DW#16#5000000) OR ((MS AND DW#16#F000000)=DW#16#6000000) OR ((MS AND DW#16#F000000)=DW#16#7000000);
+ 
+IF xConditionMonitoring THEN
+    DataXchg1:=DataXchg1 OR DW#16#1;
+ELSE
+    DataXchg1:=DataXchg1 AND DW#16#FFFFFFFE;
+END_IF;
+IF MS_Release.Value THEN
+    DataXchg:=DataXchg OR DW#16#1;
+ELSE
+    DataXchg:=DataXchg AND DW#16#FFFFFFFE;
+END_IF;
+ 
+MS_Dev:=MS;
+DataXchg1:=DataXchg1 AND DW#16#FFFF;
+MS_Xchg:=DW#16#0;
+ 
+IF xConditionMonitoring THEN
+    MS_Xchg:=MS_Ext;
+    DataXchg1:=SHL(IN:=    WORD_TO_DWORD(TextRef),N:=16) OR DataXchg1;
+END_IF;
+ 
+MS_Req.Value:=DWORD_TO_BOOL(SHR(IN:=DataXchg1 AND DW#16#2,N:=1))<>0;
+xFeatValueAtSim:=Feature.Bit30;
+ 
+IF FlutTmIn>255 THEN
+    FlutTmIn:=255;
+END_IF;
+ 
+IF FlutEn THEN
+    FlutTm:=SHL(IN:=INT_TO_DWORD(FlutTmIn),N:=24);
+    DataXchg:=DataXchg AND DW#16#FFFFFF;
+    DataXchg:=DataXchg OR FlutTm;
+    DataXchg:=DataXchg OR DW#16#2;
+ELSE
+    DataXchg:=DataXchg AND DW#16#FFFFFD;
+END_IF;
+ 
+Status:=((DW#16#80000000=(Mode AND DW#16#FF000000)) OR (DW#16#20000000=(Mode AND DW#16#FF000000))) OR SimOn.Value;
+ModErr.Value:=DW#16#40000000=(Mode AND DW#16#FF000000);
+StartOn:=Feature.Bit0;
+PV_HiAct.Value:=FALSE;
+PV_LoAct.Value:=FALSE;
+FactPh:=2.764800e+004;
+Mba:=0.0;
+MaxVal:=3.251100e+004;
+StatusM:=FALSE;
+ 
+CASE DWORD_TO_INT(Mode AND DW#16#FFFF) OF
+    262 :
+        FactPh:=5.529600e+004;
+        Mba:=-2.764800e+004;
+        MinVal:=-3.251200e+004;
+        FactPha:=5.529600e+003;
+        Mbaa:=0.0;
+    263 :
+        MinVal:=-6.912000e+003;
+        FactPha:=6.912000e+003;
+        Mbaa:=MinVal;
+    264 :
+        MinVal:=0.0;
+        FactPha:=2.764800e+004;
+        Mbaa:=MinVal;
+    265    :
+        FactPh:=5.529600e+004;
+        Mba:=-2.764800e+004;
+        MinVal:=-3.251200e+004;
+        FactPha:=2.764800e+003;
+        Mbaa:=0.0;
+    514 :
+        MinVal:=0.0;
+        FactPha:=1.382400e+004;
+        Mbaa:=MinVal;
+    515 :
+        MinVal:=-6.912000e+003;
+        FactPha:=1.728000e+003;
+        Mbaa:=MinVal;
+    516 :
+        FactPh:=5.529600e+004;
+        Mba:=-2.764800e+004;
+        MinVal:=-3.251200e+004;
+        FactPha:=1.382400e+004;
+        Mbaa:=0.0;
+    1804:
+        MinVal:=-6.912000e+003;
+        FactPha:=1.728000e+003;
+        Mbaa:=MinVal;
+    ELSE:
+        StatusM:=TRUE;
+END_CASE;
+ 
+IF SimOn.Value THEN
+    Value:=SimPV_In.Value;
+ELSE
+    IF (NOT(xFeatValueAtSim)) OR (PV_In.ST<>B#16#60) THEN
+        Value:=PV_In.Value;
+    END_IF;
+    ByQuality:=B#16#80;
+END_IF;
+ 
+IF ScaleOff THEN
+    IF ((PV_In.ST=B#16#60) AND xFeatValueAtSim) AND (NOT(SimOn.Value)) THEN
+        Value:=MinVal;
+    ELSE
+        Value:=(((Value-Scale.Low)/(Scale.High-Scale.Low))*FactPh)+Mba;
+    END_IF;
+    IF OK AND (Scale.High<>Scale.Low) THEN
+        IF Value>MaxVal THEN
+            Value:=MaxVal;
+            ByQuality:=B#16#78;
+            PV_HiAct.Value:=TRUE;
+        END_IF;
+        IF (Value<MinVal) AND (NOT(StatusM)) THEN
+            Value:=MinVal;
+            ByQuality:=B#16#78;
+            PV_LoAct.Value:=TRUE;
+        END_IF;
+        PV_ChnST.Value:=(((Value-Mba)*(Scale.High-Scale.Low))/FactPh)+Scale.Low;
+        IF Status AND OK AND FactPh<>0.0 THEN
+            ;
+        ELSE
+            ByQuality:=B#16#0;
+            Bad.Value:=TRUE;
+            OK:=TRUE;
+        END_IF;
+    ELSE
+        ByQuality:=B#16#0;
+        Bad.Value:=TRUE;
+        Value:=0.0;
+        OK:=TRUE;
+    END_IF;
+ELSE
+    IF Scale.High>=Scale.Low THEN
+        IF ((PV_In.ST=B#16#60) AND xFeatValueAtSim) AND (NOT(SimOn.Value)) THEN
+            Value:=Scale.Low;
+        END_IF;
+        IF Value>Scale.High THEN
+            Value:=Scale.High;
+            ByQuality:=B#16#78;
+            PV_HiAct.Value:=TRUE;
+        END_IF;
+        IF Value<Scale.Low THEN
+            Value:=Scale.Low;
+            ByQuality:=B#16#78;
+            PV_LoAct.Value:=TRUE;
+        END_IF;   
+    ELSE
+        IF (PV_In.ST=B#16#60) AND xFeatValueAtSim THEN
+            Value:=Scale.High;
+        END_IF;
+        IF Value<Scale.High THEN
+            Value:=Scale.High;
+            ByQuality:=B#16#78;
+            PV_HiAct.Value:=TRUE;
+        END_IF;
+        IF Value>Scale.Low THEN
+            Value:=Scale.Low;
+            ByQuality:=B#16#78;
+            PV_LoAct.Value:=TRUE;
+        END_IF; 
+    END_IF;
+    PV_ChnST.Value:=Value;
+    Value:=(((Value-Scale.Low)/(Scale.High-Scale.Low))*FactPh)+Mba;
+ 
+    IF ((((OK) AND (NOT(StatusM))) AND Status) AND (Value>=Mba)) AND (Value<=(Mba+FactPh)) THEN
+        ;
+    ELSE
+        ByQuality:=B#16#0;
+        Bad.Value:=TRUE;
+        IF StatusM THEN
+            PV_ChnST.Value:=0.0;
+        END_IF;
+        OK:=TRUE;
+    END_IF;
+END_IF;
+SimAct.Value:=SimOn.Value;
+ 
+IF SimOn.Value THEN
+    ByQuality:=B#16#60;
+    Bad.Value:=FALSE;
+ELSE
+    Bad.Value:=((NOT(Status)) OR Bad.Value) OR StatusM;
+    IF StatusM THEN
+        Value:=0.0;
+        PV_LoAct.Value:=FALSE;
+        PV_HiAct.Value:=FALSE;
+    END_IF;
+    IF ((Mode AND DW#16#10000)=DW#16#10000) AND StartOn THEN
+        Value:=(StartVal*FactPha)+Mbaa;
+        ByQuality:=B#16#80;
+    END_IF;
+END_IF;
+ 
+PV_Out:=INT_TO_WORD(REAL_TO_INT(Value));
+Mode:=Mode AND DW#16#FFFEFFFF;
+ModErr.Value:=(ModErr.Value) OR StatusM;
+ 
+IF DWORD_TO_INT(MS AND DW#16#F)=6 THEN
+    ByQuality:=B#16#68;
+ELSIF DWORD_TO_INT(MS AND DW#16#F)=5 THEN
+        ByQuality:=B#16#A4;
+END_IF;
+PV_ChnST.ST:=ByQuality;
+ 
+END_FUNCTION_BLOCK

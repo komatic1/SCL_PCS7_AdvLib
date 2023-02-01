@@ -1,0 +1,1229 @@
+Name: FB1869
+Symbolic Name: Pcs7AnIn
+Symbol Comment: Analog input driver
+Family: Channel
+Version: 8.7
+Author: AdvLib82
+Last modified: 12/09/2015
+Use: UDT15,UDT16,UDT18
+Size: 10878 bytes
+Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.02_01.02.00.01 release
+
+
+
+
+
+FUNCTION_BLOCK FB11869
+TITLE ='Analog input driver'
+{ S7_driver := 'chn'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLib82
+FAMILY : Channel
+NAME : Pcs7AnIn
+VERSION : '8.7'
+ 
+ 
+VAR_INPUT
+  PV_In { S7_edit := 'signal' }: WORD ;    //Input value
+  Scale { S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Range of process value
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  PV_InUnit { S7_edit := 'para'; S7_enum := 'true' }: INT  := 1001;    //Unit of process value
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //Reserved
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //1 = Low cut off input value
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //1 = Condition Monitoring
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //Reserved
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL  := TRUE;    //1 = Bad Value
+   Bit29 : BOOL ;    //1 = Substitute value
+   Bit30 : BOOL ;    //1 = Hold last value
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+  NamurOff { S7_visible := 'false' }: BOOL ;    //1=NAMUR limits off
+  HighLimit { S7_edit := 'para'; S7_visible := 'false' }: REAL  := 2.150000e+001;    //High limit of input value(4-20mA)
+  LowLimit { S7_edit := 'para'; S7_visible := 'false' }: REAL  := 3.300000e+000;    //Low limit of input value(4-20mA)
+  SimOn { S7_edit := 'para' }: STRUCT     //1=Simulation active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimPV_In { S7_edit := 'para' }: STRUCT     //Simulation value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SubsPV_In { S7_edit := 'para' }: REAL ;    //Substitution value
+  DeltaVal { S7_visible := 'false' }: REAL ;    //Delta value(PV.value - LastValidValue)
+  CountLim { S7_edit := 'para'; S7_visible := 'false' }: INT ;    //Restart counter limit
+  MS_Release { S7_visible := 'true' }: STRUCT     //Maintenance release
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS : DWORD ;    //Maintenance state
+  MS_Ext { S7_link := 'true' }: DWORD ;    //External Maintenance state
+  TextRef { S7_link := 'true' }: WORD ;    //Text reference external messages
+  FlutEn { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //1=Fluttersupress enable
+  FlutTmIn { S7_edit := 'para'; S7_visible := 'false' }: INT ;    //Fluttersupress time
+  FrznEn { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //Enable monitoring for frozen input value (In)
+  FrznTmIn { S7_edit := 'para'; S7_visible := 'false'; S7_dynamic := 'true' }: REAL ;    //Monitoring time of frozen imput value [s]
+  DelMsgEn { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //Reserve 
+  DelMsgTm { S7_edit := 'para'; S7_visible := 'false' }: INT ;    //Reserve 
+  SampleTime { S7_visible := 'false'; S7_link := 'false'; S7_sampletime := 'true'; S7_param := 'false' }: REAL  := 1.000000e-001;    //Sample Time[s]
+  LowCutOff { S7_edit := 'para'; S7_visible := 'false' }: REAL ;    //Low cut off input value
+END_VAR
+VAR_OUTPUT
+  Bad : STRUCT     //1=Bad process value
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_Out : STRUCT     //Process value incl. ST
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_OutUnit : INT ;    //Unit of process value
+  ScaleOut : STRUCT     //Range of process value
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  PV_HiAct { S7_visible := 'false' }: STRUCT     //1=Input value high limit failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_LoAct { S7_visible := 'false' }: STRUCT     //1=Input value low limit failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimAct { S7_visible := 'false' }: STRUCT     //1=Simulation active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  ModErr { S7_visible := 'false' }: STRUCT     //1=Higher level failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  FrznVal { S7_visible := 'false' }: STRUCT     //frozen input value
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RemMonTm { S7_visible := 'false' }: REAL ;    //remaining monitoring time
+  ErrorNum { S7_visible := 'false' }: INT  := -1;    //Parameter error
+  OosAct { S7_dynamic := 'true' }: STRUCT     //Field device out of service, maintenance in pogress
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PV_LcoAct { S7_visible := 'false' }: STRUCT     //1=Low cut off limit failure
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS_Req : STRUCT     //Maintenance request
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  MS_Dev : DWORD ;    //Maintenance State 
+END_VAR
+VAR_IN_OUT
+  Mode : DWORD ;    //Quality and mode
+  DataXchg : DWORD ;    //Data exchange
+  DataXchg1 : DWORD ;    //Data exchange
+  MS_Xchg : DWORD ;    //Maintenance State exchange
+END_VAR
+VAR
+  LastValidValue : REAL ;   
+  LastValidValue1 : REAL ;   
+  LastPV_In : WORD ;   
+  LastBad : BOOL ;   
+  DeltaOn : BOOL ;   
+  CntRes : INT ;    //Restart counter
+  _r : ARRAY  [0 .. 7 ] OF BYTE ;   
+  SxFirstStart : BOOL  := TRUE;    //First start
+  LastByQuality : BYTE ;   
+END_VAR
+VAR_TEMP
+  F_4mA : BOOL ;    //Fehler bei den NAMUR- oder Ersatz-Grenzen
+  HiLoUngl : BOOL ;    //High Range = Low Range
+  M4mA : BOOL ;    //Hilfsmerker 4 bis 20 mA
+  Status : BOOL ;    //WertStatus des Analogwertes
+  StatusM : BOOL ;    //Status Bereichdes Analogwertes
+  BadAkt : BOOL ;    //Status Messbereichkodierung
+  Except0_10V : BOOL ;    //Ausnahme Bereich 0-10V
+  SubOn : BOOL ;    //true = substitution on error active
+  LaValOn : BOOL ;    //true = last valid value on error active
+  xFeatBadValue : BOOL ;    //1=Bad Value will be issued
+  xInEquLastIn : BOOL ;    //PV_In is equal to last PV_In
+  xFrznMonEn : BOOL ;    //monitoring of frozen values is on
+  xMode80 : BOOL ;    //MODE = 16#80xxxxxx
+  ByQuality : BYTE ;   
+  Low_sc : INT ;    //Untere physische Grenze
+  UnderCnt : INT ;    //Untersteuergrenze
+  OverCnt : INT ;    //Ьbersteuergrenze
+  InVal : INT ;    //Analogeingang word
+  InValR : REAL ;    //Analogeingang in mA real
+  LoScalR : REAL ;   
+  FactPh : REAL ;    //Faktor fьr Messwertberechnung
+  LastValT : REAL ;   
+  FlutTm : DWORD ;    //Flatterunterdrьckungszeit
+  Overflow : INT ;    //Ьberlaufgrenze
+  DeltaUnd : INT ;    //Differenz Unterlaufgrenze
+  xFeatLowCutOff : BOOL ;    //1=LowCutOff enabled
+  MS_AS : DWORD ;    //Maintenance State AS
+  xConditionMonitoring : BOOL ;    //1=ConditionMonitoring
+END_VAR
+BEGIN
+ 
+IF SxFirstStart THEN
+    SxFirstStart:=FALSE;
+    ErrorNum:=0;
+END_IF;
+ 
+Except0_10V:=FALSE;
+xFeatLowCutOff:=Feature.Bit5;
+xFeatBadValue:=Feature.Bit28;
+xConditionMonitoring:=Feature.Bit10;
+IF NOT(((xFeatBadValue) OR Feature.Bit29) OR Feature.Bit30) THEN
+    xFeatBadValue:=TRUE;
+END_IF;
+ 
+IF ((((((((((Mode AND DW#16#FF00)=DW#16#700) AND ((Mode AND DW#16#FF)<>DW#16#C)) OR
+    ((Mode AND DW#16#FF00)=DW#16#800)) OR
+    ((Mode AND DW#16#FF00)=DW#16#900)) OR
+    ((Mode AND DW#16#FF00)=DW#16#A00)) OR
+    ((Mode AND DW#16#FF00)=DW#16#B00)) OR
+    ((Mode AND DW#16#FF00)=DW#16#C00)) OR
+    ((Mode AND DW#16#FF00)=DW#16#D00)) OR
+    ((Mode AND DW#16#FF00)=DW#16#E00)) OR
+    ((Mode AND DW#16#FF00)=DW#16#F00)
+THEN
+    IF DW#16#800000=(Mode AND DW#16#800000) THEN
+        PV_InUnit:=1002;
+    END_IF;
+END_IF;
+ScaleOut.High:=Scale.High;
+ScaleOut.Low:=Scale.Low;
+PV_OutUnit:=PV_InUnit;
+ 
+OosAct.Value:=(((MS AND DW#16#F000000)=DW#16#5000000) OR
+               ((MS AND DW#16#F000000)=DW#16#6000000)) OR
+               ((MS AND DW#16#F000000)=DW#16#7000000);
+ 
+IF xConditionMonitoring THEN
+    DataXchg1:=DataXchg1 OR DW#16#1;
+ELSE
+DataXchg1:=DataXchg1 AND DW#16#FFFFFFFE;
+END_IF;
+ 
+IF MS_Release.Value THEN
+    DataXchg:=DataXchg OR DW#16#1;
+ELSE
+    DataXchg:=DataXchg AND DW#16#FFFFFFFE;
+END_IF;
+ 
+MS_Dev:=MS;
+DataXchg1:=DataXchg1 AND DW#16#FFFF;
+MS_Xchg:=DW#16#0;
+ 
+IF xConditionMonitoring THEN
+    MS_Xchg:=MS_Ext;
+    DataXchg1:=SHL(IN:=WORD_TO_DWORD(TextRef),N:=16) OR DataXchg1;
+END_IF;
+ 
+MS_Req.Value:=DWORD_TO_BOOL(SHR(IN:=DataXchg1 AND DW#16#2,N:=1))<>0;
+ 
+ 
+IF FlutTmIn>255 THEN
+    FlutTmIn:=255;
+END_IF;
+ 
+IF FlutEn THEN
+    FlutTm:=SHL(IN:=INT_TO_DWORD(FlutTmIn),N:=24);
+    DataXchg:=DataXchg AND DW#16#FFFFFF;
+    DataXchg:=DataXchg OR FlutTm;
+    DataXchg:=DataXchg OR DW#16#2;
+ELSE
+    DataXchg:=DataXchg AND DW#16#FFFFFD;
+END_IF;
+ 
+xMode80:=DW#16#80000000=(Mode AND DW#16#FF000000);
+Status:=((DW#16#20000000=(Mode AND DW#16#FF000000)) OR xMode80) OR SimOn.Value;
+xFrznMonEn:=((FrznTmIn>0.0) AND xMode80) AND FrznEn;
+ModErr.Value:=DW#16#40000000=(Mode AND DW#16#FF000000);
+SubOn:=(NOT(xFeatBadValue)) AND Feature.Bit29;
+LaValOn:=(NOT((Feature.Bit29) OR xFeatBadValue)) AND Feature.Bit30;
+F_4mA:=FALSE;
+LoScalR:=Scale.Low;
+Low_sc:=-27648;
+UnderCnt:=-27648;
+OverCnt:=27648;
+Overflow:=32512;
+ 
+IF DWORD_TO_INT(Mode AND DW#16#FFFF)=264 THEN
+    DeltaUnd:=1;
+ELSE
+    DeltaUnd:=4865;
+END_IF;
+M4mA:=FALSE;
+InValR:=Scale.High-LoScalR;
+IF InValR=0.0 THEN
+    HiLoUngl:=FALSE;
+    InValR:=1.0;
+    LoScalR:=0.0;
+    Low_sc:=0;
+    FactPh:=1.000000e-001;   
+ELSE
+    HiLoUngl:=TRUE;
+    FactPh:=1.808449e-005;
+END_IF;
+InVal:=DWORD_TO_INT(Mode AND DW#16#FFFF);
+StatusM:=FALSE;
+ 
+ 
+CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF00) OF
+    256 :
+        CASE InVal OF
+            257 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=2.893518e-003;
+                END_IF;
+            258 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=9.042245e-003;
+                END_IF;
+            259 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=1.808449e-002;
+                END_IF;
+            260 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                END_IF;
+            261 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=9.042245e-005;
+                END_IF;
+            262 :
+                IF NOT HiLoUngl THEN
+                    FactPh:=1.808449e-004;
+                END_IF;
+            263 :
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    Low_sc:=0;
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=1.446759e-004;
+                    Low_sc:=-6912;
+                END_IF;   
+            264 :
+                UnderCnt:=0;
+                Low_sc:=0;
+                Except0_10V:=TRUE;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=3.616898e-004;
+                END_IF;   
+            265 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=3.616898e-004;
+                END_IF;
+            266 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=9.042245e-004;
+                END_IF;
+            267 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=1.808449e-003;
+                END_IF;    
+            268 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=3.616898e-003;
+                END_IF;   
+            269 :
+                Low_sc:=0;
+                UnderCnt:=0;
+                FactPh:=3.616898e-005;
+            ELSE:
+                Status:=FALSE;
+                StatusM:=TRUE;
+        END_CASE;
+    512 :   
+        CASE InVal OF
+            512 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=1.157407e-004;
+                END_IF;   
+            513 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=3.616898e-004;
+                END_IF;   
+            514 :
+                Low_sc:=0;
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=7.233796e-004;
+                END_IF;   
+            515 :
+                M4mA:=TRUE;
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    Low_sc:=0;
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=5.787037e-004;
+                    Low_sc:=-6912;
+                END_IF;   
+            516 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=7.233796e-004;
+                END_IF;   
+            517 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=1.808449e-004;
+                END_IF;   
+            ELSE
+                Status:=FALSE;
+                StatusM:=TRUE;
+        END_CASE;   
+    768 :   
+        CASE InVal OF
+            770 :
+                IF HiLoUngl THEN
+                    Low_sc:=0;
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=7.233796e-004;
+                END_IF;
+            771 :
+                M4mA:=TRUE;
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    Low_sc:=0;
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=5.787037e-004;
+                    Low_sc:=-6912;
+                END_IF;
+            772 :
+                IF NOT(HiLoUngl) THEN
+                    FactPh:=7.233796e-004;
+                END_IF;
+            ELSE
+                Status:=FALSE;
+                StatusM:=TRUE;
+        END_CASE;   
+    1024,1280,1536 :   
+        Low_sc:=0;
+        CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+            0 :
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=1.736111e-003;
+                END_IF;
+            2 :
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=5.425347e-003;               
+                END_IF;
+            4 :
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=1.085069e-002;
+                END_IF;
+            6 :
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=2.170139e-002;            
+                END_IF;   
+            7 :                   
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=1.085069e-001;       
+                END_IF;
+            8 :                   
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=2.170139e-001;
+                END_IF;
+            14 :               
+                UnderCnt:=0;
+                IF HiLoUngl THEN
+                    FactPh:=3.616898e-005;
+                ELSE
+                    FactPh:=3.616898e-002;
+                END_IF;
+            15 :
+                FactPh:=1.0;
+                InValR:=1.0;
+            ELSE
+                Status:=FALSE;
+                StatusM:=TRUE;
+        END_CASE;   
+    1792 :   
+        Low_sc:=0;
+        IF (Mode AND DW#16#100000)=DW#16#100000 THEN
+            FactPh:=1.000000e-001;
+            IF PV_InUnit=1002 THEN
+                CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                    0 :
+                        UnderCnt:=320;
+                        OverCnt:=27865;
+                        Overflow:=32767;
+                        DeltaUnd:=1841;
+                    1 :
+                        UnderCnt:=-4540;
+                        OverCnt:=23720;
+                        Overflow:=28221;
+                        DeltaUnd:=4541;
+                    2 :
+                        UnderCnt:=-4540;
+                        OverCnt:=18320;
+                        Overflow:=21921;
+                        DeltaUnd:=4541;
+                    3 :
+                        OverCnt:=32162;
+                        UnderCnt:=-580;
+                        Overflow:=32767;
+                        DeltaUnd:=2741;
+                    4 :
+                        OverCnt:=32162;
+                        UnderCnt:=-580;
+                        Overflow:=32767;
+                        DeltaUnd:=2741;
+                    5 :
+                        OverCnt:=21920;
+                        UnderCnt:=-3460;
+                        Overflow:=26421;
+                        DeltaUnd:=3461;
+                    6 :
+                        OverCnt:=16520;
+                        UnderCnt:=-3280;
+                        Overflow:=21021;
+                        DeltaUnd:=3281;
+                    7 :
+                        OverCnt:=7520;
+                        UnderCnt:=-4540;
+                        Overflow:=10041;
+                        DeltaUnd:=4541;
+                    8 :
+                        OverCnt:=25016;
+                        UnderCnt:=-4540;
+                        Overflow:=29517;
+                        DeltaUnd:=4541;
+                    9 :
+                        OverCnt:=11120;
+                        UnderCnt:=-3280;
+                        Overflow:=15621;
+                        DeltaUnd:=3281;
+                    10 :
+                        OverCnt:=27865;
+                        UnderCnt:=320;
+                        Overflow:=32767;
+                        DeltaUnd:=1841;
+                    11 :
+                        OverCnt:=14720;
+                        UnderCnt:=-3280;
+                        Overflow:=19221;
+                        DeltaUnd:=3281;
+                    ELSE   
+                        Status:=FALSE;
+                        StatusM:=TRUE;
+                END_CASE;   
+            ELSE
+                CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                    0 :
+                        UnderCnt:=0;
+                        OverCnt:=18200;
+                        Overflow:=20701;
+                        DeltaUnd:=1201;
+                    1 :
+                        UnderCnt:=-2700;
+                        OverCnt:=13000;
+                        Overflow:=15501;
+                        DeltaUnd:=2701;
+                    2 :
+                        UnderCnt:=-2700;
+                        OverCnt:=10000;
+                        Overflow:=12001;
+                        DeltaUnd:=2701;
+                    3 :
+                        OverCnt:=17690;
+                        UnderCnt:=-500;
+                        Overflow:=20191;
+                        DeltaUnd:=1701;
+                    4 :
+                        OverCnt:=17690;
+                        UnderCnt:=-500;
+                        Overflow:=20191;
+                        DeltaUnd:=1701;
+                    5 :
+                        OverCnt:=12000;
+                        UnderCnt:=-2100;
+                        Overflow:=14501;
+                        DeltaUnd:=2101;
+                    6 :
+                        OverCnt:=9000;
+                        UnderCnt:=-2000;
+                        Overflow:=11501;
+                        DeltaUnd:=2001;
+                    7 :
+                        OverCnt:=4000;
+                        UnderCnt:=-2700;
+                        Overflow:=5401;
+                        DeltaUnd:=2701;
+                    8 :
+                        OverCnt:=13720;
+                        UnderCnt:=-2700;
+                        Overflow:=16221;
+                        DeltaUnd:=2701;
+                    9 :
+                        OverCnt:=6000;
+                        UnderCnt:=-2000;
+                        Overflow:=8501;
+                        DeltaUnd:=2001;
+                    10 :
+                        OverCnt:=23150;
+                        UnderCnt:=0;
+                        Overflow:=25001;
+                        DeltaUnd:=1201;
+                    11 :
+                        OverCnt:=8000;
+                        UnderCnt:=-2000;
+                        Overflow:=10501;
+                        DeltaUnd:=2001;
+                    ELSE   
+                        Status:=FALSE;
+                        StatusM:=TRUE;
+                END_CASE;
+            END_IF;       
+        ELSE
+            CASE InVal OF
+                1804 :
+                    M4mA:=TRUE;
+                    UnderCnt:=0;
+                    IF HiLoUngl THEN
+                        FactPh:=3.616898e-005;
+                    ELSE
+                        FactPh:=5.787037e-004;
+                        Low_sc:=-6912;
+                    END_IF;   
+                ELSE   
+                    Status:=FALSE;
+                    StatusM:=TRUE;
+            END_CASE;
+        END_IF;   
+    2048,2304,3840 :
+        Low_sc:=0;
+        IF PV_InUnit=1002 THEN
+            CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                0 :
+                    UnderCnt:=-18400;
+                    OverCnt:=26600;
+                    FactPh:=1.000000e-002;
+                    Overflow:=31101;
+                    DeltaUnd:=22901;
+                1 :
+                    OverCnt:=28000;
+                    UnderCnt:=-7600;
+                    FactPh:=1.000000e-002;
+                    Overflow:=32767;
+                    DeltaUnd:=15701;
+                2,3,4,5,85,87,89,91 :
+                    OverCnt:=15620;
+                    UnderCnt:=-3280;
+                    FactPh:=1.000000e-001;
+                    Overflow:=18321;
+                    DeltaUnd:=4055;
+                6 :
+                    OverCnt:=4820;
+                    UnderCnt:=-760;
+                    FactPh:=1.000000e-001;
+                    Overflow:=5631;
+                    DeltaUnd:=1571;
+                7,8,9,20,22,24,26 :
+                    UnderCnt:=-18400;
+                    OverCnt:=26600;
+                    FactPh:=1.000000e-002;
+                    Overflow:=31101;
+                    DeltaUnd:=22901;
+                10,13,17,19 :
+                    IF (Mode AND DW#16#100000)=DW#16#100000 THEN
+                        OverCnt:=5720;
+                        UnderCnt:=-400;
+                        FactPh:=1.000000e-001;
+                        Overflow:=6671;
+                        DeltaUnd:=527;
+                    ELSE
+                        OverCnt:=28000;
+                        UnderCnt:=-7600;
+                        FactPh:=1.000000e-002;
+                        Overflow:=32767;
+                        DeltaUnd:=15701;
+                    END_IF;
+                11,12,16,18 :
+                    IF (Mode AND DW#16#100000)=DW#16#100000 THEN
+                        OverCnt:=3470;
+                        UnderCnt:=-670;
+                        FactPh:=1.000000e-001;
+                        Overflow:=4034;
+                        DeltaUnd:=846;
+                    ELSE
+                        OverCnt:=4820;
+                        UnderCnt:=-760;
+                        FactPh:=1.000000e-001;
+                        Overflow:=5631;
+                        DeltaUnd:=1571;
+                    END_IF;
+                14 :
+                    OverCnt:=28000;
+                    UnderCnt:=-5800;
+                    FactPh:=1.000000e-002;
+                    Overflow:=32767;
+                    DeltaUnd:=7601;
+                15 :
+                    OverCnt:=5000;
+                    UnderCnt:=-3280;
+                    FactPh:=1.000000e-001;
+                    Overflow:=5937;
+                    DeltaUnd:=4001;
+                21,23,25,27 :
+                    OverCnt:=20120;
+                    UnderCnt:=-4360;
+                    FactPh:=1.000000e-001;
+                    Overflow:=23631;
+                    DeltaUnd:=4598;
+                29,31,33 :
+                    OverCnt:=3920;
+                    UnderCnt:=-580;
+                    FactPh:=1.000000e-001;
+                    Overflow:=4641;
+                    DeltaUnd:=761;
+                157,159,161 :
+                    OverCnt:=3920;
+                    UnderCnt:=-3280;
+                    FactPh:=1.000000e-001;
+                    Overflow:=4641;
+                    DeltaUnd:=4055;
+                28,30,32 :
+                    OverCnt:=28000;
+                    UnderCnt:=-5800;
+                    FactPh:=1.000000e-002;
+                    Overflow:=32767;
+                    DeltaUnd:=7601;
+                34 :
+                    OverCnt:=28000;
+                    UnderCnt:=-7600;
+                    FactPh:=1.000000e-002;
+                    Overflow:=32767;
+                    DeltaUnd:=15701;
+                35 :
+                    OverCnt:=3560;
+                    UnderCnt:=-760;
+                    FactPh:=1.000000e-001;
+                    Overflow:=4144;
+                    DeltaUnd:=1571;
+                ELSE   
+                    Status:=FALSE;
+                    StatusM:=TRUE;
+            END_CASE;
+        ELSE
+            CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                0 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        UnderCnt:=-20000;
+                        OverCnt:=27648;
+                        FactPh:=1.000000e-002;
+                        Overflow:=32513;
+                        DeltaUnd:=24001;
+                    ELSE
+                        UnderCnt:=-12000;
+                        OverCnt:=13000;
+                        FactPh:=1.000000e-002;
+                        Overflow:=15501;
+                        DeltaUnd:=14501;
+                    END_IF;
+                1 :
+                    OverCnt:=25000;
+                    UnderCnt:=-6000;
+                    FactPh:=1.000000e-002;
+                    Overflow:=29501;
+                    DeltaUnd:=10501;
+                2,3,4,5,85,87,89,91 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        OverCnt:=8500;
+                        UnderCnt:=-2000;
+                        FactPh:=1.000000e-001;
+                        Overflow:=13001;
+                        DeltaUnd:=2401;
+                    ELSE
+                        OverCnt:=8500;
+                        UnderCnt:=-2000;
+                        FactPh:=1.000000e-001;
+                        Overflow:=10001;
+                        DeltaUnd:=2431;
+                    END_IF;   
+                6 :
+                    OverCnt:=2500;
+                    UnderCnt:=-600;
+                    FactPh:=1.000000e-001;
+                    Overflow:=2951;
+                    DeltaUnd:=1051;
+                7,8,9,20,22,24,26 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        UnderCnt:=-20000;
+                        OverCnt:=27648;
+                        FactPh:=1.000000e-002;
+                        Overflow:=32513;
+                        DeltaUnd:=24001;
+                    ELSE
+                        UnderCnt:=-12000;
+                        OverCnt:=13000;
+                        FactPh:=1.000000e-002;
+                        Overflow:=15501;
+                        DeltaUnd:=14501;
+                    END_IF;
+                10,13,17,19 :
+                    IF (Mode AND DW#16#100000)=DW#16#100000 THEN
+                        OverCnt:=3000;
+                        UnderCnt:=-400;
+                        FactPh:=1.000000e-001;
+                        Overflow:=3529;
+                        DeltaUnd:=471;
+                    ELSE
+                        OverCnt:=25000;
+                        UnderCnt:=-6000;
+                        FactPh:=1.000000e-002;
+                        Overflow:=29501;
+                        DeltaUnd:=10501;
+                    END_IF;   
+                11,12,16,18 :
+                    IF (Mode AND DW#16#100000)=DW#16#100000 THEN
+                        OverCnt:=1750;
+                        UnderCnt:=-550;
+                        FactPh:=1.000000e-001;
+                        Overflow:=2064;
+                        DeltaUnd:=648;
+                    ELSE
+                        OverCnt:=2500;
+                        UnderCnt:=-600;
+                        FactPh:=1.000000e-001;
+                        Overflow:=2951;
+                        DeltaUnd:=1051;
+                    END_IF;   
+                14 :
+                    OverCnt:=15000;
+                    UnderCnt:=-5000;
+                    FactPh:=1.000000e-002;
+                    Overflow:=18001;
+                    DeltaUnd:=6001;
+                15 :
+                    OverCnt:=2600;
+                    UnderCnt:=-2000;
+                    FactPh:=1.000000e-001;
+                    Overflow:=3121;
+                    DeltaUnd:=2401;
+                21,23,25,27 :
+                    OverCnt:=11000;
+                    UnderCnt:=-2600;
+                    FactPh:=1.000000e-001;
+                    Overflow:=12951;
+                    DeltaUnd:=2733;
+                29,31,33 :
+                    OverCnt:=2000;
+                    UnderCnt:=-500;
+                    FactPh:=1.000000e-001;
+                    Overflow:=2401;
+                    DeltaUnd:=601;
+                157,159,161 :
+                    OverCnt:=2000;
+                    UnderCnt:=-2000;
+                    FactPh:=1.000000e-001;
+                    Overflow:=2401;
+                    DeltaUnd:=2401;
+                28,30,32 :
+                    OverCnt:=15000;
+                    UnderCnt:=-5000;
+                    FactPh:=1.000000e-002;
+                    Overflow:=18001;
+                    DeltaUnd:=6001;
+                34 :
+                    OverCnt:=18000;
+                    UnderCnt:=-6000;
+                    FactPh:=1.000000e-002;
+                    Overflow:=21241;
+                    DeltaUnd:=10501;
+                35 :
+                    OverCnt:=1800;
+                    UnderCnt:=-600;
+                    FactPh:=1.000000e-001;
+                    Overflow:=2125;
+                    DeltaUnd:=1051;
+                ELSE   
+                    Status:=FALSE;
+                    StatusM:=TRUE;
+            END_CASE;
+        END_IF;       
+    2560,2816,3072,3328,3584 :
+        Low_sc:=0;
+        FactPh:=1.000000e-001;
+        IF PV_InUnit=1002 THEN
+            CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                0 :
+                    UnderCnt:=320;
+                    OverCnt:=27865;
+                    Overflow:=32767;
+                    DeltaUnd:=1841;
+                1 :
+                    UnderCnt:=-4540;
+                    OverCnt:=23720;
+                    Overflow:=28221;
+                    DeltaUnd:=4541;
+                2 :
+                    UnderCnt:=-4540;
+                    OverCnt:=18320;
+                    Overflow:=21921;
+                    DeltaUnd:=4541;
+                3 :
+                    OverCnt:=32162;
+                    UnderCnt:=-580;
+                    Overflow:=32767;
+                    DeltaUnd:=2741;
+                4 :
+                    OverCnt:=32162;
+                    UnderCnt:=-580;
+                    Overflow:=32767;
+                    DeltaUnd:=2741;
+                5 :
+                    OverCnt:=21920;
+                    UnderCnt:=-3460;
+                    Overflow:=26421;
+                    DeltaUnd:=3461;
+                6 :
+                    OverCnt:=16520;
+                    UnderCnt:=-3280;
+                    Overflow:=21021;
+                    DeltaUnd:=3281;
+                7 :
+                    OverCnt:=7520;
+                    UnderCnt:=-4540;
+                    Overflow:=10041;
+                    DeltaUnd:=4541;
+                8 :
+                    OverCnt:=25016;
+                    UnderCnt:=-4540;
+                    Overflow:=29517;
+                    DeltaUnd:=4541;
+                9 :
+                    OverCnt:=11120;
+                    UnderCnt:=-3280;
+                    Overflow:=15621;
+                    DeltaUnd:=3281;
+                10 :
+                    OverCnt:=27865;
+                    UnderCnt:=320;
+                    Overflow:=32767;
+                    DeltaUnd:=1841;
+                11 :               
+                    OverCnt:=14720;
+                    UnderCnt:=-3280;
+                    Overflow:=19221;
+                    DeltaUnd:=3281;
+                ELSE   
+                    Status:=FALSE;
+                    StatusM:=TRUE;
+            END_CASE;
+        ELSE
+            CASE WORD_TO_INT(INT_TO_WORD(InVal) AND W#16#FF) OF
+                0 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        UnderCnt:=0;
+                        OverCnt:=18200;
+                        Overflow:=20701;
+                        DeltaUnd:=1501;
+                    ELSE
+                        UnderCnt:=0;
+                        OverCnt:=18200;
+                        Overflow:=20701;
+                        DeltaUnd:=1201;
+                    END_IF;
+                1 :
+                    UnderCnt:=-2700;
+                    OverCnt:=13000;
+                    Overflow:=15501;
+                    DeltaUnd:=2701;
+                2 :
+                    UnderCnt:=-2700;
+                    OverCnt:=10000;
+                    Overflow:=12001;
+                    DeltaUnd:=2701;
+                3 :
+                    OverCnt:=17690;
+                    UnderCnt:=-500;
+                    Overflow:=20191;
+                    DeltaUnd:=1701;
+                4 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        OverCnt:=17690;
+                        UnderCnt:=-500;
+                        Overflow:=18501;
+                        DeltaUnd:=1701;
+                    ELSE
+                        OverCnt:=17690;
+                        UnderCnt:=-500;
+                        Overflow:=20191;
+                        DeltaUnd:=1701;
+                    END_IF;   
+                5 :
+                    IF (Mode AND DW#16#F00000)=DW#16#300000 THEN
+                        OverCnt:=12000;
+                        UnderCnt:=-2100;
+                        Overflow:=13601;
+                        DeltaUnd:=2101;
+                    ELSE
+                        OverCnt:=12000;
+                        UnderCnt:=-2100;
+                        Overflow:=14501;
+                        DeltaUnd:=2101;
+                    END_IF;   
+                6 :
+                    OverCnt:=9000;
+                    UnderCnt:=-2000;
+                    Overflow:=11501;
+                    DeltaUnd:=2001;
+                7 :
+                    OverCnt:=4000;
+                    UnderCnt:=-2700;
+                    Overflow:=5401;
+                    DeltaUnd:=2701;
+                8 :
+                    OverCnt:=13720;
+                    UnderCnt:=-2700;
+                    Overflow:=16221;
+                    DeltaUnd:=2701;
+                9 :
+                    OverCnt:=6000;
+                    UnderCnt:=-2000;
+                    Overflow:=8501;
+                    DeltaUnd:=2001;
+                10 :
+                    OverCnt:=23150;
+                    UnderCnt:=0;
+                    Overflow:=25001;
+                    DeltaUnd:=1201;
+                11 :
+                    OverCnt:=8000;
+                    UnderCnt:=-2000;
+                    Overflow:=10501;
+                    DeltaUnd:=2001;
+                ELSE   
+                    Status:=FALSE;
+                    StatusM:=TRUE;
+            END_CASE;
+        END_IF;
+    ELSE   
+        Status:=FALSE;
+        StatusM:=TRUE;
+END_CASE;
+ 
+FactPh:=FactPh*InValR;
+IF SimOn.Value THEN
+    InValR:=((SimPV_In.Value-LoScalR)/FactPh)+INT_TO_REAL(Low_sc);
+    Status:=TRUE;
+    IF (InValR<3.276700e+004) AND (InValR>INT_TO_REAL(Low_sc-5120)) THEN
+        InVal:=REAL_TO_INT(InValR);
+    ELSE
+        IF InValR>=3.276700e+004 THEN
+            InVal:=32767;
+        ELSE
+            InVal:=Low_sc-5120;
+        END_IF;
+    END_IF;
+    PV_LoAct.Value:=InVal<UnderCnt;
+    PV_HiAct.Value:=InVal>OverCnt;
+ELSE
+    InVal:=WORD_TO_INT(PV_In);
+    PV_LoAct.Value:=(InVal<UnderCnt) OR (DW#16#40000=(Mode AND DW#16#40000));
+    PV_HiAct.Value:=(InVal>OverCnt) OR (DW#16#20000=(Mode AND DW#16#20000));
+END_IF;
+ 
+ 
+   
+ 
+IF ((InVal<Overflow) AND (InVal>(Low_sc-DeltaUnd))) AND ((DW#16#0<>(Mode AND DW#16#FF000000)) OR SimOn.Value) THEN
+    IF M4mA THEN
+        InValR:=(INT_TO_REAL(InVal)*5.787037e-004)+4.000000e+000;
+        IF NamurOff THEN
+            F_4mA:=(InValR>HighLimit) OR (InValR<LowLimit);
+        ELSE
+            F_4mA:=(InValR>2.100000e+001) OR (InValR<3.600000e+000);
+        END_IF;
+    END_IF;   
+ELSE   
+    Status:=FALSE;
+END_IF;
+xInEquLastIn:=PV_In=LastPV_In;   
+ 
+IF (NOT(xFrznMonEn)) OR SimOn.Value THEN
+    FrznVal.Value:=FALSE;
+    RemMonTm:=FrznTmIn;
+ELSIF (FrznTmIn<SampleTime) OR (NOT(xInEquLastIn)) THEN
+    FrznVal.Value:=xInEquLastIn;
+    RemMonTm:=FrznTmIn;
+ELSIF RemMonTm>0.0 THEN
+    RemMonTm:=RemMonTm-SampleTime;
+    IF NOT(xInEquLastIn) THEN
+        FrznVal.Value:=FALSE;
+        RemMonTm:=FrznTmIn;
+    END_IF;
+    IF (RemMonTm<=0.0) AND xInEquLastIn THEN
+        FrznVal.Value:=TRUE;
+        RemMonTm:=0.0;
+    END_IF;
+END_IF;
+ 
+LastPV_In:=PV_In;
+BadAkt:=((NOT(Status)) OR F_4mA) OR FrznVal.Value;
+ 
+IF SimOn.Value THEN
+    ByQuality:=B#16#60;
+    InValR:=SimPV_In.Value;
+    CntRes:=0;
+ELSE
+    IF BadAkt THEN
+        IF SubOn THEN
+            IF LaValOn THEN
+                ByQuality:=B#16#0;
+                InValR:=(DINT_TO_REAL(INT_TO_DINT(InVal)-INT_TO_DINT(Low_sc))*FactPh)+LoScalR;
+            ELSE
+                InValR:=SubsPV_In;
+                ByQuality:=B#16#60;
+            END_IF;   
+        ELSE
+            IF LaValOn THEN
+                ByQuality:=B#16#60;
+                InValR:=LastValidValue;
+                LastValT:=LastValidValue1;
+            ELSE
+                ByQuality:=B#16#0;
+                InValR:=(DINT_TO_REAL(INT_TO_DINT(InVal)-INT_TO_DINT(Low_sc))*FactPh)+LoScalR;
+            END_IF;
+        END_IF;
+        CntRes:=0;
+    ELSE
+        InValR:=(DINT_TO_REAL(INT_TO_DINT(InVal)-INT_TO_DINT(Low_sc))*FactPh)+LoScalR;
+        LastValT:=LastValidValue;
+        ByQuality:=B#16#80;
+        IF CountLim>0 THEN
+            IF ((NOT(BadAkt)) AND LastBad) OR ((Mode AND DW#16#10000)=DW#16#10000) THEN
+                IF CntRes=0 THEN
+                    CntRes:=CountLim;
+                    Mode:=Mode AND DW#16#FFFEFFFF;
+                END_IF;
+            END_IF;
+            IF CntRes>0 THEN
+                CntRes:=CntRes-1;
+                BadAkt:=CntRes>0;
+                IF BadAkt THEN
+                    IF (LaValOn) OR SubOn THEN
+                        ByQuality:=B#16#60;
+                    ELSE
+                        ByQuality:=B#16#0;
+                    END_IF;
+                    InValR:=LastValidValue;
+                END_IF;
+            END_IF;
+        END_IF;
+    END_IF;
+    IF LaValOn THEN
+        IF DeltaVal>0.0 THEN
+            IF (ByQuality=B#16#60) OR ((ByQuality=B#16#80) AND (NOT(DeltaOn))) THEN
+                IF ABS(InValR-LastValT)>DeltaVal THEN
+                    InValR:=LastValT;
+                    LastValidValue:=LastValT;
+                    ByQuality:=B#16#60;
+                    DeltaOn:=TRUE;
+                ELSE
+                    DeltaOn:=FALSE;
+                END_IF;
+            ELSE
+                DeltaOn:=FALSE;
+            END_IF;   
+           
+        ELSE
+            DeltaOn:=FALSE;
+        END_IF;
+    END_IF;
+END_IF;
+ 
+IF (InVal<0) AND Except0_10V THEN
+    ByQuality:=B#16#0;
+    InValR:=Scale.Low;
+    BadAkt:=TRUE;
+END_IF;
+ 
+PV_Out.ST:=ByQuality;
+PV_Out.Value:=InValR;
+ModErr.Value:=(ModErr.Value) OR StatusM;
+LastValidValue1:=LastValidValue;
+ 
+IF (NOT(SimOn.Value)) AND StatusM THEN
+    PV_Out.Value:=0.0;
+END_IF;
+ 
+IF (PV_Out.Value<LowCutOff) AND xFeatLowCutOff THEN
+    PV_Out.Value:=Scale.Low;
+    PV_LcoAct.Value:=TRUE;
+END_IF;
+ 
+IF PV_Out.Value>LowCutOff THEN
+    PV_LcoAct.Value:=FALSE;
+END_IF;
+ 
+Bad.Value:=BadAkt;
+SimAct.Value:=SimOn.Value;
+LastBad:=BadAkt;
+LastValidValue:=InValR;
+ 
+IF DWORD_TO_INT(MS AND DW#16#F)=6 THEN
+    ByQuality:=B#16#68;
+    PV_Out.ST:=B#16#68;
+ELSIF DWORD_TO_INT(MS AND DW#16#F)=5 THEN
+    ByQuality:=B#16#A4;
+    PV_Out.ST:=B#16#A4;
+END_IF;
+ 
+END_FUNCTION_BLOCK
