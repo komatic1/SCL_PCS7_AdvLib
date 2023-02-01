@@ -10,7 +10,16 @@ Scl_CreateDebugInfo :=          'n' ;
 Scl_SetOKFlag:=                 'n' ;
 Scl_SetMaximumStringLength:=    '254'
 }
- 
+// Name: FC470
+// Symbolic Name: MxRBnd
+// Symbol Comment: MxRBnd
+// Family: System
+// Version: 5.0
+// Author: AdvLib90
+// Last modified: 10/10/2016
+// Use: UDT44,UDT47
+// Size in work memory: 1012 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.03_04.01.00.01 release 
 //==========================================================================
  
 TYPE "Matrix15"

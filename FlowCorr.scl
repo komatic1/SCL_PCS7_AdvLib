@@ -1,0 +1,302 @@
+// Name: FB1916
+// Symbolic Name: FlowCorr
+// Symbol Comment: Pressure Temperature Correction
+// Family: Math
+// Version: 4.0
+// Author: AdvLib82
+// Last modified: 03/18/2015
+// Use: UDT16,FC260
+// Size: 2398 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.01_01.04.00.03 release
+
+FUNCTION_BLOCK FB11916
+TITLE ='Pressure Temperature Correction'
+AUTHOR : AdvLib82
+FAMILY : Math
+NAME : FlowCorr
+VERSION : '4.0'
+ 
+ 
+VAR_INPUT
+  DiffP { S7_dynamic := 'true' }: STRUCT     //Differential pressure
+   Value : REAL  := 1.000000e+000;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  DiffP0 { S7_dynamic := 'true' }: STRUCT     //Differential pressure at operating point
+   Value : REAL  := 1.000000e+002;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  P { S7_dynamic := 'true' }: STRUCT     //Pressure
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  P0 { S7_dynamic := 'true' }: STRUCT     //Pressure at operating point
+   Value : REAL  := 1.000000e+000;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  P_Atmos { S7_dynamic := 'true' }: STRUCT     //Ambient pressure
+   Value : REAL  := 1.000000e+003;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Temp { S7_dynamic := 'true' }: STRUCT     //Temperature
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Temp0 { S7_dynamic := 'true' }: STRUCT     //Temperature at operating point
+   Value : REAL  := 2.000000e+001;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Density { S7_dynamic := 'true' }: STRUCT     //Density
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Density0 { S7_dynamic := 'true' }: STRUCT     //Density at operating point
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Flow0 { S7_dynamic := 'true' }: STRUCT     //Flow at operating point
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  TempAbs { S7_dynamic := 'true' }: STRUCT     //Absolute temperature
+   Value : REAL  := 2.731500e+002;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  Mode : INT  := 1;    //Mode 1..3
+  P_SqrtOn { S7_edit := 'para' }: BOOL ;    //1 = transmitter calculates square root
+  SubsFlow { S7_edit := 'para' }: REAL ;    //Substitution value
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //Reserved
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //1 = Substitute value
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //Reserved
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+VAR_OUTPUT
+  Bad : STRUCT     //1= Bad process value
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  Flow { S7_dynamic := 'true' }: STRUCT     //Calculated flow
+   Value : REAL ;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+END_VAR
+VAR
+  Sar_reserve : ARRAY  [0 .. 7 ] OF //8 bytes reserved for future use.
+  BYTE ;    //8 bytes reserved for future use.
+END_VAR
+VAR_TEMP
+  i : INT ;    //Counter, InvError
+  nSTprio : INT ;    //Hilfswerte
+  nSTprioNew : INT ;    //Hilfswerte
+  rTemp : REAL ;    //Internal temperature
+  rTemp0 : REAL ;    //Internal temperature at operating point
+  rTempAbs : REAL ;    //Internal temperature absolut
+  rP : REAL ;    //Internal pressure
+  rP0 : REAL ;    //Internal pressure at operating point
+  rDiffP : REAL ;    //Internal differential pressure
+  rDiffP0 : REAL ;    //Internal differential pressure at operating point
+  rP_Atmos : REAL ;    //Internal ambient pressure
+  rDensity : REAL ;    //Internal density
+  rDensity0 : REAL ;    //Internal density at operating point
+  rFlow0 : REAL ;    //Internal flow value
+  rFlowNew : REAL ;    //new Flow.Value
+  arStatus : ARRAY  [0 .. 10 ] OF //array to calculate the status
+  BYTE ;    //array to calculate the status
+  bFlowST : BYTE ;    //Internal status of flow
+  xBadAct : BOOL ;    //Bad Status
+  xBadChReal : BOOL ;    //Bad CheckReal
+END_VAR
+BEGIN
+//>L 67.3:=TRUE;>>
+rFlowNew:=Flow.Value;
+bFlowST:=Flow.ST;
+xBadAct:=FALSE;
+xBadChReal:=FALSE;
+arStatus[0]:=DiffP.ST;
+arStatus[1]:=DiffP0.ST;
+arStatus[2]:=Flow0.ST;
+arStatus[3]:=TempAbs.ST;
+arStatus[4]:=Temp0.ST;
+arStatus[5]:=Temp.ST;
+arStatus[6]:=P_Atmos.ST;
+arStatus[7]:=P0.ST;
+arStatus[8]:=P.ST;
+arStatus[9]:=Density0.ST;
+arStatus[10]:=Density.ST;
+nSTprio:=6;
+nSTprioNew:=6;
+FOR i:=0 TO 10 BY 1 DO
+    CASE BYTE_TO_INT(arStatus[i]) OF
+        128 :
+            nSTprioNew:=6;
+        0     :
+            nSTprioNew:=0;
+        40    :   
+            nSTprioNew:=1;
+        96    :
+            nSTprioNew:=2;
+        104    :
+            nSTprioNew:=3;
+        120    :
+            nSTprioNew:=4;
+        164    :
+            nSTprioNew:=5;
+    ELSE:
+        nSTprioNew:=0;
+    END_CASE;
+    IF nSTprioNew<nSTprio THEN
+        nSTprio:=nSTprioNew;
+    END_IF;
+    IF nSTprio=0 THEN EXIT; END_IF;
+END_FOR;
+ 
+CASE nSTprio OF
+    6    :
+        bFlowST:=B#16#80;
+    0    :
+        bFlowST:=B#16#0;
+    1    :
+        bFlowST:=B#16#28;
+    2    :
+        bFlowST:=B#16#60;
+    3    :
+        bFlowST:=B#16#68;
+    4    :   
+        bFlowST:=B#16#78;
+    5    :
+        bFlowST:=B#16#A4;
+ELSE:
+    bFlowST:=0;
+END_CASE;
+ 
+rDiffP:=ChkREAL(In := DiffP.Value,ErrNum := i);
+IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+rDiffP0:=ChkREAL(In := DiffP0.Value,ErrNum := i);
+IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+rFlow0:=ChkREAL(In := Flow0.Value,ErrNum := i);
+IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+IF P_SqrtOn THEN
+    rDiffP:=rDiffP**2;
+END_IF;
+ 
+IF (rDiffP0<>0.0) AND (NOT xBadChReal) THEN
+    CASE Mode OF
+        1    :
+            rTempAbs:=ChkREAL(In := TempAbs.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rTemp0:=ChkREAL(In := Temp0.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rTemp:=ChkREAL(In := Temp.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rP_Atmos:=ChkREAL(In := P_Atmos.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rP0:=ChkREAL(In := P0.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rP:=ChkREAL(In := P.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rTemp0:=rTempAbs+rTemp0;
+            rTemp:=rTempAbs+rTemp;
+            rP0:=(rP_Atmos/1.000000e+003)+rP0;
+            rP:=(rP_Atmos/1.000000e+003)+rP;
+ 
+            IF ((rTemp<>0.0) AND (rP0<>0.0)) AND (NOT xBadChReal) THEN
+                rFlowNew:=SQRT(ABS(((rDiffP/rDiffP0)*(rTemp0/rTemp))*(rP/rP0)))*rFlow0;
+            ELSE
+                xBadChReal:=TRUE;
+            END_IF;
+        2    :
+            rDensity0:=ChkREAL(In := Density0.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rDensity:=ChkREAL(In := Density.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            IF (rDensity0<>0.0) AND (NOT(xBadChReal)) THEN
+                rFlowNew:=SQRT(ABS((rDiffP/rDiffP0)*(rDensity/rDensity0)))*rFlow0;
+            ELSE
+                xBadChReal:=TRUE;
+            END_IF;
+        3    :
+            rDensity0:=ChkREAL(In := Density0.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+ 
+            rDensity:=ChkREAL(In := Density.Value,ErrNum := i);
+            IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+           
+            IF (rDensity<>0.0) AND (NOT xBadChReal) THEN
+                rFlowNew:=SQRT(ABS((rDiffP/rDiffP0)*(rDensity0/rDensity)))*rFlow0;
+            ELSE
+                xBadChReal:=TRUE;
+            END_IF;
+    ELSE
+        xBadChReal:=TRUE;
+    END_CASE;
+ELSE
+    xBadChReal:=TRUE;   
+END_IF;
+ 
+IF NOT(xBadChReal) THEN
+    rFlowNew:=ChkREAL(In := rFlowNew,ErrNum := i);
+    IF (i=3) OR (i=1) THEN xBadChReal:=TRUE; END_IF;
+END_IF;
+ 
+IF xBadChReal THEN
+    IF Feature.Bit8 THEN
+        rFlowNew:=SubsFlow;
+        bFlowST:=B#16#60;
+    ELSE
+        rFlowNew:=Flow.Value;
+        IF bFlowST<>B#16#0 THEN
+            bFlowST:=B#16#28;
+        END_IF;
+    END_IF;
+END_IF;
+ 
+IF ((bFlowST=B#16#0) OR (bFlowST=B#16#28)) OR xBadChReal THEN
+    xBadAct:=TRUE;
+END_IF;
+ 
+Flow.Value:=rFlowNew;
+Flow.ST:=bFlowST;
+Bad.Value:=xBadAct;
+ 
+END_FUNCTION_BLOCK
