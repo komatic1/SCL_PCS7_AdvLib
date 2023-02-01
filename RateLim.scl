@@ -1,0 +1,277 @@
+// Name: FB1882
+// Symbolic Name: RateLim
+// Symbol Comment: Gradient limitation
+// Family: LogicAn
+// Version: 4.0
+// Author: AdvLib82
+// Last modified: 01/11/2016
+// Use: -
+// Size: 1368 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.03_02.01.00.01 release
+
+
+
+
+
+FUNCTION_BLOCK FB11882
+TITLE ='Gradient limitation'
+{ S7_tasklist := 'OB100' }
+AUTHOR : AdvLib82
+FAMILY : LogicAn
+NAME : RateLim
+VERSION : '4.0'
+ 
+ 
+VAR_INPUT
+  In { S7_dynamic := 'true' }: STRUCT     //Analog Input Value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  InScale { S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Input Signal Ramp Scale
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  UpRaLim { S7_dynamic := 'true' }: REAL  := 3.000000e+000;    //Positive Ramp Rate Value
+  DnRaLim { S7_dynamic := 'true' }: REAL  := 3.000000e+000;    //Negative Ramp Rate Value
+  RateOn { S7_dynamic := 'true' }: STRUCT     //Ramp Rate Enable/Disable
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RmpOn { S7_dynamic := 'true' }: STRUCT     //1= Activate ramp to ramp target RmpTarget
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RmpModTime { S7_dynamic := 'true' }: BOOL ;    //1= Use time (RmpTime) for ramp, 0= Use rates UpRaLim, DnRaLim
+  RmpTime { S7_dynamic := 'true' }: REAL ;    //Time for ramp from current value up to RmpTarget
+  RmpTarget { S7_dynamic := 'true' }: STRUCT     //Target value for ramp
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SampleTime { S7_link := 'false'; S7_param := 'false'; S7_sampletime := 'true'; S7_visible := 'false' }: REAL  := 1.000000e-001;    //Sample Time[sec]
+  TimeFactor { S7_visible := 'false'; S7_edit := 'para' }: INT ;    //Time Conversion Factor (0- /Sec, 1- /Min, 2- /Hr)
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //0 = Start up with defined initializing in OB100; 1 = keep last stored values
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //0 = Rate of change in engineering unit; 1 = Rate of change in percentage
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //Reserved
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+VAR_OUTPUT
+  Out { S7_dynamic := 'true' }: STRUCT     //Ramp Output
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  UpRaAct { S7_dynamic := 'true' }: STRUCT     //Positive Ramping Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  DnRaAct { S7_dynamic := 'true' }: STRUCT     //Negative Ramping Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  ErrorNum { S7_visible := 'false'; S7_dynamic := 'true' }: INT  := -1;    //Error Number
+END_VAR
+VAR
+  SnErr : INT ;    //Error information.
+  SxFirstStart : BOOL  := TRUE;    //Initial run.
+  SxRmpOn : BOOL ;    //Ramping to RmpTarget
+  SrGradient : REAL ;    //Effective Ramp Value
+  SrTimeFact : REAL  := 1.000000e+000;    //Time conversion factor into /Sec or /Min or /Hr.END_VAR
+  SrStartRmp : REAL ;    //Ramp start value
+  SrRmpTarget : REAL ;    //Ramp target
+  SrRestRmp : REAL ;    //Rest value in ramp function and gradient limitation
+  Sar_reserve : ARRAY  [0 .. 7 ] OF //8 bytes reserved for future use.
+  BYTE ;    //8 bytes reserved for future use.
+END_VAR
+VAR_TEMP
+  TOP_SI : STRUCT    
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  START_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  nInfErr : INT ;    //Infinity Error Nos
+  xUpRaAct : BOOL ;    //Upward ramping active (internal)
+  xDnRaAct : BOOL ;    //Downward ramping active (internal)
+  rUpRaLim : REAL ;    //Equivalent Rate of Percentage of Upward Ramp Rate set.
+  rDnRaLim : REAL ;    //Equivalent Rate OF Percentage OF Downward Ramp Rate set.
+  rDiff : REAL ;    //Difference between Input and Ramped output
+  rTemp : REAL ;    //Temp. REAL variable
+  rOut : REAL ;    //New Out value
+  xFeatStartupWithOutInit : BOOL ;    //Bit 0 = 0 Start up with defined init in OB100 (default)
+  xFeatEuPercentRateChange : BOOL ;    //Bit 8 = 0, Ramping in Engineering Unit
+  stcDigVal : STRUCT    
+   Value : BOOL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;   
+  stcDigVal_b AT stcDigVal : BYTE;
+  stcAnaVal : STRUCT    
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;   
+END_VAR
+BEGIN
+xFeatStartupWithOutInit:=Feature.Bit0;
+xFeatEuPercentRateChange:=Feature.Bit8;
+SnErr:=RD_SINFO(TOP_SI := TOP_SI
+         ,START_UP_SI := START_UP_SI
+         ); // INT
+IF (BYTE_TO_INT(TOP_SI.NUM)=100) OR SxFirstStart THEN (*A7d0*)
+    SxFirstStart:=FALSE;
+    IF NOT(xFeatStartupWithOutInit) THEN (*A7d3*)
+        stcDigVal_b:=B#16#0;
+        stcDigVal.ST:=B#16#80;
+        stcAnaVal.Value:=0.0;
+        stcAnaVal.ST:=B#16#80;
+        Out:=stcAnaVal;
+        UpRaAct:=stcDigVal;
+        DnRaAct:=stcDigVal;
+        SrRmpTarget:=RmpTarget.Value;
+        SxRmpOn:=FALSE;
+    END_IF;   
+ELSIF (BYTE_TO_INT(TOP_SI.NUM)>=30) AND (BYTE_TO_INT(TOP_SI.NUM)<=38) THEN (*A7d3*)
+    ErrorNum:=0;
+    xUpRaAct:=FALSE;
+    xDnRaAct:=FALSE;
+    Out.ST:=In.ST;
+    In.Value:=ChkREAL(In := In.Value
+        ,ErrNum := nInfErr
+        );
+    IF (nInfErr=1) OR (nInfErr=3) THEN (*A7d4*)
+        ErrorNum:=30;
+    ELSE (*A7d4*)
+        IF xFeatEuPercentRateChange THEN (*A7d6*)
+            rUpRaLim:=(InScale.High-InScale.Low)*(UpRaLim/100.0);
+            rDnRaLim:=(InScale.High-InScale.Low)*(DnRaLim/100.0);
+        ELSE (*A7d6*)
+            rUpRaLim:=UpRaLim;
+            rDnRaLim:=DnRaLim;
+        END_IF; (*A7d7*)
+        IF TimeFactor=0 THEN (*A7d8*)
+            SrTimeFact:=1.0;
+        ELSIF TimeFactor=1 THEN (*A7da*)
+            SrTimeFact:=1.666667e-002;
+        ELSIF TimeFactor=2 THEN (*A7db*)
+            SrTimeFact:=2.777778e-004;
+        ELSE (*A7db*)
+            ErrorNum:=43;
+        END_IF; (*A7d9*)
+        IF ((NOT(SxRmpOn)) AND RmpOn.Value) OR (RmpTarget.Value<>SrRmpTarget) THEN (*A7dc*)
+            SrStartRmp:=Out.Value;
+            SrRestRmp:=0.0;
+        END_IF; (*A7dc*)
+        IF RmpOn.Value THEN (*A7dd*)
+            Out.ST:=RmpTarget.ST;
+            IF RmpModTime THEN (*A7de*)
+                IF RmpTime>0.0 THEN (*A7df*)
+                    rDiff:=(((RmpTarget.Value-SrStartRmp)*SrTimeFact)*SampleTime)/RmpTime;
+                ELSE (*A7df*)
+                    rDiff:=RmpTarget.Value-SrStartRmp;
+                    RmpTime:=0.0;
+                END_IF;   
+            ELSE (*A7de*)
+                IF (RmpTarget.Value-SrStartRmp)>0.0 THEN (*A7e2*)
+                    rDiff:=(ABS(rUpRaLim)*SrTimeFact)*SampleTime;
+                ELSE (*A7e2*)
+                    rDiff:=((-ABS(rDnRaLim))*SrTimeFact)*SampleTime;
+                END_IF;
+            END_IF; (*A7e1*)
+            rTemp:=SrRestRmp+rDiff;
+            rOut:=rTemp+Out.Value;
+            SrRestRmp:=(Out.Value-rOut)+rTemp;
+            IF ((rOut<=RmpTarget.Value) AND (rDiff<=0.0)) OR ((rOut>=RmpTarget.Value) AND (rDiff>=0.0)) THEN (*A7e4*)
+                SxRmpOn:=TRUE;
+                Out.Value:=RmpTarget.Value;
+            ELSE (*A7e4*)
+                IF rDiff>=0.0 THEN (*A7e6*)
+                    xUpRaAct:=TRUE;
+                END_IF; (*A7e6*)
+                IF rDiff<=0.0 THEN (*A7e7*)
+                    xDnRaAct:=TRUE;
+                END_IF; (*A7e7*)
+                Out.Value:=rOut;
+            END_IF;   
+        ELSIF RateOn.Value THEN (*A7e9*)
+            IF InScale.High>=InScale.Low THEN (*A7d5*)
+                rDiff:=In.Value-Out.Value;
+                IF rDiff>=0.0 THEN (*A7eb*)
+                    IF UpRaLim<>0.0 THEN (*A7ee*)
+                        SrGradient:=(ABS(rUpRaLim)*SrTimeFact)*SampleTime;
+                        IF rDiff>SrGradient THEN (*A7ed*)
+                            xUpRaAct:=TRUE;
+                        END_IF;   
+                    END_IF; (*A7ed*)
+                ELSE
+                    IF DnRaLim<>0.0 THEN (*A7ee*)
+                        SrGradient:=((-ABS(rDnRaLim))*SrTimeFact)*SampleTime;
+                        IF rDiff<SrGradient THEN (*A7ee*)
+                            xDnRaAct:=TRUE;
+                        END_IF;
+                    END_IF;   
+                END_IF; (*A7ee*)
+                IF (xUpRaAct) OR xDnRaAct THEN (*A7f1*)
+                    rTemp:=SrRestRmp+SrGradient;
+                    rOut:=rTemp+Out.Value;
+                    SrRestRmp:=(Out.Value-rOut)+rTemp;
+                    Out.Value:=rOut;
+                ELSE (*A7f1*)
+                    Out.Value:=In.Value;
+                    SrRestRmp:=0.0;
+                END_IF;   
+            END_IF; (*A7f2*)
+        ELSE (*A7e9*)
+            Out.Value:=In.Value;
+            SrRestRmp:=0.0;
+        END_IF;
+    END_IF; (*A7d5*)
+    UpRaAct.Value:=xUpRaAct;
+    DnRaAct.Value:=xDnRaAct;
+    SrRmpTarget:=RmpTarget.Value;
+    SxRmpOn:=RmpOn.Value;
+    UpRaAct.ST:=Out.ST;
+    DnRaAct.ST:=Out.ST;
+END_IF; (*A7d3*)
+ 
+END_FUNCTION_BLOCK
