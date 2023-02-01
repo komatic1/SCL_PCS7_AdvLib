@@ -1,0 +1,885 @@
+// Name: FB1802
+// Symbolic Name: TimeTrig
+// Symbol Comment: Time Trigger
+// Family: TIME
+// Version: 4.0
+// Author: AdvLib82
+// Last modified: 07/20/2015
+// Use: FC369,FC452,FC453,FC454,FC455,FC456,SFC1,SFC51,SFC6
+// Size: 6764 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.08.02_01.02.00.01 release
+
+FUNCTION_BLOCK FB11802
+TITLE ='Time Trigger'
+{ S7_m_c := 'true'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLib82
+FAMILY : 'TIME'
+NAME : TimeTrig
+VERSION : '4.0'
+ 
+ 
+VAR_INPUT
+  InPerTrigOn { S7_visible := 'false'; S7_link := 'false'; S7_read_back := 'always' }: BOOL ;    //Periode mode On (stored as input variable)
+  InSglTrigOn { S7_visible := 'false'; S7_link := 'false'; S7_read_back := 'always' }: BOOL ;    //Single Trigger On (stored as input variable)
+  InSglTrigDT { S7_visible := 'false'; S7_link := 'false'; S7_read_back := 'always' }: DATE_AND_TIME ;    //Single Trigger Date and Time (stored as input variable)
+  LiOp { S7_edit := 'para'; S7_dynamic := 'true' }: STRUCT     //1=Link, 0=Operator
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SetPerOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Set Periode Mode
+  RstPerOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Reset Periode Mode
+  SetPerLi { S7_dynamic := 'true' }: STRUCT     //Linkable Set Periode Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RstPerLi { S7_dynamic := 'true' }: STRUCT     //Linkable Reset Periode Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SetSglOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Set Trigger Input Signal
+  RstSglOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Reset Trigger Input Signal
+  SetSglLi { S7_dynamic := 'true' }: STRUCT     //Linkable Set Trigger Input Signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RstSglLi { S7_dynamic := 'true' }: STRUCT     //Linkable Reset Trigger Input Signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  PerMode { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: INT  := 1;    //Periode mode; 1: Daily, 2: Weekly; 3: Monthly;
+  DayOfWeek { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: INT  := 1;    //Setpoint day of week trigger [1..7]
+  DayOfMonth { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: INT  := 1;    //Setpoint day of month trigger [1..31]
+  HourOfDay { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: INT ;    //Setpoint hour of day trigger [0..23]
+  DelayTime { Op_Level := '2'; S7_edit := 'para'; S7_visible := 'false'; S7_m_c := 'true' }: DINT ;    //Delay Time value[Sec].
+  LocalTime { Op_Level := '2'; S7_edit := 'para'; S7_m_c := 'true'; S7_dynamic := 'true' }: BOOL ;    //1=Local time ON
+  PulseWidth { Op_Level := '2'; S7_edit := 'para'; S7_visible := 'false'; S7_m_c := 'true' }: REAL  := 3.000000e+000;    //Control Output Start/Stop Pulse Width [s]
+  SampleTime { S7_visible := 'false'; S7_link := 'false'; S7_sampletime := 'true'; S7_param := 'false' }: REAL  := 1.000000e-001;    //Sampling Time [s]
+  OnOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=On Mode: On Mode by Operator
+  OosOp { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Oos Mode: Oos Mode by Operator
+  OosLi { S7_dynamic := 'true' }: STRUCT     //1=Oos Mode: Oos Mode by Field Signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  UserStatus { S7_visible := 'false'; S7_m_c := 'true' }: BYTE ;    //User Status Bits
+  BatchEn { S7_visible := 'false' }: BOOL ;    //Enable Remote Operation of Controller by Batch Recipe
+  BatchID { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Current Batch ID (number)
+  BatchName { S7_visible := 'false'; S7_m_c := 'true' }: STRING  [32 ];    //Current Batch Name
+  StepNo { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Batch Step Number
+  Occupied { S7_visible := 'false' }: BOOL ;    //Occupied by Batch
+  SelFp1 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 1
+  SelFp2 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 2
+  OS_Perm { S7_visible := 'false' }: STRUCT     //Operator Permissions
+   Bit0 : BOOL  := TRUE;    //Reserved
+   Bit1 : BOOL  := TRUE;    //1 = Operator can shift to on mode
+   Bit2 : BOOL  := TRUE;    //Reserved
+   Bit3 : BOOL  := TRUE;    //1 = Operator can shift to out of service mode
+   Bit4 : BOOL  := TRUE;    //1 = Operator can Set Periode Mode
+   Bit5 : BOOL  := TRUE;    //1 = Operator can Reset Periode Mode
+   Bit6 : BOOL  := TRUE;    //1 = Operator can Set Input Trigger Signal
+   Bit7 : BOOL  := TRUE;    //1 = Operator can Reset Input Trigger Signal
+   Bit8 : BOOL  := TRUE;    //Reserved
+   Bit9 : BOOL  := TRUE;    //Reserved
+   Bit10 : BOOL  := TRUE;    //1 = Operator can change HourOfDay
+   Bit11 : BOOL  := TRUE;    //1 = Operator can change DayOfWeek
+   Bit12 : BOOL  := TRUE;    //1 = Operator can change DayOfMonth
+   Bit13 : BOOL  := TRUE;    //1 = Operator can change DelayDay
+   Bit14 : BOOL  := TRUE;    //1 = Operator can change DelayHour
+   Bit15 : BOOL  := TRUE;    //1 = Operator can change DelayMin
+   Bit16 : BOOL  := TRUE;    //1 = Operator can change PulseWidth
+   Bit17 : BOOL  := TRUE;    //1 = Operator can set Local Time
+   Bit18 : BOOL  := TRUE;    //1 = Operator can change DailyOn
+   Bit19 : BOOL  := TRUE;    //1 = Operator can change WeeklyOn
+   Bit20 : BOOL  := TRUE;    //1 = Operator can change MonthlyOn
+   Bit21 : BOOL  := TRUE;    //Reserved
+   Bit22 : BOOL  := TRUE;    //Reserved
+   Bit23 : BOOL  := TRUE;    //Reserved
+   Bit24 : BOOL  := TRUE;    //Reserved
+   Bit25 : BOOL  := TRUE;    //Reserved
+   Bit26 : BOOL  := TRUE;    //Reserved
+   Bit27 : BOOL  := TRUE;    //Reserved
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;   
+  OS_Perm_byte AT OS_Perm : ARRAY [0..3] OF BYTE;
+  OS_Perm_dw AT OS_Perm : DWORD;
+ 
+  OpSt_In { BLK_Jump := '1'; S7_visible := 'false' }: DWORD ;    //Enabled operator stations
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //0 = Start up with defined initializing in OB100; 1 = keep last stored values
+   Bit1 : BOOL ;    //1 = OosLi can switch to Out of Service
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //1 = Local authorization active
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+VAR_OUTPUT
+  PerTrigOn { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Periode mode On
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SglTrigOn { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Single Trigger On
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  Trigger { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Time Trigger
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  CPU_DT : DATE_AND_TIME ;    //CPU Date and Time
+  CPU_Year { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Year
+  CPU_Mon { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Month
+  CPU_Day { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Day
+  CPU_Hour { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Hour
+  CPU_Min { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Minute
+  CPU_Sec { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //CPU Time Second
+  CPU_DayOfWeek { S7_visible := 'false'; S7_dynamic := 'true' }: INT ;    //CPU Time Day of week
+  SglTrigDT : DATE_AND_TIME ;    //Single Trigger Date and Time
+  NxTrgDT : DATE_AND_TIME ;    //Next trigger Date and Time
+  NxTrgYear { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Year
+  NxTrgMon { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Month
+  NxTrgDay { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Day
+  NxTrgHour { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Hour
+  NxTrgMin { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Minute
+  NxTrgSec { S7_dynamic := 'true'; S7_m_c := 'true' }: INT ;    //Next Trigger Time Second
+  DiffTmDay { S7_m_c := 'true' }: INT ;    //Day: Difference between next trigger time and CPU time
+  DiffTmHour { S7_m_c := 'true' }: INT ;    //Hour: Difference between next trigger time and CPU time
+  DiffTmMin { S7_m_c := 'true' }: INT ;    //Min: Difference between next trigger time and CPU time
+  DiffTmSec : INT ;    //Sec: Difference between next trigger time and CPU time
+  DlyTmEff { S7_visible := 'false' }: DINT ;    //Effective Delay Time value[Sec].
+  BarTmSec { S7_m_c := 'true'; S7_visible := 'false' }: DINT ;    //Bar Display Time in Seconds
+  BarOpHiScale { S7_m_c := 'true' }: DINT  := 60;    //Bar Display High Limits in Minutes
+  DayOpHiScale { S7_m_c := 'true' }: INT  := 1;    //Days Bar Display High Value
+  HrsOpHiScale { S7_m_c := 'true' }: INT ;    //Hours-Bar Display High Value
+  MinOpHiScale { S7_m_c := 'true' }: INT ;    //Minutes-Bar Display High Value
+  SummerTime { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Summer time
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OosAct { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;' }: STRUCT     //Out of service is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OnAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //On Mode is active
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  OS_PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator Permission: Output for OS
+  OS_PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator Permission: Output for OS
+  OpSt_Out { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Enabled operator stations
+  ST_Worst { S7_m_c := 'true'; S7_visible := 'false' }: BYTE  := B#16#80;    //Worst Signal Status
+  Status1 { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Status Word
+  ErrorNum { S7_visible := 'false'; S7_dynamic := 'true' }: INT  := -1;    //Error Number
+END_VAR
+VAR
+  SnErrRD_SINFO : INT ;    //Error information RD_SINFO
+  SnErrRDSYSST : INT ;    //Error information RDSYSST
+  SnREAD_CLK : INT ;    //Error information READ_CLK
+  SrPulseTime : REAL ;    //Counter for pulse width
+  SrPulseWidth : REAL ;    //last value PulseWidth
+  StmDiffTime : TIME ;    //Difference time
+  StmCorLocalTm : TIME ;    //Correction time for calculation the local time
+  SdiDelayTime : DINT ;    //last value DelayTime
+  SbyPerMode : BYTE ;    //last value PerMode
+  SbyHourOfDay : BYTE ;    //last value HourOfDay
+  SbyDayOfWeek : BYTE ;    //last value DayOfWeek
+  SbyDayOfMonth : BYTE ;    //last value DayOfMonth
+  SxFirstStart : BOOL  := TRUE;    //Initial run
+  SxBUSY_T : BOOL ;    //SFC 51 reading not ready
+  SxOosLi : BOOL ;    //Rising edge of OosLi
+  SxResSglTrigOn : BOOL ;    //Store Trigger
+  SxPerTrigOn : BOOL ;    //Store PerTrigOn
+  SxSglTrigOn : BOOL ;    //Store SglTrigOn
+  SxSglTrigUntilTriggerOn : BOOL ;    //Single Trigger until Trigger =1
+  SxCalNxtTrigSumTm : BOOL ;    //Calculate Next trigger time or summer time
+  SxNextTrigIsDaily : BOOL ;    //Next Trigger is Daily Trigger
+  SxNextTrigIsWeekly : BOOL ;    //Next Trigger is Weekly Trigger
+  SxNextTrigIsMonthly : BOOL ;    //Next Trigger is Monthly Trigger
+  SxNextTrigIsSingle : BOOL ;    //Next Trigger is Single Trigger
+  SxLocalTimeOld : BOOL ;    //Old value of LocalTime
+END_VAR
+VAR_TEMP
+  stcTOP_SI : STRUCT    
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  stcSTART_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  stcSZL_HEADER : STRUCT    
+   LENTHDR : WORD ;   
+   N_DR : WORD ;   
+  END_STRUCT ;   
+  stcBG_TIME : STRUCT    
+   Index : WORD ;    //W#16#0008: Zeitsystem-Zustand
+   zykl_1 : WORD ;    //reserviert
+   korr_1 : WORD ;    //Korrekturfaktor fьr die Uhrzeit
+   clock_0 : WORD ;    //Betriebsstundenzдhler 0: Zeit in Stunden
+   clock_1 : WORD ;    //Betriebsstundenzдhler 1: Zeit in Stunden
+   clock_2 : WORD ;    //Betriebsstundenzдhler 2: Zeit in Stunden
+   clock_3 : WORD ;    //Betriebsstundenzдhler 3: Zeit in Stunden
+   clock_4 : WORD ;    //Betriebsstundenzдhler 4: Zeit in Stunden
+   clock_5 : WORD ;    //Betriebsstundenzдhler 5: Zeit in Stunden
+   clock_6 : WORD ;    //Betriebsstundenzдhler 6: Zeit in Stunden
+   clock_7 : WORD ;    //Betriebsstundenzдhler 7: Zeit in Stunden
+   cpu_time : DATE_AND_TIME ;    //Aktuelles Datum und Uhrzeit (Format: date_and_time)
+   bszl_0 : BYTE ;    //Bit x: Betriebsstundenzдhler x, 0 = x = 7 (Bit = 1: Betriebsstundenzдhler lдuft
+   bszl_1 : BYTE ;    //reserviert
+   bszue_0 : BYTE ;    //Bit x: Ьberlauf von Betriebsstundenzдhler x, 0 = x = 7 (Bit = 1: Ьberlauf)
+   bszue_1 : BYTE ;    //reserviert
+   status : STRUCT    
+    BIT8 : BOOL ;   
+    BIT9 : BOOL ;   
+    BIT10 : BOOL ;   
+    BIT11 : BOOL ;   
+    BIT12 : BOOL ;   
+    BIT13 : BOOL ;   
+    BIT14 : BOOL ;   
+    BIT15 : BOOL ;   
+    BIT0 : BOOL ;   
+    BIT1 : BOOL ;   
+    BIT2 : BOOL ;   
+    BIT3 : BOOL ;   
+    BIT4 : BOOL ;   
+    BIT5 : BOOL ;   
+    BIT6 : BOOL ;   
+    BIT7 : BOOL ;   
+   END_STRUCT ;   
+   res1 : BYTE ;    //reserviert
+   res2 : BYTE ;    //reserviert
+   res3 : BYTE ;    //reserviert
+   status_valid : BYTE ;    //Gьltigkeit der Variablen status: B#16#01: status gьltig
+  END_STRUCT ;   
+  iTemp : INT ;   
+  iMaxDayOfMonth : INT ;   
+  tTemp : TIME ;   
+  wTemp : WORD ;   
+  diTemp : DINT ;   
+  dwStatus : DWORD ;    //Variable for status
+  dwStatus_bool AT dwStatus : ARRAY [0..31] OF BOOL; 
+ 
+  diDiffTime : DINT ;    //difference time [ms]
+  dtTemp : DATE_AND_TIME ;    //temp variable
+  dtTemp_b AT dtTemp : ARRAY[0..7] OF BYTE;
+  dtCPU_Time : DATE_AND_TIME ;    //actual CPU time
+  dtCPU_Time_st AT dtCPU_Time : STRUCT
+    b0 : BYTE;
+     b1 : BYTE;
+    b2 : BYTE;
+    b3 : BYTE;
+    b4 : BYTE;
+    b5 : BYTE;
+    b6 : BYTE;
+    b7 : BYTE;
+ 
+  END_STRUCT ;
+  dtNxTrg : DATE_AND_TIME ;    //temp variable
+  dtNxTrg_b AT dtNxTrg : ARRAY [0..7] OF BYTE;
+ 
+  dwOS_Perm : DWORD ;    //OS_Perm
+  dwOS_Perm_byte AT dwOS_Perm : ARRAY [0..3] OF BYTE;
+  dwOS_Perm_bool AT dwOS_Perm : ARRAY [0..31] OF BOOL;
+ 
+  byTemp : BYTE ;    //Variable for temp byte.
+  stcInST : STRUCT     //Input 0..15 Signal Status
+   b0 : BYTE ;   
+   b1 : BYTE ;   
+   b2 : BYTE ;   
+   b3 : BYTE ;   
+   b4 : BYTE ;   
+   b5 : BYTE ;   
+   b6 : BYTE ;   
+   b7 : BYTE ;   
+   b8 : BYTE ;   
+   b9 : BYTE ;   
+   b10 : BYTE ;   
+   b11 : BYTE ;   
+   b12 : BYTE ;   
+   b13 : BYTE ;   
+   b14 : BYTE ;   
+   b15 : BYTE ;   
+  END_STRUCT ;   
+  xFeatStartupWithOutInit : BOOL ;    //Bit  0 = 0 Start up with defined init in OB100 (default)
+  xFeatOosLiEn : BOOL ;    //Bit  1 = 1, OosLiEn: OosLi can switch to Out of Service
+  xFeatLocalAuth : BOOL ;    //Bit 24 = 1, Function local authorization active
+  xOSPerTrigOn : BOOL ;    //1 = Operator enabled to switch to On mode
+  xOSPerOOS : BOOL ;    //1 = Operator enabled to switch to OOS mode
+  xOSPerSetPerTrig : BOOL ;    //1 = Permision to Set PerTrigOn
+  xOSPerRstPerTrig : BOOL ;    //1 = Permision to Reset PerTrigOn
+  xOSPerSetSglTrig : BOOL ;    //1 = Permision to Set SglTrigOn
+  xOSPerRstSglTrig : BOOL ;    //1 = Permision to Reset SglTrigOn
+  xOSPerHourOfDay : BOOL ;    //1 = Permision to HourOfDay;
+  xOSPerDayOfWeek : BOOL ;    //1 = Permision to DayOfWeek
+  xOSPerDayOfMonth : BOOL ;    //1 = Permision to DayOfMonth
+  xOSPerDelayDay : BOOL ;     //1 = Permision to DelayDay
+  xOSPerDelayHour : BOOL ;    //1 = Permision to DelayHour
+  xOSPerDelayMin : BOOL ;    //1 = Permision to DelayMin
+  xOSPerPulseWidth : BOOL ;    //1 = Permision to PulseWidth
+  xOSPerLocalTime : BOOL ;    //1 = Permision to LocalTime;
+  xOSPerDailyOn : BOOL ;    //1 = Permision to DailyOn;
+  xOSPerWeeklyOn : BOOL ;    //1 = Permision to WeeklyOn;
+  xOSPerMonthlyOn : BOOL ;    //1 = Permision to MonthlyOn;
+  xOB_Cycle : BOOL ;    //block is running in a cyclic interrupt OB
+  xOB_Start : BOOL ;    //block is running in start OB
+  xInvalidSignalState : BOOL ;    //Status1 Bit14
+  xDailyOn : BOOL ;    //temporary Daily Mode
+  xWeeklyOn : BOOL ;    //temporary Daily Mode
+  xMonthlyOn : BOOL ;    //temporary Daily Mode
+  xTrigger : BOOL ;    //temporary Trigger
+END_VAR
+BEGIN
+dwStatus:=Status1;
+xFeatStartupWithOutInit:=Feature.Bit0;
+xFeatOosLiEn:=Feature.Bit1;
+xFeatLocalAuth:=Feature.Bit24;
+xInvalidSignalState:=FALSE;
+IF xFeatLocalAuth THEN
+    OpSt_Out:=OpSt_In OR DW#16#80000000;
+ELSE
+    OpSt_Out:=OpSt_In AND DW#16#7FFFFFFF;
+END_IF;
+dwOS_Perm_byte[3]:=OS_Perm_byte[0];
+dwOS_Perm_byte[2]:=OS_Perm_byte[1];
+dwOS_Perm_byte[1]:=OS_Perm_byte[2];
+dwOS_Perm_byte[0]:=OS_Perm_byte[3];
+ 
+OS_PermOut:=dwOS_Perm;
+xOSPerTrigOn:=FALSE;
+xOSPerOOS:=OS_Perm.Bit3;
+xOSPerSetPerTrig:=OS_Perm.Bit4;
+xOSPerRstPerTrig:=OS_Perm.Bit5;
+xOSPerSetSglTrig:=OS_Perm.Bit6;
+xOSPerRstSglTrig:=OS_Perm.Bit7;
+xOSPerHourOfDay:=OS_Perm.Bit10;
+xOSPerDayOfWeek:=OS_Perm.Bit11;
+xOSPerDayOfMonth:=OS_Perm.Bit12;
+xOSPerDelayDay:=OS_Perm.Bit13;
+xOSPerDelayHour:=OS_Perm.Bit14;
+xOSPerDelayMin:=OS_Perm.Bit15;
+xOSPerPulseWidth:=OS_Perm.Bit16;
+xOSPerLocalTime:=OS_Perm.Bit17;
+xOSPerDailyOn:=OS_Perm.Bit18;
+xOSPerWeeklyOn:=OS_Perm.Bit19;
+xOSPerMonthlyOn:=OS_Perm.Bit20;
+ErrorNum:=0;
+ 
+SnErrRD_SINFO:=RD_SINFO(TOP_SI :=stcTOP_SI,START_UP_SI :=stcSTART_UP_SI );
+ 
+xOB_Cycle:= (DWORD_TO_INT(BYTE_TO_DWORD(stcTOP_SI.NUM)) >= 30) AND (DWORD_TO_INT(BYTE_TO_DWORD(stcTOP_SI.NUM)) <= 38);
+xOB_Start:= BYTE_TO_INT(stcTOP_SI.NUM) = 100;
+      
+IF OnOp THEN
+    OosAct.Value:=FALSE;
+ELSIF (((OosLi.Value) AND xFeatOosLiEn) AND (NOT(SxOosLi))) OR OosOp THEN
+        OosAct.Value:=TRUE;
+END_IF;
+SxOosLi:=OosLi.Value;
+OnAct.Value:=NOT(OosAct.Value);
+IF OosAct.Value THEN
+    PerTrigOn.Value:=FALSE;
+    SglTrigOn.Value:=FALSE;
+    Trigger.Value:=FALSE;
+    SxResSglTrigOn:=FALSE;
+    SxCalNxtTrigSumTm:=TRUE;
+    SxNextTrigIsDaily:=FALSE;
+    SxNextTrigIsWeekly:=FALSE;
+    SxNextTrigIsMonthly:=FALSE;
+    SxNextTrigIsSingle:=FALSE;
+    xOSPerSetPerTrig:=FALSE;
+    xOSPerRstPerTrig:=FALSE;
+    xOSPerSetSglTrig:=FALSE;
+    xOSPerRstSglTrig:=FALSE;
+    xOSPerHourOfDay:=FALSE;
+    xOSPerDayOfWeek:=FALSE;
+    xOSPerDayOfMonth:=FALSE;
+    xOSPerDelayDay:=FALSE;
+    xOSPerDelayHour:=FALSE;
+    xOSPerDelayMin:=FALSE;
+    xOSPerPulseWidth:=FALSE;
+    xOSPerLocalTime:=FALSE;
+    xOSPerDailyOn:=FALSE;
+    xOSPerWeeklyOn:=FALSE;
+    xOSPerMonthlyOn:=FALSE;
+    OS_PermLog:=DW#16#2 AND OS_PermOut;
+    ErrorNum:=0;
+END_IF;
+IF (SxFirstStart) OR xOB_Start THEN
+    SxFirstStart:=FALSE;
+    IF xFeatStartupWithOutInit THEN
+        PerTrigOn.Value:=InPerTrigOn;
+        SglTrigOn.Value:=InSglTrigOn;
+        SglTrigDT:=InSglTrigDT;
+        SxResSglTrigOn:=FALSE;
+        SxPerTrigOn:=InPerTrigOn;
+        SxSglTrigOn:=InSglTrigOn;
+        SxSglTrigUntilTriggerOn:=InSglTrigOn;
+        SxCalNxtTrigSumTm:=TRUE;
+    ELSE
+        PerTrigOn.Value:=FALSE;
+        SglTrigOn.Value:=FALSE;
+        Trigger.Value:=FALSE;
+        SxResSglTrigOn:=FALSE;
+        SxPerTrigOn:=FALSE;
+        SxSglTrigOn:=FALSE;
+        SxCalNxtTrigSumTm:=TRUE;
+    END_IF;
+END_IF;
+ 
+IF (NOT(OosAct.Value)) AND xOB_Cycle THEN
+    IF ((SetPerLi.Value) AND RstPerLi.Value) OR ((SetSglLi.Value) AND RstSglLi.Value) THEN
+        ErrorNum:=51;
+    END_IF;
+    IF BYTE_TO_INT(SbyPerMode)<1         THEN SbyPerMode        :=B#16#1; END_IF;
+    IF BYTE_TO_INT(SbyPerMode)>3         THEN SbyPerMode        :=B#16#3; END_IF;
+    IF (PerMode<1) OR (PerMode>3)         THEN PerMode        :=BYTE_TO_INT(SbyPerMode); END_IF;
+    IF BYTE_TO_INT(SbyHourOfDay)<0         THEN SbyHourOfDay    :=B#16#0; END_IF;
+    IF BYTE_TO_INT(SbyHourOfDay)>23     THEN SbyHourOfDay    :=B#16#17; END_IF;
+    IF (HourOfDay<0) OR (HourOfDay>23)     THEN HourOfDay        :=BYTE_TO_INT(SbyHourOfDay); END_IF;
+    IF BYTE_TO_INT(SbyDayOfWeek)<1         THEN SbyDayOfWeek    :=B#16#1; END_IF;
+    IF BYTE_TO_INT(SbyDayOfWeek)>7         THEN SbyDayOfWeek    :=B#16#7; END_IF;
+    IF (DayOfWeek<1) OR (DayOfWeek>7)     THEN DayOfWeek        :=BYTE_TO_INT(SbyDayOfWeek); END_IF;
+    IF BYTE_TO_INT(SbyDayOfMonth)<1     THEN SbyDayOfMonth    :=B#16#1; END_IF;
+    IF BYTE_TO_INT(SbyDayOfMonth)>31     THEN SbyDayOfMonth    :=B#16#1F; END_IF;
+    IF (DayOfMonth<1) OR (DayOfMonth>31) THEN DayOfMonth:=BYTE_TO_INT(SbyDayOfMonth); END_IF;
+    IF (DelayTime<0) OR (DelayTime>1728000) THEN DelayTime:=SdiDelayTime; END_IF;
+    IF LiOp.Value THEN (*A7e8*)
+        xOSPerSetPerTrig:=FALSE;
+        xOSPerRstPerTrig:=FALSE;
+        xOSPerSetSglTrig:=FALSE;
+        xOSPerRstSglTrig:=FALSE;
+        IF (NOT(RstPerLi.Value)) AND SetPerLi.Value THEN (*A7e9*)
+            PerTrigOn.Value:=SetPerLi.Value;
+        ELSIF (NOT(SetPerLi.Value)) AND RstPerLi.Value THEN (*A7eb*)
+            PerTrigOn.Value:=FALSE;
+        ELSIF (NOT(SetPerLi.Value)) AND (NOT(RstPerLi.Value)) THEN (*A7ec*)
+            PerTrigOn.Value:=SxPerTrigOn;
+        ELSIF (SetPerLi.Value) AND RstPerLi.Value THEN (*A7ed*)
+            PerTrigOn.Value:=SxPerTrigOn;
+            xInvalidSignalState:=TRUE;
+        END_IF; (*A7ed*)
+ 
+       
+        IF (NOT(RstSglLi.Value)) AND SetSglLi.Value THEN (*A7ee*)
+            SglTrigOn.Value:=SetSglLi.Value;
+        ELSIF (NOT(SetSglLi.Value)) AND RstSglLi.Value THEN (*A7f0*)
+            SglTrigOn.Value:=FALSE;
+        ELSIF (NOT(SetSglLi.Value)) AND (NOT(RstSglLi.Value)) THEN (*A7f1*)
+            SglTrigOn.Value:=SxSglTrigOn;
+        ELSIF (SetSglLi.Value) AND RstSglLi.Value THEN (*A7f3*)
+            SglTrigOn.Value:=SxSglTrigOn;
+            xInvalidSignalState:=TRUE;
+        END_IF; (*A7ef*)
+    ELSE (*A7e8*)
+        xOSPerSetPerTrig:=(NOT(PerTrigOn.Value)) AND xOSPerSetPerTrig;
+        xOSPerRstPerTrig:=(xOSPerRstPerTrig) AND PerTrigOn.Value;
+        xOSPerSetSglTrig:=(NOT(SglTrigOn.Value)) AND xOSPerSetSglTrig;
+        xOSPerRstSglTrig:=(xOSPerRstSglTrig) AND SglTrigOn.Value;
+        IF SetPerOp THEN (*A7f4*)
+            PerTrigOn.Value:=TRUE;
+        ELSIF RstPerOp THEN (*A7f6*)
+            PerTrigOn.Value:=FALSE;
+        ELSIF (NOT(SetPerOp)) AND (NOT(RstPerOp)) THEN (*A7f7*)
+            PerTrigOn.Value:=SxPerTrigOn;
+        END_IF; (*A7f7*)
+        IF SetSglOp THEN (*A7f8*)
+            SglTrigOn.Value:=TRUE;
+        ELSIF RstSglOp THEN (*A7fa*)
+            SglTrigOn.Value:=FALSE;
+        ELSIF (NOT(SetSglOp)) AND (NOT(RstSglOp)) THEN (*A7f3*)
+            SglTrigOn.Value:=SxSglTrigOn;
+        END_IF;
+    END_IF; (*A7f3*)
+   
+    SnREAD_CLK:=READ_CLK(CDT:=dtCPU_Time);   
+   
+    IF LocalTime THEN
+        dtCPU_Time:=AD_DT_TM_APL(T := dtCPU_Time,D := StmCorLocalTm );
+    END_IF;
+    CPU_DT:=dtCPU_Time;
+    iTemp:=BCD_TO_INT(dtCPU_Time_st.b0);
+    IF iTemp>89 THEN iTemp:=iTemp+1000;    ELSE iTemp:=iTemp+2000; END_IF;
+    CPU_Year:=iTemp;   
+    CPU_Mon:=BCD_TO_INT(dtCPU_Time_st.b1);
+    CPU_Day:=BCD_TO_INT(dtCPU_Time_st.b2);
+    CPU_Hour:=BCD_TO_INT(dtCPU_Time_st.b3);
+    CPU_Min:=BCD_TO_INT(dtCPU_Time_st.b4);
+    CPU_Sec:=BCD_TO_INT(dtCPU_Time_st.b5);
+    CPU_DayOfWeek:=BCD_TO_INT(dtCPU_Time_st.b7 AND B#16#F);       
+ 
+    IF ((((((((INT_TO_BYTE(HourOfDay)<>SbyHourOfDay) OR
+    (INT_TO_BYTE(DayOfWeek)<>SbyDayOfWeek)) OR
+    (INT_TO_BYTE(DayOfMonth)<>SbyDayOfMonth)) OR
+    (DelayTime<>SdiDelayTime)) OR
+    (PerMode<>BYTE_TO_INT(SbyPerMode))) OR
+    (PulseWidth<>SrPulseWidth)) OR
+    (NOT SxPerTrigOn AND PerTrigOn.Value)) OR
+    (NOT SxSglTrigOn AND SglTrigOn.Value))
+    OR
+    (LocalTime <> SxLocalTimeOld) 
+    THEN (*A7ff*)
+        SxCalNxtTrigSumTm:=TRUE;
+    END_IF; (*A7ff*)
+    SxLocalTimeOld:=LocalTime;   
+    IF (((NOT(SxSglTrigOn)) AND SglTrigOn.Value) AND (DelayTime>=0)) AND (DelayTime<=1728000) THEN
+        tTemp:=DINT_TO_TIME(DelayTime*1000);
+        SglTrigDT:=AD_DT_TM_APL(T := dtCPU_Time,D := tTemp );
+        DlyTmEff:=DelayTime;
+        SxSglTrigUntilTriggerOn:=TRUE;
+    END_IF;
+   
+    IF NOT(SglTrigOn.Value) THEN
+        SxSglTrigUntilTriggerOn:=FALSE;
+    END_IF;
+    IF NOT(SxSglTrigUntilTriggerOn) THEN
+        SglTrigDT:=DT#1990-1-1-0:0:0.0;
+    END_IF;   
+    IF (PerTrigOn.Value) OR SxSglTrigUntilTriggerOn THEN (*A803*)
+        IF GE_DT_APL(DT1 :=  CPU_DT,DT2 :=  NxTrgDT) AND NxTrgMon<>0 THEN
+            SxCalNxtTrigSumTm:=TRUE;
+            SrPulseTime:=PulseWidth;
+            IF SxNextTrigIsSingle THEN (*A804*)
+                SxResSglTrigOn:=TRUE;
+                SxSglTrigUntilTriggerOn:=FALSE;
+            END_IF;
+        END_IF; (*A804*)           
+        IF SxCalNxtTrigSumTm THEN (*A806*)
+            dtNxTrg:=DT#2089-12-31-23:59:59.999;
+            IF PerTrigOn.Value THEN (*A807*)
+                IF PerMode=1 AND HourOfDay>=0 AND HourOfDay<=23 THEN (*A808*)
+                    dtTemp:=dtCPU_Time;
+                    dtTemp_b[3]:=WORD_TO_BYTE(INT_TO_BCD_WORD(HourOfDay));
+                    dtTemp_b[4]:=0;
+                    dtTemp_b[5]:=0;
+                    dtTemp_b[6]:=0;
+                    dtTemp_b[7]:=dtTemp_b[7] AND B#16#F;
+                    IF LT_DT_APL(DT1 := dtTemp,DT2 := dtCPU_Time) THEN
+                        dtTemp:=AD_DT_TM_APL(T := dtTemp,D := T#1D);   
+                    END_IF;       
+                    IF LT_DT_APL(DT1 := dtTemp,DT2 := dtNxTrg) THEN
+                        dtNxTrg:=dtTemp;
+                    END_IF;   
+                    BarOpHiScale:=86400;
+                    DayOpHiScale:=1;
+                    HrsOpHiScale:=0;
+                    MinOpHiScale:=0;
+                    SxNextTrigIsDaily:=TRUE;
+                    SxNextTrigIsWeekly:=FALSE;
+                    SxNextTrigIsMonthly:=FALSE;
+                END_IF; (*A808*)
+                IF PerMode=2 AND DayOfWeek>=1 AND DayOfWeek<=7 AND HourOfDay>=0 AND HourOfDay<=23 THEN (*A80b*)
+                    dtTemp:=dtCPU_Time;
+                    dtTemp:=AD_DT_TM_APL(T := dtTemp,D := T#1d*(DayOfWeek-CPU_DayOfWeek));
+                    dtTemp_b[3]:=WORD_TO_BYTE(INT_TO_BCD_WORD(HourOfDay));
+                    dtTemp_b[4]:=0;
+                    dtTemp_b[5]:=0;
+                    dtTemp_b[6]:=0;
+                    dtTemp_b[7]:=dtTemp_b[7] AND B#16#F;
+                    IF LT_DT_APL(DT1 := dtTemp,DT2 := dtCPU_Time) THEN
+                        dtTemp:=AD_DT_TM_APL(T := dtTemp,D := T#7D);   
+                    END_IF;       
+                    IF LT_DT_APL(DT1 :=  dtTemp,DT2 :=  dtNxTrg) THEN
+                        dtNxTrg:=dtTemp;
+                    END_IF;   
+                    BarOpHiScale:=604800;
+                    DayOpHiScale:=7;
+                    HrsOpHiScale:=0;
+                    MinOpHiScale:=0;
+                    SxNextTrigIsWeekly:=TRUE;
+                    SxNextTrigIsDaily:=FALSE;
+                    SxNextTrigIsMonthly:=FALSE;
+                 END_IF; (*A80b*)             
+                IF PerMode=3 AND DayOfMonth>=1 AND DayOfMonth<=31 AND HourOfDay>=0 AND HourOfDay<=23 THEN (*A80c*)
+                    iMaxDayOfMonth:=DayOfMonth;
+                    IF iMaxDayOfMonth>=29 THEN
+                        dtTemp:=dtCPU_Time;
+                        dtTemp_b[2]:=WORD_TO_BYTE(INT_TO_BCD_WORD(1));
+                        dtTemp:=AD_DT_TM_APL(T :=dtTemp,D :=T#20D);
+                        dtTemp:=AD_DT_TM_APL(T :=dtTemp,D :=T#11D);
+                        iTemp:=BCD_TO_INT(BYTE_TO_WORD(dtTemp_b[2]));
+                        IF iTemp=1 THEN iMaxDayOfMonth:=31; END_IF;
+                        IF iTemp=2 THEN iMaxDayOfMonth:=30; END_IF;
+                        IF iTemp=3 THEN iMaxDayOfMonth:=29; END_IF;
+                        IF iTemp=4 THEN iMaxDayOfMonth:=28; END_IF;
+                        IF DayOfMonth<iMaxDayOfMonth THEN iMaxDayOfMonth:=DayOfMonth; END_IF;
+                    END_IF;
+                               
+                    dtTemp:=dtCPU_Time;
+                    dtTemp_b[2]:=WORD_TO_BYTE(INT_TO_BCD_WORD(iMaxDayOfMonth));
+                    dtTemp_b[3]:=WORD_TO_BYTE(INT_TO_BCD_WORD(HourOfDay));
+                    dtTemp_b[4]:=0;
+                    dtTemp_b[5]:=0;
+                    dtTemp_b[6]:=0;
+                    dtTemp_b[7]:=dtTemp_b[7] AND B#16#F;
+                   
+                    IF LT_DT_APL(DT1 := dtTemp,DT2 := dtCPU_Time) THEN (*A815*)
+                        iTemp:=CPU_Mon+1;
+                        IF iTemp>12 THEN (*A816*)
+                            iTemp:=1;
+                            dtTemp_b[0]:=WORD_TO_BYTE(INT_TO_BCD_WORD(CPU_Year+1));
+                        END_IF; (*A816*)
+                        dtTemp_b[1]:=WORD_TO_BYTE(INT_TO_BCD_WORD(iTemp));
+                    END_IF; (*A815*)
+                    IF LT_DT_APL(DT1 := dtTemp,DT2 := dtNxTrg) THEN
+                        dtNxTrg:=dtTemp;
+                    END_IF;       
+                    BarOpHiScale:=2678400;
+                    DayOpHiScale:=31;
+                    HrsOpHiScale:=0;
+                    MinOpHiScale:=0;
+                    SxNextTrigIsMonthly:=TRUE;
+                    SxNextTrigIsWeekly:=FALSE;
+                    SxNextTrigIsDaily:=FALSE;
+                END_IF;   
+            END_IF; (*A807*)
+            IF SxSglTrigUntilTriggerOn THEN (*A818*)
+                IF LE_DT_APL(DT1 := SglTrigDT,DT2 := dtNxTrg ) THEN (*A818*)
+                    dtNxTrg:=SglTrigDT;
+                    SxNextTrigIsSingle:=TRUE;
+                    SxNextTrigIsDaily:=FALSE;
+                    SxNextTrigIsWeekly:=FALSE;
+                    SxNextTrigIsMonthly:=FALSE;
+                    BarOpHiScale:=DlyTmEff;
+                    DayOpHiScale:=DINT_TO_INT(BarOpHiScale/86400);
+                    HrsOpHiScale:=DINT_TO_INT((DlyTmEff MOD 86400) / 3600);
+                    MinOpHiScale:=DINT_TO_INT((DlyTmEff MOD 3600) / 60);
+                END_IF;
+            END_IF; (*A818*)
+            NxTrgDT:=dtNxTrg;
+            iTemp:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[0]));
+            IF iTemp>89 THEN (*A81a*)
+                iTemp:=iTemp+1000;
+            ELSE (*A81a*)
+                iTemp:=iTemp+2000;
+            END_IF; (*A81b*)
+            NxTrgYear:=iTemp;
+            NxTrgMon:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[1]));
+            NxTrgDay:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[2]));
+            NxTrgHour:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[3]));
+            NxTrgMin:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[4]));
+            NxTrgSec:=BCD_TO_INT(BYTE_TO_WORD(dtNxTrg_b[5]));
+        END_IF; (*A806*) 
+        StmDiffTime:=SB_DT_DT_APL(DT1 := NxTrgDT,DT2 :=  CPU_DT);
+        diDiffTime:=TIME_TO_DINT(StmDiffTime);
+        iTemp:=0;
+        IF StmDiffTime=T#24D20H31M23S647MS THEN
+            dtTemp:=AD_DT_TM_APL(T := CPU_DT,D :=  T#10D);
+            diDiffTime:=TIME_TO_DINT(SB_DT_DT_APL(DT1 := NxTrgDT ,DT2 := dtTemp));
+            iTemp:=10;
+        END_IF;   
+        IF diDiffTime<0 THEN diDiffTime:=0; END_IF;
+        DiffTmDay:=DINT_TO_INT(diDiffTime/86400000)+iTemp;
+        DiffTmHour:=DINT_TO_INT((diDiffTime MOD 86400000)/3600000);
+        DiffTmMin:=DINT_TO_INT((diDiffTime MOD 3600000)/60000);
+        DiffTmSec:=DINT_TO_INT((diDiffTime MOD 60000)/1000);
+        BarTmSec:=diDiffTime/1000 + INT_TO_DINT(iTemp)*86400;
+    ELSE //a803
+        NxTrgDT:=DT#1990-1-1-0:0:0.0;
+        NxTrgYear:=0;
+        NxTrgMon:=0;
+        NxTrgDay:=0;
+        NxTrgHour:=0;
+        NxTrgMin:=0;
+        NxTrgSec:=0;
+        DiffTmDay:=0;
+        DiffTmHour:=0;
+        DiffTmMin:=0;
+        DiffTmSec:=0;
+        BarTmSec:=0;
+        BarOpHiScale:=60;
+        DayOpHiScale:=0;
+        HrsOpHiScale:=0;
+        MinOpHiScale:=0;
+        DlyTmEff:=DelayTime;
+        SxNextTrigIsDaily:=FALSE;
+        SxNextTrigIsWeekly:=FALSE;
+        SxNextTrigIsMonthly:=FALSE;
+        SxNextTrigIsSingle:=FALSE;   
+    END_IF;    //A81e
+    xTrigger:=FALSE;
+    IF PulseWidth<SampleTime THEN (*A81f*)
+        PulseWidth:=SampleTime;
+    END_IF; (*A81f*)
+    IF SrPulseTime>0.0 THEN (*A820*)
+        SrPulseTime:=SrPulseTime-SampleTime;
+        xTrigger:=TRUE;
+    ELSE (*A820*)
+        IF SxResSglTrigOn THEN (*A821*)
+        SglTrigOn.Value:=FALSE;
+        SxResSglTrigOn:=FALSE;
+        DlyTmEff:=DelayTime;
+        END_IF;
+    END_IF; (*A821*)
+    IF NOT((PerTrigOn.Value) OR SglTrigOn.Value) THEN (*A823*)
+        xTrigger:=FALSE;
+    END_IF; (*A823*)
+    Trigger.Value:=xTrigger;
+    IF SxCalNxtTrigSumTm THEN (*A824*)
+               
+        SnErrRDSYSST:=RDSYSST(REQ := TRUE
+                ,SZL_ID := W#16#132
+                ,INDEX := W#16#8
+                ,BUSY :=  SxBUSY_T
+                ,SZL_HEADER := stcSZL_HEADER
+                ,DR := stcBG_TIME
+                );
+    IF (stcBG_TIME.status_valid=B#16#1) AND (SnErrRDSYSST=0) THEN (*A825*)
+        SummerTime.Value:=stcBG_TIME.status.BIT6;
+        SummerTime.ST:=B#16#80;
+        diTemp:=0;
+        IF stcBG_TIME.status.BIT10 THEN diTemp:=1800000;    END_IF;
+        IF stcBG_TIME.status.BIT11 THEN diTemp:=diTemp+3600000;    END_IF;
+        IF stcBG_TIME.status.BIT12 THEN diTemp:=diTemp+7200000;    END_IF;
+        IF stcBG_TIME.status.BIT13 THEN diTemp:=diTemp+14400000; END_IF;
+        IF stcBG_TIME.status.BIT14 THEN diTemp:=diTemp+28800000; END_IF;
+        IF stcBG_TIME.status.BIT15 THEN diTemp:=-1*diTemp; END_IF;
+        StmCorLocalTm:=DINT_TO_TIME(diTemp);
+    ELSE (*A825*)
+        SummerTime.ST:=B#16#0;
+        StmCorLocalTm:=T#0MS;
+    END_IF; (*A82c*)
+    SxCalNxtTrigSumTm:=FALSE;
+    END_IF; (*A824*)
+    dwOS_Perm:=OS_Perm_dw;
+    dwOS_Perm_bool[1]:=xOSPerTrigOn;
+    dwOS_Perm_bool[3]:=xOSPerOOS;
+    dwOS_Perm_bool[4]:=xOSPerSetPerTrig;
+    dwOS_Perm_bool[5]:=xOSPerRstPerTrig;
+    dwOS_Perm_bool[6]:=xOSPerSetSglTrig;
+    dwOS_Perm_bool[7]:=xOSPerRstSglTrig;
+    dwOS_Perm_bool[10]:=xOSPerHourOfDay;
+    dwOS_Perm_bool[11]:=xOSPerDayOfWeek;
+    dwOS_Perm_bool[12]:=xOSPerDayOfMonth;
+    dwOS_Perm_bool[13]:=xOSPerDelayDay;
+    dwOS_Perm_bool[14]:=xOSPerDelayHour;
+    dwOS_Perm_bool[15]:=xOSPerDelayMin;
+    dwOS_Perm_bool[16]:=xOSPerPulseWidth;
+    dwOS_Perm_bool[17]:=xOSPerLocalTime;
+    dwOS_Perm_bool[18]:=(NOT(PerMode=1)) AND xOSPerDailyOn;
+    dwOS_Perm_bool[19]:=(NOT(PerMode=2)) AND xOSPerWeeklyOn;
+    dwOS_Perm_bool[20]:=(NOT(PerMode=3)) AND xOSPerMonthlyOn;
+    dwOS_Perm_bool[21]:=(NOT(DayOfWeek=1)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[22]:=(NOT(DayOfWeek=2)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[23]:=(NOT(DayOfWeek=3)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[24]:=(NOT(DayOfWeek=4)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[25]:=(NOT(DayOfWeek=5)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[26]:=(NOT(DayOfWeek=6)) AND xOSPerDayOfWeek;
+    dwOS_Perm_bool[27]:=(NOT(DayOfWeek=7)) AND xOSPerDayOfWeek;
+    byTemp:=dwOS_Perm_byte[3];
+    dwOS_Perm_byte[3]:=dwOS_Perm_byte[0];
+    dwOS_Perm_byte[0]:=byTemp;
+    byTemp:=dwOS_Perm_byte[2];
+    dwOS_Perm_byte[2]:=dwOS_Perm_byte[1];
+    dwOS_Perm_byte[1]:=byTemp;
+    OS_PermLog:=dwOS_Perm;
+    stcInST.b0:=SetSglLi.ST;
+    stcInST.b1:=RstSglLi.ST;
+    stcInST.b2:=SetPerLi.ST;
+    stcInST.b3:=RstPerLi.ST;
+   
+    ST_Worst:=SelST16(InST := stcInST,Num := 4,SelPrio := 0);
+     SglTrigOn.ST:=ST_Worst;
+    PerTrigOn.ST:=ST_Worst;
+    Trigger.ST:=ST_Worst;
+    IF INT_TO_BYTE(HourOfDay)<>SbyHourOfDay OR
+       INT_TO_BYTE(DayOfWeek)<>SbyDayOfWeek OR
+       INT_TO_BYTE(DayOfMonth)<>SbyDayOfMonth OR
+       (DelayTime<>SdiDelayTime) OR
+       (PerMode<>BYTE_TO_INT(SbyPerMode)) OR
+       (NOT SxPerTrigOn AND PerTrigOn.Value) OR
+       (NOT SxSglTrigOn) AND SglTrigOn.Value
+    THEN (*A82d*)
+        SxCalNxtTrigSumTm:=TRUE;
+    END_IF; (*A82d*)
+    SxPerTrigOn:=PerTrigOn.Value;
+    SxSglTrigOn:=SglTrigOn.Value;
+    SbyHourOfDay:=INT_TO_BYTE(HourOfDay);
+    SbyDayOfWeek:=INT_TO_BYTE(DayOfWeek);
+    SbyDayOfMonth:=INT_TO_BYTE(DayOfMonth);
+    SbyPerMode:=INT_TO_BYTE(PerMode);
+    SdiDelayTime:=DelayTime;
+    SrPulseWidth:=PulseWidth;
+    InPerTrigOn:=PerTrigOn.Value;
+    InSglTrigOn:=SglTrigOn.Value;
+    InSglTrigDT:=SglTrigDT;
+END_IF; (*A7d9*)
+SetPerOp:=FALSE;
+RstPerOp:=FALSE;
+SetSglOp:=FALSE;
+RstSglOp:=FALSE;
+OosOp:=FALSE;
+OnOp:=FALSE;
+IF NOT(OosAct.Value) THEN (*A82e*)
+    dwStatus_bool[24]:=Occupied;
+    dwStatus_bool[25]:=BatchEn;
+    dwStatus_bool[20]:=Trigger.Value;
+    dwStatus_bool[22]:=SxNextTrigIsDaily;
+    dwStatus_bool[23]:=SxNextTrigIsWeekly;
+    dwStatus_bool[8]:=SxNextTrigIsMonthly;
+    dwStatus_bool[9]:=SxNextTrigIsSingle;
+    dwStatus_bool[10]:=PerMode=1;
+    dwStatus_bool[11]:=PerMode=2;
+    dwStatus_bool[12]:=PerMode=3;
+    dwStatus_bool[13]:=DayOfWeek=1;
+    dwStatus_bool[14]:=DayOfWeek=2;
+    dwStatus_bool[15]:=DayOfWeek=3;
+    dwStatus_bool[0]:=DayOfWeek=4;
+    dwStatus_bool[1]:=DayOfWeek=5;
+    dwStatus_bool[2]:=DayOfWeek=6;
+    dwStatus_bool[3]:=DayOfWeek=7;
+    dwStatus_bool[4]:=LiOp.Value;
+    dwStatus_bool[5]:=xInvalidSignalState;
+ELSE (*A82e*)
+    dwStatus:=DW#16#0;
+END_IF; (*A82f*)
+dwStatus_bool[27]:=OosAct.Value;
+dwStatus_bool[28]:=OosLi.Value;
+dwStatus_bool[30]:=OnAct.Value;
+dwStatus_bool[31]:=NOT(((PerTrigOn.Value) OR SglTrigOn.Value) OR Trigger.Value);
+dwStatus_bool[16]:=PerTrigOn.Value;
+dwStatus_bool[17]:=NOT(PerTrigOn.Value);
+dwStatus_bool[18]:=SglTrigOn.Value;
+dwStatus_bool[19]:=NOT(SglTrigOn.Value);
+Status1:=dwStatus;   
+ 
+END_FUNCTION_BLOCK
