@@ -1,0 +1,660 @@
+{
+    Scl_ResetOptions ; 
+    Scl_OverwriteBlocks:=           'y' ;
+    Scl_GenerateReferenceData :=    'y' ;
+    Scl_S7ServerActive:=            'n' ;
+    Scl_CreateObjectCode:=          'y' ;
+    Scl_OptimizeObjectCode:=        'y' ; 
+    Scl_MonitorArrayLimits:=        'n' ;
+    Scl_CreateDebugInfo :=          'n' ; 
+    Scl_SetOKFlag:=                 'n' ;
+    Scl_SetMaximumStringLength:=    '254'
+    }
+    FUNCTION_BLOCK FB11844
+    TITLE ='Linear Optimization'
+    AUTHOR : AdvLib80
+    FAMILY : Control
+    NAME : LPOptim
+    VERSION : '2.1'
+    // reversed by komatic
+    
+    VAR_INPUT
+      J_Mini { S7_visible := 'false'; S7_link := 'false' }: BOOL ;    //1=Mininmum J, 0=Maximum J
+      Start : BOOL ;    //1 = Starts the calculation
+      X1 { S7_dynamic := 'true' }: REAL ;    //Decision variable 1
+      X2 { S7_dynamic := 'true' }: REAL ;    //Decision variable 2
+      X3 { S7_dynamic := 'true' }: REAL ;    //Decision variable 3
+      X4 { S7_dynamic := 'true' }: REAL ;    //Decision variable 4
+      J_0 { S7_dynamic := 'true' }: REAL ;    //Working point
+      N_X { S7_dynamic := 'true' }: INT  := 4;    //Number of variables X to be optimized
+      N_b { S7_dynamic := 'true' }: INT  := 8;    //Number of constraints b 
+      Gradient : STRUCT     //Gradient vector
+       g1 : REAL  := 1.000000e+000;    
+       g2 : REAL  := 1.000000e+000;    
+       g3 : REAL  := 1.000000e+000;    
+       g4 : REAL  := 1.000000e+000;    
+      END_STRUCT ;    
+      Constraints : STRUCT     //Constraints
+       b1 : REAL ;    
+       b2 : REAL ;    
+       b3 : REAL ;    
+       b4 : REAL ;    
+       b5 : REAL ;    
+       b6 : REAL ;    
+       b7 : REAL ;    
+       b8 : REAL ;    
+      END_STRUCT ;    
+      A1n : STRUCT     //Factors for elements of X at the first constraint
+       a11 : REAL ;    
+       a12 : REAL ;    
+       a13 : REAL ;    
+       a14 : REAL ;    
+      END_STRUCT ;    
+      A2n : STRUCT     //Factors for elements of X at the second constraint
+       a21 : REAL ;    
+       a22 : REAL ;    
+       a23 : REAL ;    
+       a24 : REAL ;    
+      END_STRUCT ;    
+      A3n : STRUCT     //Factors for elements of X at the third constraint
+       a31 : REAL ;    
+       a32 : REAL ;    
+       a33 : REAL ;    
+       a34 : REAL ;    
+      END_STRUCT ;    
+      A4n : STRUCT     //Factors for elements of X at the fourth constraint
+       a41 : REAL ;    
+       a42 : REAL ;    
+       a43 : REAL ;    
+       a44 : REAL ;    
+      END_STRUCT ;    
+      A5n : STRUCT     //Factors for elements of X at the fifth constraint
+       a51 : REAL ;    
+       a52 : REAL ;    
+       a53 : REAL ;    
+       a54 : REAL ;    
+      END_STRUCT ;    
+      A6n : STRUCT     //Factors for elements of X at the sixth constraint
+       a61 : REAL ;    
+       a62 : REAL ;    
+       a63 : REAL ;    
+       a64 : REAL ;    
+      END_STRUCT ;    
+      A7n : STRUCT     //Factors for elements of X at the seventh constraint
+       a71 : REAL ;    
+       a72 : REAL ;    
+       a73 : REAL ;    
+       a74 : REAL ;    
+      END_STRUCT ;    
+      A8n : STRUCT     //Factors for elements of X at the eighth constraint
+       a81 : REAL ;    
+       a82 : REAL ;    
+       a83 : REAL ;    
+       a84 : REAL ;    
+      END_STRUCT ;    
+    END_VAR
+    VAR_OUTPUT
+      Bad { S7_dynamic := 'true' }: BOOL ;    //Calculation error
+      ErrorNum { S7_visible := 'false'; S7_dynamic := 'true' }: INT ;    //Error Number
+      J_Opt { S7_dynamic := 'true' }: REAL ;    //Optimal quality criterion
+      J_Act { S7_dynamic := 'true' }: REAL ;    //Quality criterion by active decision variables 
+      X1Opt { S7_dynamic := 'true' }: REAL ;    //Optimal value for X1
+      X2Opt { S7_dynamic := 'true' }: REAL ;    //Optimal value for X2
+      X3Opt { S7_dynamic := 'true' }: REAL ;    //Optimal value for X3
+      X4Opt { S7_dynamic := 'true' }: REAL ;    //Optimal value for X4    
+    END_VAR
+    VAR
+      SiTa1 : ARRAY  [1 .. 9, 1 .. 13 ] OF //Dimension: Simplex-tabelau
+      REAL ;    //Dimension: Simplex-tabelau
+      SiTa1_one AT SiTa1 : ARRAY[0..116] OF REAL;
+      SiTa2 : ARRAY  [1 .. 9, 1 .. 13 ] OF //Dimension: Simplex-tabelau
+      REAL ;    //Dimension: Simplex-tabelau
+      Rech : BOOL ;    
+      fact1 : REAL ;    
+      fact2 : REAL ;    
+      fact3 : REAL ;    
+      fact4 : REAL ;    
+      J_Mini_Alt : BOOL ;    
+      N_X_Alt : INT  := 4;    //number of variables X to be optimized
+      N_b_Alt : INT  := 8;    //number of constrains b 
+      Gradient_Alt : STRUCT     
+       g1 : REAL  := 1.000000e+000;    
+       g2 : REAL  := 1.000000e+000;    
+       g3 : REAL  := 1.000000e+000;    
+       g4 : REAL  := 1.000000e+000;    
+      END_STRUCT ;    
+      Constraints_Alt : STRUCT     
+       b1 : REAL ;    
+       b2 : REAL ;    
+       b3 : REAL ;    
+       b4 : REAL ;    
+       b5 : REAL ;    
+       b6 : REAL ;    
+       b7 : REAL ;    
+       b8 : REAL ;    
+      END_STRUCT ;    
+      A1n_Alt : STRUCT     
+       a11 : REAL ;    
+       a12 : REAL ;    
+       a13 : REAL ;    
+       a14 : REAL ;    
+      END_STRUCT ;    
+      A2n_Alt : STRUCT     
+       a21 : REAL ;    
+       a22 : REAL ;    
+       a23 : REAL ;    
+       a24 : REAL ;    
+      END_STRUCT ;    
+      A3n_Alt : STRUCT     
+       a31 : REAL ;    
+       a32 : REAL ;    
+       a33 : REAL ;    
+       a34 : REAL ;    
+      END_STRUCT ;    
+      A4n_Alt : STRUCT     
+       a41 : REAL ;    
+       a42 : REAL ;    
+       a43 : REAL ;    
+       a44 : REAL ;    
+      END_STRUCT ;    
+      A5n_Alt : STRUCT     
+       a51 : REAL ;    
+       a52 : REAL ;    
+       a53 : REAL ;    
+       a54 : REAL ;    
+      END_STRUCT ;    
+      A6n_Alt : STRUCT     
+       a61 : REAL ;    
+       a62 : REAL ;    
+       a63 : REAL ;    
+       a64 : REAL ;    
+      END_STRUCT ;    
+      A7n_Alt : STRUCT     
+       a71 : REAL ;    
+       a72 : REAL ;    
+       a73 : REAL ;    
+       a74 : REAL ;    
+      END_STRUCT ;    
+      A8n_Alt : STRUCT     
+       a81 : REAL ;    
+       a82 : REAL ;    
+       a83 : REAL ;    
+       a84 : REAL ;    
+      END_STRUCT ;    
+    END_VAR
+    VAR_TEMP
+      LowQuo : REAL ;    
+      pivot_z : INT ;    
+      z_ok : BOOL ;    
+      Neg : BOOL ;    
+      Unconstr : BOOL ;    
+      Unend : BOOL ;    
+      HighCo : REAL ;    
+      pivot_s : INT ;    
+      s_ok : BOOL ;    
+      i_z : INT ;    
+      i_s : INT ;    
+      i : INT ;    
+      Quotient : REAL ;    
+      Invers : REAL ;    
+      ValPivotSp : REAL ;    
+      x1i : INT ;    
+      x2i : INT ;    
+      x3i : INT ;    
+      x4i : INT ;    
+    END_VAR
+    BEGIN
+    
+    CASE N_X OF
+        1 :
+            Gradient.g2:=0.0;
+            Gradient.g3:=0.0;
+            Gradient.g4:=0.0;
+        2 :
+            Gradient.g3:=0.0;
+            Gradient.g4:=0.0;
+        3 :
+            Gradient.g4:=0.0;
+    END_CASE;
+    
+    IF N_X_Alt<>N_X OR 
+       N_b_Alt<>N_b OR 
+       J_Mini_Alt <> J_Mini OR
+       Gradient_Alt.g1<>Gradient.g1 OR
+       Gradient_Alt.g2<>Gradient.g2 OR
+       Gradient_Alt.g3<>Gradient.g3 OR
+       Gradient_Alt.g4<>Gradient.g4 OR
+       Constraints_Alt.b1<>Constraints.b1 OR
+       Constraints_Alt.b2<>Constraints.b2 OR
+       Constraints_Alt.b3<>Constraints.b3 OR
+       Constraints_Alt.b4<>Constraints.b4 OR
+       Constraints_Alt.b5<>Constraints.b5 OR
+       Constraints_Alt.b6<>Constraints.b6 OR
+       Constraints_Alt.b7<>Constraints.b7 OR
+       Constraints_Alt.b8<>Constraints.b8 OR
+       A1n_Alt.a11<>A1n.a11 OR 
+       A1n_Alt.a12<>A1n.a12 OR 
+       A1n_Alt.a13<>A1n.a13 OR 
+       A1n_Alt.a14<>A1n.a14 OR 
+       A2n_Alt.a21<>A2n.a21 OR
+       A2n_Alt.a22<>A2n.a22 OR
+       A2n_Alt.a23<>A2n.a23 OR
+       A2n_Alt.a24<>A2n.a24 OR
+       A3n_Alt.a31<>A3n.a31 OR
+       A3n_Alt.a32<>A3n.a32 OR
+       A3n_Alt.a33<>A3n.a33 OR
+       A3n_Alt.a34<>A3n.a34 OR
+       A4n_Alt.a41<>A4n.a41 OR
+       A4n_Alt.a42<>A4n.a42 OR
+       A4n_Alt.a43<>A4n.a43 OR
+       A4n_Alt.a44<>A4n.a44 OR
+       A5n_Alt.a51<>A5n.a51 OR
+       A5n_Alt.a52<>A5n.a52 OR
+       A5n_Alt.a53<>A5n.a53 OR
+       A5n_Alt.a54<>A5n.a54 OR
+       A6n_Alt.a61<>A6n.a61 OR
+       A6n_Alt.a62<>A6n.a62 OR
+       A6n_Alt.a63<>A6n.a63 OR
+       A6n_Alt.a64<>A6n.a64 OR
+       A7n_Alt.a71<>A7n.a71 OR
+       A7n_Alt.a72<>A7n.a72 OR
+       A7n_Alt.a73<>A7n.a73 OR
+       A7n_Alt.a74<>A7n.a74 OR
+       A8n_Alt.a81<>A8n.a81 OR
+       A8n_Alt.a82<>A8n.a82 OR
+       A8n_Alt.a83<>A8n.a83 OR
+       A8n_Alt.a84<>A8n.a84
+    THEN
+        Start:=true;
+    END_IF;
+    J_Mini_Alt:=J_Mini; 
+    N_X_Alt:=N_X;
+    N_b_Alt:=N_b;
+    Gradient_Alt.g1:=Gradient.g1;
+    Gradient_Alt.g2:=Gradient.g2;
+    Gradient_Alt.g3:=Gradient.g3;
+    Gradient_Alt.g4:=Gradient.g4;
+    Constraints_Alt.b1:=Constraints.b1;
+    Constraints_Alt.b2:=Constraints.b2;
+    Constraints_Alt.b3:=Constraints.b3;
+    Constraints_Alt.b4:=Constraints.b4;
+    Constraints_Alt.b5:=Constraints.b5;
+    Constraints_Alt.b6:=Constraints.b6;
+    Constraints_Alt.b7:=Constraints.b7;
+    Constraints_Alt.b8:=Constraints.b8;
+    A1n_Alt.a11:=A1n.a11;
+    A1n_Alt.a12:=A1n.a12;
+    A1n_Alt.a13:=A1n.a13;
+    A1n_Alt.a14:=A1n.a14;
+    A2n_Alt.a21:=A2n.a21;
+    A2n_Alt.a22:=A2n.a22;
+    A2n_Alt.a23:=A2n.a23;
+    A2n_Alt.a24:=A2n.a24;
+    A3n_Alt.a31:=A3n.a31;
+    A3n_Alt.a32:=A3n.a32;
+    A3n_Alt.a33:=A3n.a33;
+    A3n_Alt.a34:=A3n.a34;
+    A4n_Alt.a41:=A4n.a41;
+    A4n_Alt.a42:=A4n.a42;
+    A4n_Alt.a43:=A4n.a43;
+    A4n_Alt.a44:=A4n.a44;
+    A5n_Alt.a51:=A5n.a51;
+    A5n_Alt.a52:=A5n.a52;
+    A5n_Alt.a53:=A5n.a53;
+    A5n_Alt.a54:=A5n.a54;
+    A6n_Alt.a61:=A6n.a61;
+    A6n_Alt.a62:=A6n.a62;
+    A6n_Alt.a63:=A6n.a63;
+    A6n_Alt.a64:=A6n.a64;
+    A7n_Alt.a71:=A7n.a71;
+    A7n_Alt.a72:=A7n.a72;
+    A7n_Alt.a73:=A7n.a73;
+    A7n_Alt.a74:=A7n.a74;
+    A8n_Alt.a81:=A8n.a81;
+    A8n_Alt.a82:=A8n.a82;
+    A8n_Alt.a83:=A8n.a83;
+    A8n_Alt.a84:=A8n.a84;
+    
+    J_Act:=Gradient.g1*X1+Gradient.g2*X2+Gradient.g3*X3+Gradient.g4*X4+J_0;
+    
+    IF Start THEN 
+        IF ((((Gradient.g1<>0.0) OR 
+        (Gradient.g2<>0.0)) OR 
+        (Gradient.g3<>0.0)) OR 
+        (Gradient.g4<>0.0)) OR 
+        (((((((Constraints.b1<>0.0) OR 
+        (Constraints.b2<>0.0)) OR 
+        (Constraints.b3<>0.0)) OR 
+        ((Constraints.b4<>0.0) AND 
+        (Constraints.b5<>0.0))) OR 
+        (Constraints.b6<>0.0)) OR 
+        (Constraints.b7<>0.0)) OR 
+        (Constraints.b8<>0.0))
+        THEN
+            IF J_Mini THEN
+                SiTa1[1, 1]:=Gradient.g1;
+                SiTa1[1, 2]:=Gradient.g2;
+                SiTa1[1, 3]:=Gradient.g3;
+                SiTa1[1, 4]:=Gradient.g4;
+            ELSE 
+                SiTa1[1, 1]:=-Gradient.g1;
+                SiTa1[1, 2]:=-Gradient.g2;
+                SiTa1[1, 3]:=-Gradient.g3;
+                SiTa1[1, 4]:=-Gradient.g4;
+            END_IF;    
+            SiTa1[1, 5]:=0.0;
+            SiTa1[1, 6]:=0.0;
+            SiTa1[1, 7]:=0.0;
+            SiTa1[1, 8]:=0.0;
+            SiTa1[1, 9]:=0.0;
+            SiTa1[1, 10]:=0.0;
+            SiTa1[1, 11]:=0.0;
+            SiTa1[1, 12]:=0.0;
+            SiTa1[1, 13]:=0.0;
+            SiTa1[2, 1]:=A1n.a11;
+            SiTa1[2, 2]:=A1n.a12;
+            SiTa1[2, 3]:=A1n.a13;
+            SiTa1[2, 4]:=A1n.a14;
+            IF N_b>0 THEN
+                SiTa1[2, 5]:=1.0;
+            ELSE
+                SiTa1[2, 5]:=0.0;
+            END_IF;    
+            SiTa1[2, 6]:=0.0;
+            SiTa1[2, 7]:=0.0;
+            SiTa1[2, 8]:=0.0;
+            SiTa1[2, 9]:=0.0;
+            SiTa1[2, 10]:=0.0;
+            SiTa1[2, 11]:=0.0;
+            SiTa1[2, 12]:=0.0;
+            SiTa1[2, 13]:=Constraints.b1;
+            SiTa1[3, 1]:=A2n.a21; 
+            SiTa1[3, 2]:=A2n.a22; 
+            SiTa1[3, 3]:=A2n.a23; 
+            SiTa1[3, 4]:=A2n.a24; 
+            SiTa1[3, 5]:=0.0;
+            IF N_b> 1 THEN
+                SiTa1[3, 6]:=1.0;
+            ELSE
+                SiTa1[3, 6]:=0.0;
+            END_IF;    
+            SiTa1[3, 7]:=0.0;
+            SiTa1[3, 8]:=0.0;
+            SiTa1[3, 9]:=0.0;
+            SiTa1[3, 10]:=0.0;
+            SiTa1[3, 11]:=0.0;
+            SiTa1[3, 12]:=0.0;
+            SiTa1[3, 13]:=Constraints.b2;
+    
+            SiTa1[4, 1]:=A3n.a31; 
+            SiTa1[4, 2]:=A3n.a32; 
+            SiTa1[4, 3]:=A3n.a33; 
+            SiTa1[4, 4]:=A3n.a34; 
+            SiTa1[4, 5]:=0.0;
+            SiTa1[4, 6]:=0.0;
+            IF N_b>2 THEN
+                SiTa1[4, 7]:=1.0;
+            ELSE
+                SiTa1[4, 7]:=0.0;
+            END_IF;    
+            SiTa1[4, 8]:=0.0;
+            SiTa1[4, 9]:=0.0;
+            SiTa1[4, 10]:=0.0;
+            SiTa1[4, 11]:=0.0;
+            SiTa1[4, 12]:=0.0;
+            SiTa1[4, 13]:=Constraints.b3;
+            
+            SiTa1[5, 1]:=A4n.a41; 
+            SiTa1[5, 2]:=A4n.a42; 
+            SiTa1[5, 3]:=A4n.a43; 
+            SiTa1[5, 4]:=A4n.a44; 
+            SiTa1[5, 5]:=0.0;
+            SiTa1[5, 6]:=0.0;
+            SiTa1[5, 7]:=0.0;
+            IF N_b>3 THEN
+                SiTa1[5, 8]:=1.0;
+            ELSE
+                SiTa1[5, 8]:=0.0;
+            END_IF;    
+            SiTa1[5, 9]:=0.0;
+            SiTa1[5, 10]:=0.0;
+            SiTa1[5, 11]:=0.0;
+            SiTa1[5, 12]:=0.0;
+            SiTa1[5, 13]:=Constraints.b4;
+    
+            SiTa1[6, 1]:=A5n.a51; 
+            SiTa1[6, 2]:=A5n.a52; 
+            SiTa1[6, 3]:=A5n.a53; 
+            SiTa1[6, 4]:=A5n.a54; 
+            SiTa1[6, 5]:=0.0;
+            SiTa1[6, 6]:=0.0;
+            SiTa1[6, 7]:=0.0;
+            SiTa1[6, 8]:=0.0;
+            IF N_b>4 THEN
+                SiTa1[6, 9]:=1.0;
+            ELSE
+                SiTa1[6, 9]:=0.0;
+            END_IF;    
+            SiTa1[6, 10]:=0.0;
+            SiTa1[6, 11]:=0.0;
+            SiTa1[6, 12]:=0.0;
+            SiTa1[6, 13]:=Constraints.b5;
+            
+            SiTa1[7, 1]:=A6n.a61; 
+            SiTa1[7, 2]:=A6n.a62; 
+            SiTa1[7, 3]:=A6n.a63; 
+            SiTa1[7, 4]:=A6n.a64; 
+            SiTa1[7, 5]:=0.0;
+            SiTa1[7, 6]:=0.0;
+            SiTa1[7, 7]:=0.0;
+            SiTa1[7, 8]:=0.0;
+            SiTa1[7, 9]:=0.0;
+            IF N_b>5 THEN
+                SiTa1[7, 10]:=1.0;
+            ELSE
+                SiTa1[7, 10]:=0.0;
+            END_IF;    
+            SiTa1[7, 11]:=0.0;
+            SiTa1[7, 12]:=0.0;
+            SiTa1[7, 13]:=Constraints.b6;
+            
+            SiTa1[8, 1]:=A7n.a71; 
+            SiTa1[8, 2]:=A7n.a72; 
+            SiTa1[8, 3]:=A7n.a73; 
+            SiTa1[8, 4]:=A7n.a74; 
+            SiTa1[8, 5]:=0.0;
+            SiTa1[8, 6]:=0.0;
+            SiTa1[8, 7]:=0.0;
+            SiTa1[8, 8]:=0.0;
+            SiTa1[8, 9]:=0.0;
+            SiTa1[8, 10]:=0.0;
+            IF N_b>6 THEN
+                SiTa1[8, 11]:=1.0;
+            ELSE
+                SiTa1[8, 11]:=0.0;
+            END_IF;    
+            SiTa1[8, 12]:=0.0;
+            SiTa1[8, 13]:=Constraints.b7;
+    
+            SiTa1[9, 1]:=A8n.a81; 
+            SiTa1[9, 2]:=A8n.a82; 
+            SiTa1[9, 3]:=A8n.a83; 
+            SiTa1[9, 4]:=A8n.a84; 
+            SiTa1[9, 5]:=0.0;
+            SiTa1[9, 6]:=0.0;
+            SiTa1[9, 7]:=0.0;
+            SiTa1[9, 8]:=0.0;
+            SiTa1[9, 9]:=0.0;
+            SiTa1[9, 10]:=0.0;
+            SiTa1[9, 11]:=0.0;
+            IF N_b>7 THEN
+                SiTa1[9, 12]:=1.0;
+            ELSE
+                SiTa1[9, 12]:=0.0;
+            END_IF;    
+            SiTa1[9, 13]:=Constraints.b8;
+            Start:=false;
+            Rech:=true;
+            Bad:=false;
+            ErrorNum:=0;
+        ELSE
+            Bad:=true;
+            ErrorNum:=40;
+        END_IF;    
+    END_IF;      
+    
+    IF Rech THEN
+        FOR i:=1 TO 100 BY 1 DO
+            Neg:=true;
+            FOR i_s:=1 TO 12 BY 1 DO 
+                IF SiTa1[1,i_s]<0.0 THEN
+                    Neg:=false;
+                END_IF;    
+            END_FOR;
+            IF Neg THEN
+                Rech:=false;
+                EXIT;
+            END_IF;
+            HighCo:=SiTa1[1,i_s];
+            pivot_s:=0;
+            s_ok:=false;
+            FOR i_s:=1 TO 13 BY 1 DO
+                IF HighCo>SiTa1[1,i_s] THEN
+                    HighCo:=SiTa1[1,i_s];
+                    pivot_s:=i_s;
+                    s_ok:=true;
+                END_IF;    
+            END_FOR;
+            Unconstr:=true;
+            IF pivot_s<>0 THEN
+                FOR i_z:=2 TO 9 BY 1 DO
+                    IF SiTa1[i_z,pivot_s]<>0  THEN
+                        Unconstr:=false;
+                    END_IF;    
+                END_FOR;
+            END_IF;
+            IF Unconstr THEN
+                Bad:=true;
+                ErrorNum:=35;
+                Rech:=false;
+                EXIT;
+            END_IF;    
+            LowQuo:=1.000000e+020;
+            pivot_z:=0;
+            z_ok:=false;
+            FOR i_z:=2 TO 9 BY 1 DO 
+                IF SiTa1[i_z,pivot_s]<>0.0 THEN
+                    Quotient:=SiTa1[i_z,13]/SiTa1[i_z,pivot_s];
+                    IF Quotient<LowQuo AND Quotient>0.0 THEN
+                        LowQuo:=Quotient;
+                        pivot_z:=i_z;
+                        z_ok:=true;
+                    END_IF;    
+                END_IF;
+            END_FOR;
+            IF z_ok AND s_ok THEN
+                Invers:=1.0/SiTa1[pivot_z,pivot_s];
+                FOR i_s:=1 TO 13 BY 1 DO
+                    SiTa2[pivot_z,i_s]:=SiTa1[pivot_z,i_s]*Invers;
+                END_FOR;
+                FOR i_z:=1 TO 9 BY 1 DO 
+                    FOR i_s:=1 TO 13 BY 1 DO 
+                        IF pivot_z<>i_z THEN
+                            ValPivotSp:=-SiTa1[i_z,pivot_s];
+                            IF i_s=pivot_s THEN
+                                SiTa2[i_z,i_s]:=SiTa1[i_z,i_s]+ValPivotSp;
+                            ELSE
+                                SiTa2[i_z,i_s]:=SiTa1[i_z,i_s]+SiTa1[pivot_z,i_s]*ValPivotSp*Invers;
+                            END_IF;
+                        END_IF;
+                    END_FOR;
+                END_FOR;
+                Unend:=true;
+                FOR i_s:=1 TO 13 BY 1 DO
+                    IF SiTa1[1,i_s]<>SiTa2[1,i_s] THEN
+                        Unend:=false;
+                    END_IF;    
+                END_FOR;
+                FOR i_z:=1 TO 9 BY 1 DO 
+                    FOR i_s:=1 TO 13 BY 1 DO 
+                        SiTa1[i_z,i_s]:=SiTa2[i_z,i_s];
+                    END_FOR;
+                END_FOR;
+                IF Unend THEN
+                    Bad:=true;
+                    ErrorNum:=20;
+                    Rech:=false;
+                    EXIT;
+                END_IF;    
+            ELSE    
+                Bad:=true;
+                ErrorNum:=10;
+                Rech:=false;
+                EXIT;
+            END_IF;
+            FOR i_z:=2 TO N_b+1 BY 1 DO
+                IF SiTa1[2,(INT_TO_DINT(i_z)-1)*13]=0.0 THEN
+                    SiTa1[2,(INT_TO_DINT(i_z)-1)*13]:=1.000000e-006;
+                END_IF;
+            END_FOR;
+        END_FOR;    
+        
+        FOR i_z:=2 TO 9 BY 1 DO 
+            IF SiTa1[i_z,1]=1.0 OR SiTa1[i_z,1]=-1.0 THEN
+                x1i:=i_z;
+                fact1:=SiTa1[i_z,1];
+            END_IF;
+            IF SiTa1_one[(INT_TO_DINT(i_z)-1)*13+1]=1.0 OR SiTa1_one[(INT_TO_DINT(i_z)-1)*13+1]=-1.0 THEN
+                x2i:=i_z;
+                fact2:=SiTa1_one[(INT_TO_DINT(i_z)-1)*13+1];
+            END_IF;
+            IF SiTa1_one[(INT_TO_DINT(i_z)-1)*13+2]=1.0 OR SiTa1_one[(INT_TO_DINT(i_z)-1)*13+2]=-1.0 THEN
+                x3i:=i_z;
+                fact3:=SiTa1_one[(INT_TO_DINT(i_z)-1)*13+2];
+            END_IF;
+            IF SiTa1_one[(INT_TO_DINT(i_z)-1)*13+3]=1.0 OR SiTa1_one[(INT_TO_DINT(i_z)-1)*13+3]=-1.0 THEN
+                x4i:=i_z;
+                fact4:=SiTa1_one[(INT_TO_DINT(i_z)-1)*13+3];
+            END_IF;
+        END_FOR;  
+        IF Bad THEN
+            J_Opt:=0.0;
+            X1Opt:=0.0;
+            X2Opt:=0.0;
+            X3Opt:=0.0;
+            X4Opt:=0.0;
+        ELSE
+            CASE N_X OF
+                1 :
+                    X1Opt:=SiTa1_one[(INT_TO_DINT(x1i)-1)*13+12]*fact1;
+                    X2Opt:=0.0;
+                    X3Opt:=0.0;
+                    X4Opt:=0.0;
+                2 :
+                    X1Opt:=SiTa1_one[(INT_TO_DINT(x1i)-1)*13+12]*fact1;
+                    X2Opt:=SiTa1_one[(INT_TO_DINT(x2i)-1)*13+12]*fact2;
+                    X3Opt:=0.0;
+                    X4Opt:=0.0;
+                3 :
+                    X1Opt:=SiTa1_one[(INT_TO_DINT(x1i)-1)*13+12]*fact1;
+                    X2Opt:=SiTa1_one[(INT_TO_DINT(x2i)-1)*13+12]*fact2;
+                    X3Opt:=SiTa1_one[(INT_TO_DINT(x3i)-1)*13+12]*fact3;
+                    X4Opt:=0.0;
+                4 :
+                    X1Opt:=SiTa1_one[(INT_TO_DINT(x1i)-1)*13+12]*fact1;
+                    X2Opt:=SiTa1_one[(INT_TO_DINT(x2i)-1)*13+12]*fact2;
+                    X3Opt:=SiTa1_one[(INT_TO_DINT(x3i)-1)*13+12]*fact3;
+                    X4Opt:=SiTa1_one[(INT_TO_DINT(x4i)-1)*13+12]*fact4;
+                ELSE
+                    Bad:=true;
+                    ErrorNum:=15;
+            END_CASE;
+        END_IF;
+        J_Opt:=Gradient.g1*X1Opt+Gradient.g2*X2Opt+Gradient.g3*X3Opt+Gradient.g4*X4Opt+J_0;
+    END_IF;
+    END_FUNCTION_BLOCK
+    
+    
+    
+    
+    
