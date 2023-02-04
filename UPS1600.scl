@@ -1,0 +1,1359 @@
+// Name: FB1493
+// Symbolic Name: UPS1600
+// Symbol Comment: SITOP UPS1600
+// Family: SITOP
+// Version: 1.2
+// Author: AdvLibSE
+// Last modified: 09/29/2015
+// Use: SFB35,SFC20,SFC6
+// Size: 4024 byte
+
+{
+Scl_ResetOptions ; 
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ; 
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ; 
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+FUNCTION_BLOCK FB11493
+TITLE ='PCS 7 APL-Block for SITOP UPS1600'
+{ S7_m_c := 'true'; S7_alarm_ui := '1'; S7_language := '7(1) German (Germany)  31.05.2016  15:54:12'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLibSE
+FAMILY : SITOP
+NAME : UPS1600
+VERSION : '1.2'
+
+
+VAR_INPUT
+  Cur_OpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Current [A] - Bar display limits for OS  
+   High : REAL  := 1.000000e+001;    //High Value
+   Low : REAL ;    //Low Value
+  END_STRUCT ;    
+  Volt_OpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Voltage  [V] - Bar display limits for OS
+   High : REAL  := 3.000000e+001;    //High Value
+   Low : REAL ;    //Low Value
+  END_STRUCT ;    
+  Level_OpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Charge Level [%] - Bar display limits for OS
+   High : REAL  := 1.000000e+002;    //High Value
+   Low : REAL ;    //Low Value
+  END_STRUCT ;    
+  OnOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=On Mode: On Mode by Operator
+  OosOp { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Oos Mode: Oos Mode by Operator
+  OosLi { S7_dynamic := 'true' }: STRUCT     //1=Oos Mode: Oos Mode by Field Signal                  
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RdDataOp { S7_visible := 'false'; S7_m_c := 'true'; Op_Level := '1' }: BOOL ;    //1 = Read Asyncron Values 
+  AcyclRdCyl { S7_edit := 'para' }: REAL  := 6.000000e+001;    //Cycle in which acyclic data is read [s]
+  RstUPSLi { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Linked signal to Reset UPS                    
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  OutVoltDwnTm { S7_edit := 'para' }: BYTE  := B#16#A;    //Output voltage down time [s]
+  BufferTime { S7_edit := 'para' }: REAL  := 1.000000e+001;    //Buffer time [s]
+  UserAna1 { S7_visible := 'false'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xshortcut := 'Value,;' }: STRUCT     //User Analog Input 1
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal Status
+  END_STRUCT ;    
+  UA1unit { S7_visible := 'false'; S7_m_c := 'true'; S7_unit := '' }: INT ;    //Unit of UserAna1
+  UserAna2 { S7_visible := 'false'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xshortcut := 'Value,;' }: STRUCT     //User Analog Input 2
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal Status
+  END_STRUCT ;    
+  UA2unit { S7_visible := 'false'; S7_m_c := 'true'; S7_unit := '' }: INT ;    //Unit of UserAna2
+  MsgLock { S7_visible := 'false' }: STRUCT     //Inhibit process message
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SampleTime { S7_visible := 'false'; S7_link := 'false'; S7_sampletime := 'true'; S7_param := 'false' }: REAL  := 1.000000e-001;    //Sampling Time [s]
+  RunUpCyc { S7_visible := 'false' }: INT  := 3;    //Number of cycles for which all messages are suppressed
+  MsgEvId { S7_visible := 'false'; S7_param := 'false'; S7_link := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Message Event ID 1
+  BatchEn { S7_visible := 'false' }: BOOL ;    //Enable Remote Operation of Controller by Batch Recipe
+  Occupied { S7_visible := 'false' }: BOOL ;    //Occupied by Batch
+  BatchID { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Current Batch ID (number)
+  BatchName { S7_visible := 'false'; S7_m_c := 'true' }: STRING  [32 ];    //Current Batch Name
+  StepNo { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Batch Step Number
+  FaultExt { S7_dynamic := 'true' }: STRUCT     //External Error
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtMsg1 { S7_visible := 'false' }: STRUCT     //External Message 1
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtMsg2 { S7_visible := 'false' }: STRUCT     //External Message 2
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtVa104 { S7_visible := 'false' }: ANY ;    //External Value 4 MsgEvId
+  ExtVa105 { S7_visible := 'false' }: ANY ;    //External Value 5 MsgEvId
+  ExtVa106 { S7_visible := 'false' }: ANY ;    //External Value 6 MsgEvId
+  ExtVa107 { S7_visible := 'false' }: ANY ;    //External Value 7 MsgEvId
+  ExtVa108 { S7_visible := 'false' }: ANY ;    //External Value 8 MsgEvId
+  UserStatus { S7_m_c := 'true'; S7_visible := 'false' }: BYTE ;    //User Status Bits
+  SelFp1 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 1
+  OS_Perm { S7_visible := 'false' }: STRUCT     //Operator Permissions
+   Bit0 : BOOL  := TRUE;    //Reserved
+   Bit1 : BOOL  := TRUE;    //1 = Operator can switch to On
+   Bit2 : BOOL  := TRUE;    //Reserved
+   Bit3 : BOOL  := TRUE;    //1 = Operator can switch to Out Of Service
+   Bit4 : BOOL  := TRUE;    //Reserved
+   Bit5 : BOOL  := TRUE;    //Reserved
+   Bit6 : BOOL  := TRUE;    //Reserved
+   Bit7 : BOOL  := TRUE;    //Reserved
+   Bit8 : BOOL  := TRUE;    //Reserved
+   Bit9 : BOOL  := TRUE;    //Reserved
+   Bit10 : BOOL  := TRUE;    //Reserved
+   Bit11 : BOOL  := TRUE;    //Reserved
+   Bit12 : BOOL  := TRUE;    //Reserved
+   Bit13 : BOOL  := TRUE;    //Reserved
+   Bit14 : BOOL  := TRUE;    //Reserved
+   Bit15 : BOOL  := TRUE;    //Reserved
+   Bit16 : BOOL  := TRUE;    //Reserved
+   Bit17 : BOOL  := TRUE;    //Reserved
+   Bit18 : BOOL  := TRUE;    //Reserved
+   Bit19 : BOOL  := TRUE;    //Reserved
+   Bit20 : BOOL  := TRUE;    //Reserved
+   Bit21 : BOOL  := TRUE;    //Reserved
+   Bit22 : BOOL  := TRUE;    //Reserved
+   Bit23 : BOOL  := TRUE;    //Reserved
+   Bit24 : BOOL  := TRUE;    //Reserved
+   Bit25 : BOOL  := TRUE;    //Reserved
+   Bit26 : BOOL  := TRUE;    //Reserved
+   Bit27 : BOOL  := TRUE;    //1 = Operator can read the configuration data
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;    
+  OS_Perm_b AT OS_Perm : ARRAY[0..3] OF BYTE;
+  OS_Perm_d AT OS_Perm : DWORD;
+  
+  OS1Perm { S7_visible := 'false' }: STRUCT     //Operator Permissions 2
+   Bit0 : BOOL  := TRUE;    //Reserved
+   Bit1 : BOOL  := TRUE;    //Reserved
+   Bit2 : BOOL  := TRUE;    //Reserved
+   Bit3 : BOOL  := TRUE;    //Reserved
+   Bit4 : BOOL  := TRUE;    //Reserved
+   Bit5 : BOOL  := TRUE;    //Reserved
+   Bit6 : BOOL  := TRUE;    //Reserved
+   Bit7 : BOOL  := TRUE;    //Reserved
+   Bit8 : BOOL  := TRUE;    //Reserved
+   Bit9 : BOOL  := TRUE;    //Reserved
+   Bit10 : BOOL  := TRUE;    //Reserved
+   Bit11 : BOOL  := TRUE;    //Reserved
+   Bit12 : BOOL  := TRUE;    //Reserved
+   Bit13 : BOOL  := TRUE;    //Reserved
+   Bit14 : BOOL  := TRUE;    //Reserved
+   Bit15 : BOOL  := TRUE;    //Reserved
+   Bit16 : BOOL  := TRUE;    //Reserved
+   Bit17 : BOOL  := TRUE;    //Reserved
+   Bit18 : BOOL  := TRUE;    //Reserved
+   Bit19 : BOOL  := TRUE;    //Reserved
+   Bit20 : BOOL  := TRUE;    //Reserved
+   Bit21 : BOOL  := TRUE;    //Reserved
+   Bit22 : BOOL  := TRUE;    //Reserved
+   Bit23 : BOOL  := TRUE;    //Reserved
+   Bit24 : BOOL  := TRUE;    //Reserved
+   Bit25 : BOOL  := TRUE;    //Reserved
+   Bit26 : BOOL  := TRUE;    //Reserved
+   Bit27 : BOOL  := TRUE;    //Reserved
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;    
+  OpSt_In { BLK_Jump := '1'; S7_visible := 'false' }: DWORD ;    //Enabled operator stations
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //0 = Start up with defined initializing in OB100; 1 = keep last stored values
+   Bit1 : BOOL ;    //1 = OosLi can switch to Out of Service
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved 
+   Bit4 : BOOL ;    //Reserved 
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //1 = Read acyclic data cyclic
+   Bit8 : BOOL ;    //1 = Read configuration data automatically in OB100 and with return of device
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //1 = Enable message state actualization
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //1 = Local authorization active 
+   Bit25 : BOOL ;    //1 = Suppress all messages if MsgLock = 1
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;    
+  Feature2 { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //Reserved
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //Reserved
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;    
+END_VAR
+VAR_OUTPUT
+  ChrgLevel { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Level_OpScale.Low,Level_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Battery charge level
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  InpVoltOK { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Input voltage OK
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  BuffModeAct { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Buffer mode active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RdyForBuff { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Ready for buffering
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ChrgSuffic { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Charge sufficient
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  BattChngRec { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Battery change recommended
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  NewAlrmsPen { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=New alarms pending
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  UnknownBatt { S7_dynamic := 'true'; S7_contact := 'true'; S7_edit := 'para' }: STRUCT     //1=Unknown battery
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Uin { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Volt_OpScale.Low,Volt_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Input Voltage
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Iout { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Cur_OpScale.Low,Cur_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Output Current
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Uout { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Volt_OpScale.Low,Volt_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Output Voltage
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Ubatt { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Volt_OpScale.Low,Volt_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Battery Voltage 
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Icharge { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Cur_OpScale.Low,Cur_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Charge Current
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Ueoc { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,Volt_OpScale.Low,Volt_OpScale.High;'; S7_edit := 'para' }: STRUCT     //End of charging (eoc) voltage
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RdyToRst { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Ready to reset device active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RstUPSCmdErr { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Last error code of reset UPS command
+  GrpErr { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Group error is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SumMsgAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Summary message Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  OosAct { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;' }: STRUCT     //Out of service is active 
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  OnAct { S7_dynamic := 'true' }: STRUCT     //On Mode is active
+   Value : BOOL  := TRUE;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  OS_PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS_Perm
+  OS_PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS_Perm with changes from FB algorithm
+  OS1PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS1Perm
+  OS1PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS1Perm with changes from FB algorithm
+  OpSt_Out { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Enabled operator stations      
+  ST_Worst { S7_visible := 'false'; S7_m_c := 'true' }: BYTE  := B#16#80;    //Worst Quality Code
+  Status1 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 1, defined in the online help
+  Status2 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 2, defined in the online help
+  Status3 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 3, defined in the online help
+  Status4 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 4, defined in the online help
+  MsgErr { S7_visible := 'false' }: BOOL ;    //1=Messaging error occurs
+  MsgStat { S7_visible := 'false' }: WORD ;    //Message status
+  MsgAckn { S7_visible := 'false' }: WORD ;    //Message acknowledgement status
+END_VAR
+VAR_IN_OUT
+  CyclData : STRUCT     //Cyclic SITOP data
+   Csf : BOOL ;    //Control System Fault
+   InpVoltOK : STRUCT     //1=Input voltage OK
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   BuffModeAct : STRUCT     //1=Buffer mode active
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   RdyForBuff : STRUCT     //1=Ready for buffering
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   ChrgSuffic : STRUCT     //1=Charge sufficient
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   BattChngRec : STRUCT     //1=Battery change recommended
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   NewAlrmsPen : STRUCT     //1=New alarms pending
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   UnknownBatt : STRUCT     //1=Unknown battery
+    Value : BOOL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+   BattChrgLvl : STRUCT     //Battery charge level
+    Value : REAL ;    // Value
+    ST : BYTE ;    // Signal Status
+   END_STRUCT ;    
+  END_STRUCT ;    
+  AcyclData : STRUCT     //Acyclic SITOP data
+   SlotRd : INT ;    //Number of slot for read request
+   ReqRd : INT ;    //Request to read parameter with this absolute index
+   LenRd : INT ;    //Length of parameter in byte to be read
+   SlotWr : INT ;    //Number of slot for write request
+   ReqWr : INT ;    //Request to write parameter with this absolute index
+   LenWr : INT ;    //Length of parameter in byte to be written
+   RdyRead : INT ;    //Parameter with this ID was read
+   RdyWrite : INT ;    //Parameter with this ID was written
+   RetValRd : WORD ;    //Return value of read request
+   RetValWr : WORD ;    //Return value of write request
+   Input : STRUCT     
+    Para0 : DWORD ;    //Value input parameter
+    Para1 : DWORD ;    //Value input parameter
+    Para2 : DWORD ;    //Value input parameter
+    Para3 : DWORD ;    //Value input parameter
+    Para4 : DWORD ;    //Value input parameter
+    Para5 : DWORD ;    //Value input parameter
+    Para6 : DWORD ;    //Value input parameter
+    Para7 : DWORD ;    //Value input parameter
+    Para8 : DWORD ;    //Value input parameter
+    Para9 : DWORD ;    //Value input parameter
+    Para10 : DWORD ;    //Value input parameter
+    Para11 : DWORD ;    //Value input parameter
+    Para12 : DWORD ;    //Value input parameter
+    Para13 : DWORD ;    //Value input parameter
+    Para14 : DWORD ;    //Value input parameter
+    Para15 : DWORD ;    //Value input parameter
+    Para16 : DWORD ;    //Value input parameter
+    Para17 : DWORD ;    //Value input parameter
+    Para18 : DWORD ;    //Value input parameter
+    Para19 : DWORD ;    //Value input parameter
+    Para20 : DWORD ;    //Value input parameter
+    Para21 : DWORD ;    //Value input parameter
+    Para22 : DWORD ;    //Value input parameter
+    Para23 : DWORD ;    //Value input parameter
+    Para24 : DWORD ;    //Value input parameter
+    Para25 : DWORD ;    //Value input parameter
+    Para26 : DWORD ;    //Value input parameter
+    Para27 : DWORD ;    //Value input parameter
+    Para28 : DWORD ;    //Value input parameter
+    Para29 : DWORD ;    //Value input parameter
+    Para30 : DWORD ;    //Value input parameter
+    Para31 : DWORD ;    //Value input parameter
+    Para32 : DWORD ;    //Value input parameter
+    Para33 : DWORD ;    //Value input parameter
+    Para34 : DWORD ;    //Value input parameter
+    Para35 : DWORD ;    //Value input parameter
+    Para36 : DWORD ;    //Value input parameter
+    Para37 : DWORD ;    //Value input parameter
+    Para38 : DWORD ;    //Value input parameter
+    Para39 : DWORD ;    //Value input parameter
+    Para40 : DWORD ;    //Value input parameter
+    Para41 : DWORD ;    //Value input parameter
+    Para42 : DWORD ;    //Value input parameter
+    Para43 : DWORD ;    //Value input parameter
+    Para44 : DWORD ;    //Value input parameter
+    Para45 : DWORD ;    //Value input parameter
+    Para46 : DWORD ;    //Value input parameter
+    Para47 : DWORD ;    //Value input parameter
+    Para48 : DWORD ;    //Value input parameter
+    Para49 : DWORD ;    //Value input parameter
+    Para50 : DWORD ;    //Value input parameter
+    Para51 : DWORD ;    //Value input parameter
+    Para52 : DWORD ;    //Value input parameter
+    Para53 : DWORD ;    //Value input parameter
+    Para54 : DWORD ;    //Value input parameter
+    Para55 : DWORD ;    //Value input parameter
+    Para56 : DWORD ;    //Value input parameter
+    Para57 : DWORD ;    //Value input parameter
+    Para58 : DWORD ;    //Value input parameter
+    Para59 : DWORD ;    //Value input parameter
+    Para60 : DWORD ;    //Value input parameter
+    Para61 : DWORD ;    //Value input parameter
+    Para62 : DWORD ;    //Value input parameter
+    Para63 : DWORD ;    //Value input parameter
+    Para64 : DWORD ;    //Value input parameter
+    Para65 : DWORD ;    //Value input parameter
+    Para66 : DWORD ;    //Value input parameter
+    Para67 : DWORD ;    //Value input parameter
+    Para68 : DWORD ;    //Value input parameter
+    Para69 : DWORD ;    //Value input parameter
+    Para70 : DWORD ;    //Value input parameter
+    Para71 : DWORD ;    //Value input parameter
+    Para72 : DWORD ;    //Value input parameter
+    Para73 : DWORD ;    //Value input parameter
+    Para74 : DWORD ;    //Value input parameter
+    Para75 : DWORD ;    //Value input parameter
+    Para76 : DWORD ;    //Value input parameter
+    Para77 : DWORD ;    //Value input parameter
+    Para78 : DWORD ;    //Value input parameter
+    Para79 : DWORD ;    //Value input parameter
+    Para80 : DWORD ;    //Value input parameter
+    Para81 : DWORD ;    //Value input parameter
+    Para82 : DWORD ;    //Value input parameter
+    Para83 : DWORD ;    //Value input parameter
+    Para84 : DWORD ;    //Value input parameter
+    Para85 : DWORD ;    //Value input parameter
+    Para86 : DWORD ;    //Value input parameter
+    Para87 : DWORD ;    //Value input parameter
+    Para88 : DWORD ;    //Value input parameter
+    Para89 : DWORD ;    //Value input parameter
+    Para90 : DWORD ;    //Value input parameter
+    Para91 : DWORD ;    //Value input parameter
+    Para92 : DWORD ;    //Value input parameter
+    Para93 : DWORD ;    //Value input parameter
+    Para94 : DWORD ;    //Value input parameter
+    Para95 : DWORD ;    //Value input parameter
+    Para96 : DWORD ;    //Value input parameter
+    Para97 : DWORD ;    //Value input parameter
+    Para98 : DWORD ;    //Value input parameter
+    Para99 : DWORD ;    //Value input parameter
+    Para100 : DWORD ;    //Value input parameter
+    Para101 : DWORD ;    //Value input parameter
+    Para102 : DWORD ;    //Value input parameter
+    Para103 : DWORD ;    //Value input parameter
+    Para104 : DWORD ;    //Value input parameter
+    Para105 : DWORD ;    //Value input parameter
+    Para106 : DWORD ;    //Value input parameter
+    Para107 : DWORD ;    //Value input parameter
+    Para108 : DWORD ;    //Value input parameter
+    Para109 : DWORD ;    //Value input parameter
+    Para110 : DWORD ;    //Value input parameter
+    Para111 : DWORD ;    //Value input parameter
+    Para112 : DWORD ;    //Value input parameter
+    Para113 : DWORD ;    //Value input parameter
+    Para114 : DWORD ;    //Value input parameter
+    Para115 : DWORD ;    //Value input parameter
+    Para116 : DWORD ;    //Value input parameter
+    Para117 : DWORD ;    //Value input parameter
+    Para118 : DWORD ;    //Value input parameter
+    Para119 : DWORD ;    //Value input parameter
+    Para120 : DWORD ;    //Value input parameter
+    Para121 : DWORD ;    //Value input parameter
+    Para122 : DWORD ;    //Value input parameter
+    Para123 : DWORD ;    //Value input parameter
+    Para124 : DWORD ;    //Value input parameter
+    Para125 : DWORD ;    //Value input parameter
+    Para126 : DWORD ;    //Value input parameter
+    Para127 : DWORD ;    //Value input parameter
+    Para128 : DWORD ;    //Value input parameter
+    Para129 : DWORD ;    //Value input parameter
+    Para130 : DWORD ;    //Value input parameter
+    Para131 : DWORD ;    //Value input parameter
+    Para132 : DWORD ;    //Value input parameter
+    Para133 : DWORD ;    //Value input parameter
+    Para134 : DWORD ;    //Value input parameter
+    Para135 : DWORD ;    //Value input parameter
+    Para136 : DWORD ;    //Value input parameter
+    Para137 : DWORD ;    //Value input parameter
+    Para138 : DWORD ;    //Value input parameter
+    Para139 : DWORD ;    //Value input parameter
+    Para140 : DWORD ;    //Value input parameter
+    Para141 : DWORD ;    //Value input parameter
+    Para142 : DWORD ;    //Value input parameter
+    Para143 : DWORD ;    //Value input parameter
+    Para144 : DWORD ;    //Value input parameter
+    Para145 : DWORD ;    //Value input parameter
+    Para146 : DWORD ;    //Value input parameter
+    Para147 : DWORD ;    //Value input parameter
+    Para148 : DWORD ;    //Value input parameter
+    Para149 : DWORD ;    //Value input parameter
+    Para150 : DWORD ;    //Value input parameter
+    Para151 : DWORD ;    //Value input parameter
+    Para152 : DWORD ;    //Value input parameter
+    Para153 : DWORD ;    //Value input parameter
+    Para154 : DWORD ;    //Value input parameter
+    Para155 : DWORD ;    //Value input parameter
+    Para156 : DWORD ;    //Value input parameter
+    Para157 : DWORD ;    //Value input parameter
+    Para158 : DWORD ;    //Value input parameter
+    Para159 : DWORD ;    //Value input parameter
+    Para160 : DWORD ;    //Value input parameter
+    Para161 : DWORD ;    //Value input parameter
+    Para162 : DWORD ;    //Value input parameter
+    Para163 : DWORD ;    //Value input parameter
+    Para164 : DWORD ;    //Value input parameter
+    Para165 : DWORD ;    //Value input parameter
+    Para166 : DWORD ;    //Value input parameter
+    Para167 : DWORD ;    //Value input parameter
+    Para168 : DWORD ;    //Value input parameter
+    Para169 : DWORD ;    //Value input parameter
+    Para170 : DWORD ;    //Value input parameter
+    Para171 : DWORD ;    //Value input parameter
+    Para172 : DWORD ;    //Value input parameter
+    Para173 : DWORD ;    //Value input parameter
+    Para174 : DWORD ;    //Value input parameter
+    Para175 : DWORD ;    //Value input parameter
+    Para176 : DWORD ;    //Value input parameter
+    Para177 : DWORD ;    //Value input parameter
+    Para178 : DWORD ;    //Value input parameter
+    Para179 : DWORD ;    //Value input parameter
+    Para180 : DWORD ;    //Value input parameter
+    Para181 : DWORD ;    //Value input parameter
+    Para182 : DWORD ;    //Value input parameter
+    Para183 : DWORD ;    //Value input parameter
+    Para184 : DWORD ;    //Value input parameter
+    Para185 : DWORD ;    //Value input parameter
+    Para186 : DWORD ;    //Value input parameter
+    Para187 : DWORD ;    //Value input parameter
+    Para188 : DWORD ;    //Value input parameter
+    Para189 : DWORD ;    //Value input parameter
+    Para190 : DWORD ;    //Value input parameter
+    Para191 : DWORD ;    //Value input parameter
+    Para192 : DWORD ;    //Value input parameter
+    Para193 : DWORD ;    //Value input parameter
+    Para194 : DWORD ;    //Value input parameter
+    Para195 : DWORD ;    //Value input parameter
+    Para196 : DWORD ;    //Value input parameter
+    Para197 : DWORD ;    //Value input parameter
+    Para198 : DWORD ;    //Value input parameter
+    Para199 : DWORD ;    //Value input parameter
+    Para200 : DWORD ;    //Value input parameter
+    Para201 : DWORD ;    //Value input parameter
+    Para202 : DWORD ;    //Value input parameter
+    Para203 : DWORD ;    //Value input parameter
+    Para204 : DWORD ;    //Value input parameter
+    Para205 : DWORD ;    //Value input parameter
+    Para206 : DWORD ;    //Value input parameter
+    Para207 : DWORD ;    //Value input parameter
+    Para208 : DWORD ;    //Value input parameter
+    Para209 : DWORD ;    //Value input parameter
+    Para210 : DWORD ;    //Value input parameter
+    Para211 : DWORD ;    //Value input parameter
+    Para212 : DWORD ;    //Value input parameter
+    Para213 : DWORD ;    //Value input parameter
+    Para214 : DWORD ;    //Value input parameter
+    Para215 : DWORD ;    //Value input parameter
+    Para216 : DWORD ;    //Value input parameter
+    Para217 : DWORD ;    //Value input parameter
+    Para218 : DWORD ;    //Value input parameter
+    Para219 : DWORD ;    //Value input parameter
+    Para220 : DWORD ;    //Value input parameter
+    Para221 : DWORD ;    //Value input parameter
+    Para222 : DWORD ;    //Value input parameter
+    Para223 : DWORD ;    //Value input parameter
+    Para224 : DWORD ;    //Value input parameter
+    Para225 : DWORD ;    //Value input parameter
+    Para226 : DWORD ;    //Value input parameter
+    Para227 : DWORD ;    //Value input parameter
+    Para228 : DWORD ;    //Value input parameter
+    Para229 : DWORD ;    //Value input parameter
+    Para230 : DWORD ;    //Value input parameter
+    Para231 : DWORD ;    //Value input parameter
+    Para232 : DWORD ;    //Value input parameter
+    Para233 : DWORD ;    //Value input parameter
+    Para234 : DWORD ;    //Value input parameter
+    Para235 : DWORD ;    //Value input parameter
+    Para236 : DWORD ;    //Value input parameter
+    Para237 : DWORD ;    //Value input parameter
+    Para238 : DWORD ;    //Value input parameter
+    Para239 : DWORD ;    //Value input parameter
+    Para240 : DWORD ;    //Value input parameter
+    Para241 : DWORD ;    //Value input parameter
+    Para242 : DWORD ;    //Value input parameter
+    Para243 : DWORD ;    //Value input parameter
+    Para244 : DWORD ;    //Value input parameter
+    Para245 : DWORD ;    //Value input parameter
+    Para246 : DWORD ;    //Value input parameter
+    Para247 : DWORD ;    //Value input parameter
+    Para248 : DWORD ;    //Value input parameter
+    Para249 : DWORD ;    //Value input parameter
+    Para250 : DWORD ;    //Value input parameter
+    Para251 : DWORD ;    //Value input parameter
+    Para252 : DWORD ;    //Value input parameter
+    Para253 : DWORD ;    //Value input parameter
+    Para254 : DWORD ;    //Value input parameter
+    Para255 : DWORD ;    //Value input parameter
+   END_STRUCT ;    
+   Output : STRUCT     
+    Para0 : DWORD ;    //Value output parameter
+    Para1 : DWORD ;    //Value output parameter
+    Para2 : DWORD ;    //Value output parameter
+    Para3 : DWORD ;    //Value output parameter
+    Para4 : DWORD ;    //Value output parameter
+    Para5 : DWORD ;    //Value output parameter
+    Para6 : DWORD ;    //Value output parameter
+    Para7 : DWORD ;    //Value output parameter
+    Para8 : DWORD ;    //Value output parameter
+    Para9 : DWORD ;    //Value output parameter
+    Para10 : DWORD ;    //Value output parameter
+    Para11 : DWORD ;    //Value output parameter
+    Para12 : DWORD ;    //Value output parameter
+    Para13 : DWORD ;    //Value output parameter
+    Para14 : DWORD ;    //Value output parameter
+    Para15 : DWORD ;    //Value output parameter
+    Para16 : DWORD ;    //Value output parameter
+    Para17 : DWORD ;    //Value output parameter
+    Para18 : DWORD ;    //Value output parameter
+    Para19 : DWORD ;    //Value output parameter
+    Para20 : DWORD ;    //Value output parameter
+    Para21 : DWORD ;    //Value output parameter
+    Para22 : DWORD ;    //Value output parameter
+    Para23 : DWORD ;    //Value output parameter
+    Para24 : DWORD ;    //Value output parameter
+    Para25 : DWORD ;    //Value output parameter
+    Para26 : DWORD ;    //Value output parameter
+    Para27 : DWORD ;    //Value output parameter
+    Para28 : DWORD ;    //Value output parameter
+    Para29 : DWORD ;    //Value output parameter
+    Para30 : DWORD ;    //Value output parameter
+    Para31 : DWORD ;    //Value output parameter
+    Para32 : DWORD ;    //Value output parameter
+    Para33 : DWORD ;    //Value output parameter
+    Para34 : DWORD ;    //Value output parameter
+    Para35 : DWORD ;    //Value output parameter
+    Para36 : DWORD ;    //Value output parameter
+    Para37 : DWORD ;    //Value output parameter
+    Para38 : DWORD ;    //Value output parameter
+    Para39 : DWORD ;    //Value output parameter
+    Para40 : DWORD ;    //Value output parameter
+    Para41 : DWORD ;    //Value output parameter
+    Para42 : DWORD ;    //Value output parameter
+    Para43 : DWORD ;    //Value output parameter
+    Para44 : DWORD ;    //Value output parameter
+    Para45 : DWORD ;    //Value output parameter
+    Para46 : DWORD ;    //Value output parameter
+    Para47 : DWORD ;    //Value output parameter
+    Para48 : DWORD ;    //Value output parameter
+    Para49 : DWORD ;    //Value output parameter
+    Para50 : DWORD ;    //Value output parameter
+    Para51 : DWORD ;    //Value output parameter
+    Para52 : DWORD ;    //Value output parameter
+    Para53 : DWORD ;    //Value output parameter
+    Para54 : DWORD ;    //Value output parameter
+    Para55 : DWORD ;    //Value output parameter
+    Para56 : DWORD ;    //Value output parameter
+    Para57 : DWORD ;    //Value output parameter
+    Para58 : DWORD ;    //Value output parameter
+    Para59 : DWORD ;    //Value output parameter
+    Para60 : DWORD ;    //Value input parameter
+    Para61 : DWORD ;    //Value input parameter
+    Para62 : DWORD ;    //Value input parameter
+    Para63 : DWORD ;    //Value input parameter
+    Para64 : DWORD ;    //Value input parameter
+    Para65 : DWORD ;    //Value input parameter
+    Para66 : DWORD ;    //Value input parameter
+    Para67 : DWORD ;    //Value input parameter
+    Para68 : DWORD ;    //Value input parameter
+    Para69 : DWORD ;    //Value input parameter
+    Para70 : DWORD ;    //Value input parameter
+    Para71 : DWORD ;    //Value input parameter
+    Para72 : DWORD ;    //Value input parameter
+    Para73 : DWORD ;    //Value input parameter
+    Para74 : DWORD ;    //Value input parameter
+    Para75 : DWORD ;    //Value input parameter
+    Para76 : DWORD ;    //Value input parameter
+    Para77 : DWORD ;    //Value input parameter
+    Para78 : DWORD ;    //Value input parameter
+    Para79 : DWORD ;    //Value input parameter
+    Para80 : DWORD ;    //Value input parameter
+    Para81 : DWORD ;    //Value input parameter
+    Para82 : DWORD ;    //Value input parameter
+    Para83 : DWORD ;    //Value input parameter
+    Para84 : DWORD ;    //Value input parameter
+    Para85 : DWORD ;    //Value input parameter
+    Para86 : DWORD ;    //Value input parameter
+    Para87 : DWORD ;    //Value input parameter
+    Para88 : DWORD ;    //Value input parameter
+    Para89 : DWORD ;    //Value input parameter
+    Para90 : DWORD ;    //Value input parameter
+    Para91 : DWORD ;    //Value input parameter
+    Para92 : DWORD ;    //Value input parameter
+    Para93 : DWORD ;    //Value input parameter
+    Para94 : DWORD ;    //Value input parameter
+    Para95 : DWORD ;    //Value input parameter
+    Para96 : DWORD ;    //Value input parameter
+    Para97 : DWORD ;    //Value input parameter
+    Para98 : DWORD ;    //Value input parameter
+    Para99 : DWORD ;    //Value input parameter
+    Para100 : DWORD ;    //Value input parameter
+    Para101 : DWORD ;    //Value input parameter
+    Para102 : DWORD ;    //Value input parameter
+    Para103 : DWORD ;    //Value input parameter
+    Para104 : DWORD ;    //Value input parameter
+    Para105 : DWORD ;    //Value input parameter
+    Para106 : DWORD ;    //Value input parameter
+    Para107 : DWORD ;    //Value input parameter
+    Para108 : DWORD ;    //Value input parameter
+    Para109 : DWORD ;    //Value input parameter
+    Para110 : DWORD ;    //Value input parameter
+    Para111 : DWORD ;    //Value input parameter
+    Para112 : DWORD ;    //Value input parameter
+    Para113 : DWORD ;    //Value input parameter
+    Para114 : DWORD ;    //Value input parameter
+    Para115 : DWORD ;    //Value input parameter
+    Para116 : DWORD ;    //Value input parameter
+    Para117 : DWORD ;    //Value input parameter
+    Para118 : DWORD ;    //Value input parameter
+    Para119 : DWORD ;    //Value input parameter
+    Para120 : DWORD ;    //Value input parameter
+    Para121 : DWORD ;    //Value input parameter
+    Para122 : DWORD ;    //Value input parameter
+    Para123 : DWORD ;    //Value input parameter
+    Para124 : DWORD ;    //Value input parameter
+    Para125 : DWORD ;    //Value input parameter
+    Para126 : DWORD ;    //Value input parameter
+    Para127 : DWORD ;    //Value input parameter
+    Para128 : DWORD ;    //Value input parameter
+    Para129 : DWORD ;    //Value input parameter
+    Para130 : DWORD ;    //Value input parameter
+    Para131 : DWORD ;    //Value input parameter
+    Para132 : DWORD ;    //Value input parameter
+    Para133 : DWORD ;    //Value input parameter
+    Para134 : DWORD ;    //Value input parameter
+    Para135 : DWORD ;    //Value input parameter
+    Para136 : DWORD ;    //Value input parameter
+    Para137 : DWORD ;    //Value input parameter
+    Para138 : DWORD ;    //Value input parameter
+    Para139 : DWORD ;    //Value input parameter
+    Para140 : DWORD ;    //Value input parameter
+    Para141 : DWORD ;    //Value input parameter
+    Para142 : DWORD ;    //Value input parameter
+    Para143 : DWORD ;    //Value input parameter
+    Para144 : DWORD ;    //Value input parameter
+    Para145 : DWORD ;    //Value input parameter
+    Para146 : DWORD ;    //Value input parameter
+    Para147 : DWORD ;    //Value input parameter
+    Para148 : DWORD ;    //Value input parameter
+    Para149 : DWORD ;    //Value input parameter
+    Para150 : DWORD ;    //Value input parameter
+    Para151 : DWORD ;    //Value input parameter
+    Para152 : DWORD ;    //Value input parameter
+    Para153 : DWORD ;    //Value input parameter
+    Para154 : DWORD ;    //Value input parameter
+    Para155 : DWORD ;    //Value input parameter
+    Para156 : DWORD ;    //Value input parameter
+    Para157 : DWORD ;    //Value input parameter
+    Para158 : DWORD ;    //Value input parameter
+    Para159 : DWORD ;    //Value input parameter
+    Para160 : DWORD ;    //Value input parameter
+    Para161 : DWORD ;    //Value input parameter
+    Para162 : DWORD ;    //Value input parameter
+    Para163 : DWORD ;    //Value input parameter
+    Para164 : DWORD ;    //Value input parameter
+    Para165 : DWORD ;    //Value input parameter
+    Para166 : DWORD ;    //Value input parameter
+    Para167 : DWORD ;    //Value input parameter
+    Para168 : DWORD ;    //Value input parameter
+    Para169 : DWORD ;    //Value input parameter
+    Para170 : DWORD ;    //Value input parameter
+    Para171 : DWORD ;    //Value input parameter
+    Para172 : DWORD ;    //Value input parameter
+    Para173 : DWORD ;    //Value input parameter
+    Para174 : DWORD ;    //Value input parameter
+    Para175 : DWORD ;    //Value input parameter
+    Para176 : DWORD ;    //Value input parameter
+    Para177 : DWORD ;    //Value input parameter
+    Para178 : DWORD ;    //Value input parameter
+    Para179 : DWORD ;    //Value input parameter
+    Para180 : DWORD ;    //Value input parameter
+    Para181 : DWORD ;    //Value input parameter
+    Para182 : DWORD ;    //Value input parameter
+    Para183 : DWORD ;    //Value input parameter
+    Para184 : DWORD ;    //Value input parameter
+    Para185 : DWORD ;    //Value input parameter
+    Para186 : DWORD ;    //Value input parameter
+    Para187 : DWORD ;    //Value input parameter
+    Para188 : DWORD ;    //Value input parameter
+    Para189 : DWORD ;    //Value input parameter
+    Para190 : DWORD ;    //Value input parameter
+    Para191 : DWORD ;    //Value input parameter
+    Para192 : DWORD ;    //Value input parameter
+    Para193 : DWORD ;    //Value input parameter
+    Para194 : DWORD ;    //Value input parameter
+    Para195 : DWORD ;    //Value input parameter
+    Para196 : DWORD ;    //Value input parameter
+    Para197 : DWORD ;    //Value input parameter
+    Para198 : DWORD ;    //Value input parameter
+    Para199 : DWORD ;    //Value input parameter
+    Para200 : DWORD ;    //Value input parameter
+    Para201 : DWORD ;    //Value input parameter
+    Para202 : DWORD ;    //Value input parameter
+    Para203 : DWORD ;    //Value input parameter
+    Para204 : DWORD ;    //Value input parameter
+    Para205 : DWORD ;    //Value input parameter
+    Para206 : DWORD ;    //Value input parameter
+    Para207 : DWORD ;    //Value input parameter
+    Para208 : DWORD ;    //Value input parameter
+    Para209 : DWORD ;    //Value input parameter
+    Para210 : DWORD ;    //Value input parameter
+    Para211 : DWORD ;    //Value input parameter
+    Para212 : DWORD ;    //Value input parameter
+    Para213 : DWORD ;    //Value input parameter
+    Para214 : DWORD ;    //Value input parameter
+    Para215 : DWORD ;    //Value input parameter
+    Para216 : DWORD ;    //Value input parameter
+    Para217 : DWORD ;    //Value input parameter
+    Para218 : DWORD ;    //Value input parameter
+    Para219 : DWORD ;    //Value input parameter
+    Para220 : DWORD ;    //Value input parameter
+    Para221 : DWORD ;    //Value input parameter
+    Para222 : DWORD ;    //Value input parameter
+    Para223 : DWORD ;    //Value input parameter
+    Para224 : DWORD ;    //Value input parameter
+    Para225 : DWORD ;    //Value input parameter
+    Para226 : DWORD ;    //Value input parameter
+    Para227 : DWORD ;    //Value input parameter
+    Para228 : DWORD ;    //Value input parameter
+    Para229 : DWORD ;    //Value input parameter
+    Para230 : DWORD ;    //Value input parameter
+    Para231 : DWORD ;    //Value input parameter
+    Para232 : DWORD ;    //Value input parameter
+    Para233 : DWORD ;    //Value input parameter
+    Para234 : DWORD ;    //Value input parameter
+    Para235 : DWORD ;    //Value input parameter
+    Para236 : DWORD ;    //Value input parameter
+    Para237 : DWORD ;    //Value input parameter
+    Para238 : DWORD ;    //Value input parameter
+    Para239 : DWORD ;    //Value input parameter
+    Para240 : DWORD ;    //Value input parameter
+    Para241 : DWORD ;    //Value input parameter
+    Para242 : DWORD ;    //Value input parameter
+    Para243 : DWORD ;    //Value input parameter
+    Para244 : DWORD ;    //Value input parameter
+    Para245 : DWORD ;    //Value input parameter
+    Para246 : DWORD ;    //Value input parameter
+    Para247 : DWORD ;    //Value input parameter
+    Para248 : DWORD ;    //Value input parameter
+    Para249 : DWORD ;    //Value input parameter
+    Para250 : DWORD ;    //Value input parameter
+    Para251 : DWORD ;    //Value input parameter
+    Para252 : DWORD ;    //Value input parameter
+    Para253 : DWORD ;    //Value input parameter
+    Para254 : DWORD ;    //Value input parameter
+    Para255 : DWORD ;    //Value input parameter
+   END_STRUCT ;    
+  END_STRUCT ;
+   AcyclData_w AT AcyclData : ARRAY[0..1000] OF WORD;
+   
+END_VAR
+VAR
+  ALARM_8P_1 : SFB35;    //Multiple instances of ALARM_8P
+  SarBatchName : ARRAY  [1 .. 32 ] OF BYTE  := 32 (B#16#0) ;    
+  SnErr : INT ;    //Error information
+  SnRunUpCyc : INT ;    //Counters of run-up-cycle
+  SdwPrevBatchId : DWORD ;    //Previous BA_ID
+  SdwStepNoLoc : DWORD ;    //Variable for StepNo
+  SdwBatchId : DWORD ;    //Variable for BatchId
+  SrBufferTime : REAL ;    //Variable for buffer time
+  SrAcyclRdCyl : REAL ;    //Variable for cyclic reading of data records
+  SrReadDrWait : REAL ;    //Variable for reading of data records
+  SwRdReq : WORD ;    
+  SwRdReq_b AT SwRdReq : ARRAY[0..15] OF BOOL;
+  SwWrReq : WORD ;    
+  SwWrReq_b AT SwWrReq : ARRAY[0..15] OF BOOL;
+  DataRecord_State_Info : ARRAY  [0 .. 15 ] OF DWORD ;
+  DataRecord_State_Info_w AT DataRecord_State_Info : ARRAY[0..31] OF WORD;  
+  SbMsgEff1 : BYTE ;    //Effective message signal
+  SbMsgEff1_b AT SbMsgEff1 : ARRAY[0..7] OF BOOL;
+  SbMsgEff1Old : BYTE ;    //Effective message signal (Last cycle)
+  SxShowAlarm1 : BOOL  := TRUE;    //Call instance of ALARM_8P
+  SxFirstStart : BOOL  := TRUE;    //Initial run
+  SxRstUPSLi : BOOL ;    //Variable for Reset UPS
+  SxRdDrErr : BOOL ;    //Error while reading data record
+  SxWrDrErr : BOOL ;    //Error while writing data record
+  SxRdWrCfgAct : BOOL ;    //Reading or writing of configuration data is active
+  SxOosLi : BOOL ;    //Variable for OosLi
+  SxReadDr : BOOL ;    //Variable for reading of data records
+  SxBlockTimer : BOOL ;    //Variable for ready for reset timer
+END_VAR
+VAR_TEMP
+  stcTOP_SI : STRUCT     
+   EV_CLASS : BYTE ;    
+   EV_NUM : BYTE ;    
+   PRIORITY : BYTE ;    
+   NUM : BYTE ;    
+   TYP2_3 : BYTE ;    
+   TYP1 : BYTE ;    
+   ZI1 : WORD ;    
+   ZI2_3 : DWORD ;    
+  END_STRUCT ;    
+  stcSTART_UP_SI : STRUCT     
+   EV_CLASS : BYTE ;    
+   EV_NUM : BYTE ;    
+   PRIORITY : BYTE ;    
+   NUM : BYTE ;    
+   TYP2_3 : BYTE ;    
+   TYP1 : BYTE ;    
+   ZI1 : WORD ;    
+   ZI2_3 : DWORD ;    
+  END_STRUCT ;    
+  dvInit : STRUCT     //Auxiliary variable for initialization
+   Value : BOOL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  nCount : INT ;    //Variable for FOR-statement
+  dwTemp : DWORD ;    //Variable for temp dword
+  byTemp : BYTE ;    //Variable for temp byte
+  dwStatus1 : DWORD ;    //Variable for status1
+  dwStatus1_b AT dwStatus1 : ARRAY[0..31] OF BOOL;  
+  dwStatus2 : DWORD ;    //Variable for status2
+  dwStatus2_b AT dwStatus2 : ARRAY[0..31] OF BOOL;
+  dwStatus3 : DWORD ;    //Variable for status3
+  dwStatus4 : DWORD ;    //Variable for status4
+  dwOS_Perm : DWORD ;    //Temporary variable for the value of OS_PermOut/OS_PermLog
+  dwOS_Perm_b AT dwOS_Perm : ARRAY[0..3] OF BYTE;
+  dwOS_Perm_bool AT dwOS_Perm : ARRAY[0..31] OF BOOL;
+  xOS_Perm_On : BOOL ;    //1 = Operator permission to switch to On State.
+  xOS_Perm_Oos : BOOL ;    //1 = Operator permission to switch to Oos state.
+  xOSPerRdCfg : BOOL ;    //1 = Operator can read the configuration data
+  xFeatStartupWithOutInit : BOOL ;    //Bit 0 = 0, Start up with defined init in OB100 (default)  -> Switch to Manual M
+  xFeatOosLiEn : BOOL ;    //Bit 1 = 0, OosLiEn: OosLi cant switch to Out of Service
+  xFeatReadAcyclCycl : BOOL ;    //Bit 7 = 1: Read acyclic data cyclic
+  xFeatReadDr : BOOL ;    //Bit 8 = 0: configuration data are not read
+  xFeat_MsgAck : BOOL ;    //Bit 22 = 1, Enable message state actualization
+  xFeatLocalAuth : BOOL ;    //Bit 24 = 1, Function local authorization active     
+  xFeatMsgLockAll : BOOL ;    //Bit 25 = 1, 1 = Suppress all messages if MsgLock = 1    
+  xFaultExtCSF : BOOL ;    //External Fault FautExt or CSF
+  xOB_Cycle : BOOL ;    //block is running in a cyclic interrupt OB
+  xOB_Start : BOOL ;    //block is running in start OB
+END_VAR
+BEGIN
+xFeatStartupWithOutInit:=Feature.Bit0;
+xFeatOosLiEn:=Feature.Bit1;
+xFeatReadAcyclCycl:=Feature.Bit7;
+xFeatReadDr:=Feature.Bit8;
+xFeat_MsgAck:=Feature.Bit22;
+xFeatLocalAuth:=Feature.Bit24;
+xFeatMsgLockAll:=Feature.Bit25;
+xOS_Perm_On:=OS_Perm.Bit1;
+xOS_Perm_Oos:=OS_Perm.Bit3;
+xOSPerRdCfg:=OS_Perm.Bit27;
+dwStatus1:=Status1;
+dwStatus2:=Status2;
+dwStatus3:=Status3;
+dwStatus4:=Status4;
+dvInit.Value:=FALSE;
+dvInit.ST:=B#16#80;
+xFaultExtCSF:=(FaultExt.Value) OR CyclData.Csf;
+ChrgLevel:=CyclData.BattChrgLvl;
+InpVoltOK:=CyclData.InpVoltOK;
+BuffModeAct:=CyclData.BuffModeAct;
+RdyForBuff:=CyclData.RdyForBuff;
+ChrgSuffic:=CyclData.ChrgSuffic;
+BattChngRec:=CyclData.BattChngRec;
+NewAlrmsPen:=CyclData.NewAlrmsPen;
+UnknownBatt:=CyclData.UnknownBatt;
+SnErr:=RD_SINFO(TOP_SI :=  stcTOP_SI
+         ,START_UP_SI :=  stcSTART_UP_SI
+         ); 
+xOB_Cycle:=(BYTE_TO_INT(stcTOP_SI.NUM)>=30) AND (BYTE_TO_INT(stcTOP_SI.NUM)<=38);
+xOB_Start:=BYTE_TO_INT(stcTOP_SI.NUM)=100;
+IF OnOp THEN (*A7d0*)
+    OosAct.Value:=FALSE;
+ELSIF (((OosLi.Value) AND xFeatOosLiEn) AND (NOT(SxOosLi))) OR OosOp THEN (*A7d2*)
+    OosAct.Value:=TRUE;
+END_IF; (*A7d2*)
+SxOosLi:=OosLi.Value;
+OnAct.Value:=NOT(OosAct.Value);
+IF xFeatLocalAuth THEN (*A7d3*)
+    OpSt_Out:=OpSt_In OR DW#16#80000000;
+ELSE (*A7d3*)
+    OpSt_Out:=OpSt_In AND DW#16#7FFFFFFF;
+END_IF; (*A7d4*)
+IF OosAct.Value THEN (*A7d5*)
+    SxBlockTimer:=FALSE;
+    SrBufferTime:=0.0;
+    SrAcyclRdCyl:=0.0;
+END_IF; (*A7d5*)
+
+IF (SxFirstStart) OR xOB_Start THEN (*A7d6*)
+    SxFirstStart:=FALSE;
+    SxShowAlarm1:=TRUE;
+    SxBlockTimer:=FALSE;
+    SrBufferTime:=0.0;
+    SrAcyclRdCyl:=0.0;
+    SwRdReq:=W#16#0;
+    SwWrReq:=W#16#0;
+    AcyclData.ReqRd:=-1;
+    AcyclData.ReqWr:=-1;
+    AcyclData.SlotRd:=-1;
+    AcyclData.SlotWr:=-1;
+    SxRdWrCfgAct:=FALSE;
+    IF xOB_Start THEN (*A7d7*)
+        SnRunUpCyc:=RunUpCyc;
+    END_IF; (*A7d7*)
+    IF xFeatReadDr THEN (*A7d8*)
+        SwRdReq_b[0]:=TRUE;
+        SwRdReq_b[2]:=TRUE;
+        SxRdWrCfgAct:=TRUE;
+    END_IF; (*A7d8*)
+    IF xFeatStartupWithOutInit THEN (*A7d9*)
+        OnOp:=FALSE;
+        OosOp:=FALSE;
+    ELSE (*A7d9*)
+        OosAct:=dvInit;
+        OnAct.Value:=TRUE;
+        OnAct.ST:=B#16#80;
+        GrpErr:=dvInit;
+        SumMsgAct:=dvInit;
+    END_IF;
+END_IF; (*A7d6*)
+
+IF (NOT CyclData.Csf) AND GrpErr.Value THEN (*A7db*)
+    IF xFeatReadDr THEN (*A7db*)
+        SwRdReq_b[0]:=TRUE;
+        SwRdReq_b[2]:=TRUE;
+        SxRdWrCfgAct:=TRUE;
+    END_IF;
+END_IF; (*A7db*)
+GrpErr.Value:=(NOT(OosAct.Value)) AND xFaultExtCSF;
+IF (NOT(OosAct.Value)) AND xOB_Cycle THEN (*A7dd*)
+    IF xFeatReadAcyclCycl THEN (*A7de*)
+        SrAcyclRdCyl:=SrAcyclRdCyl+SampleTime;
+    END_IF; (*A7de*)
+    IF (SrAcyclRdCyl>AcyclRdCyl) OR RdDataOp THEN (*A7df*)
+        SwRdReq_b[0]:=TRUE;
+        SwRdReq_b[2]:=TRUE;
+        SxRdWrCfgAct:=TRUE;
+        SrAcyclRdCyl:=0.0;
+    END_IF; (*A7df*)
+    IF (NOT(SxBlockTimer)) AND BuffModeAct.Value THEN (*A7e0*)
+        SrBufferTime:=SrBufferTime+SampleTime;
+    END_IF; (*A7e0*)
+    IF NOT(BuffModeAct.Value) THEN (*A7e1*)
+        SxBlockTimer:=FALSE;
+    END_IF; (*A7e1*)
+    IF SrBufferTime>BufferTime THEN (*A7e2*)
+        RdyToRst.Value:=TRUE;
+        SxBlockTimer:=TRUE;
+        SrBufferTime:=0.0;
+    END_IF; (*A7e2*)
+    IF (NOT(BuffModeAct.Value)) AND (NOT(RdyToRst.Value)) THEN (*A7e3*)
+        RstUPSLi.Value:=FALSE;
+    END_IF; (*A7e3*)
+    IF (NOT(SxRstUPSLi)) AND RstUPSLi.Value THEN (*A7e4*)
+        SwWrReq_b[0]:=TRUE;
+        SwRdReq_b[1]:=TRUE;
+        SxRdWrCfgAct:=TRUE;
+        RdyToRst.Value:=FALSE;
+    END_IF; (*A7e4*)
+    SumMsgAct.Value:=(((((((BuffModeAct.Value) OR BuffModeAct.Value) OR (NOT(RdyForBuff.Value))) OR SxRdDrErr) OR SxWrDrErr) OR CyclData.Csf) OR ExtMsg1.Value) OR ExtMsg2.Value;
+    IF GrpErr.Value THEN (*A7e5*)
+        ST_Worst:=B#16#0;
+    ELSE (*A7e5*)
+        ST_Worst:=B#16#80;
+    END_IF; (*A7e6*)
+    IF SnRunUpCyc>0 THEN (*A7dd*)
+        SnRunUpCyc:=SnRunUpCyc-1;
+    END_IF;
+END_IF; (*A7dd*)
+
+IF (xOB_Start) OR xOB_Cycle THEN (*A7e8*)
+    IF SwWrReq<>W#16#0 THEN (*A7e9*)
+        IF ((((AcyclData.ReqWr=-1) AND (AcyclData.SlotWr=-1)) AND (AcyclData.RdyWrite=-1)) AND (AcyclData.ReqRd=-1)) AND (NOT(SxReadDr)) THEN (*A7ea*)
+            AcyclData.SlotWr:=1;
+            IF SwWrReq_b[0] THEN (*A7ea*)
+                AcyclData.ReqWr:=16;
+                AcyclData.LenWr:=4;
+                AcyclData.Output.Para0:=DW#16#0;
+                AcyclData.Output.Para0:=DW#16#2003;
+                AcyclData.Output.Para0:=SHL(IN:=AcyclData.Output.Para0,N:=16);
+                AcyclData.Output.Para0:=(OutVoltDwnTm) OR AcyclData.Output.Para0;
+            END_IF;
+        END_IF; (*A7ea*)
+        IF AcyclData.SlotWr=1 THEN (*A7e9*)
+            CASE AcyclData.RdyWrite OF
+              16: 
+                SwWrReq_b[0]:=FALSE;
+                AcyclData.ReqWr:=-1;
+                AcyclData.SlotWr:=-1;
+                SxReadDr:=TRUE;
+                IF AcyclData.RetValWr<>W#16#0 THEN (*A7ed*)
+                    SxWrDrErr:=TRUE;
+                    SwRdReq_b[1]:=FALSE;
+                    AcyclData.ReqRd:=-1;
+                END_IF;    
+            ELSE:    
+                ;
+            END_CASE;      
+        END_IF;    
+    END_IF;    (*A7e9*)
+    IF SwRdReq<>W#16#0 THEN (*A7f1*)
+        IF (((((AcyclData.ReqRd=-1) AND (AcyclData.SlotRd=-1)) AND (AcyclData.RdyRead=-1)) AND (AcyclData.ReqWr=-1)) AND (AcyclData.SlotWr=-1)) AND (AcyclData.RdyWrite=-1) THEN (*A7f2*)
+            AcyclData.SlotRd:=1;
+            IF SwRdReq_b[0] THEN (*A7f3*)
+                AcyclData.ReqRd:=3;
+                AcyclData.LenRd:=4;
+            ELSIF SwRdReq_b[1] THEN (*A7f5*)
+                AcyclData.ReqRd:=16;
+                AcyclData.LenRd:=4;
+            ELSIF SwRdReq_b[2] THEN (*A7f2*)
+                AcyclData.ReqRd:=32;
+                AcyclData.LenRd:=64;
+            END_IF;    
+        END_IF;(*A7f2*)
+        IF AcyclData.SlotRd=1 THEN (*A7f1*)
+            CASE AcyclData.RdyRead OF
+                3:
+                    SwRdReq_b[0]:=FALSE;
+                    AcyclData.ReqRd:=-1;
+                    AcyclData.SlotRd:=-1;
+                    IF AcyclData.RetValRd=W#16#0 THEN (*A7fb*)
+                        Ueoc.Value:=INT_TO_REAL(DWORD_TO_INT((SHR(IN:=(AcyclData.Input.Para0 AND DW#16#FFFF0000),N:=16))))/100.0;
+                        Ueoc.ST:=B#16#80;
+                    ELSE (*A7fb*)
+                        SxRdDrErr:=TRUE;
+                    END_IF;    
+                
+                16: 
+                    SwRdReq_b[1]:=FALSE;
+                    AcyclData.ReqRd:=-1;
+                    AcyclData.SlotRd:=-1;
+                    SxReadDr:=FALSE;
+                    IF AcyclData.RetValRd=W#16#0 THEN (*A7ff*)
+                        RstUPSCmdErr:=DWORD_TO_WORD(AcyclData.Input.Para0 AND DW#16#FFFF);
+                    ELSE (*A7ff*)
+                        SxRdDrErr:=TRUE;
+                    END_IF;
+                32:        
+                    SwRdReq_b[2]:=FALSE;
+                    AcyclData.ReqRd:=-1;
+                    AcyclData.SlotRd:=-1;
+                    IF AcyclData.RetValRd=W#16#0 THEN (*A803*)
+                        DataRecord_State_Info[0]:=AcyclData.Input.Para0;
+                        DataRecord_State_Info[1]:=AcyclData.Input.Para1;
+                        DataRecord_State_Info[2]:=AcyclData.Input.Para2;
+                        DataRecord_State_Info[3]:=AcyclData.Input.Para3;
+                        DataRecord_State_Info[4]:=AcyclData.Input.Para4;
+                        DataRecord_State_Info[5]:=AcyclData.Input.Para5;
+                        DataRecord_State_Info[6]:=AcyclData.Input.Para6;
+                        DataRecord_State_Info[7]:=AcyclData.Input.Para7;
+                        DataRecord_State_Info[8]:=AcyclData.Input.Para8;
+                        DataRecord_State_Info[9]:=AcyclData.Input.Para9;
+                        DataRecord_State_Info[10]:=AcyclData.Input.Para10;
+                        DataRecord_State_Info[11]:=AcyclData.Input.Para11;
+                        DataRecord_State_Info[12]:=AcyclData.Input.Para12;
+                        DataRecord_State_Info[13]:=AcyclData.Input.Para13;
+                        DataRecord_State_Info[14]:=AcyclData.Input.Para14;
+                        DataRecord_State_Info[15]:=AcyclData.Input.Para15;
+                        Uin.Value:=INT_TO_REAL(WORD_TO_INT(DataRecord_State_Info_w[11]))/1.000000e+002;
+                        Uin.ST:=B#16#80;
+                        Iout.Value:=INT_TO_REAL(WORD_TO_INT(DataRecord_State_Info_w[17]))/2.000000e+002;
+                        Iout.ST:=B#16#80;
+                        Uout.Value:=INT_TO_REAL(WORD_TO_INT(DataRecord_State_Info_w[13]))/1.000000e+002;
+                        Uout.ST:=B#16#80;
+                        Icharge.Value:=INT_TO_REAL(WORD_TO_INT(DataRecord_State_Info_w[15]))/1.000000e+003;
+                        Icharge.ST:=B#16#80;
+                        Ubatt.Value:=INT_TO_REAL(WORD_TO_INT(DataRecord_State_Info_w[16]))/1.000000e+002;
+                        Ubatt.ST:=B#16#80;
+                    ELSE (*A803*)
+                        SxRdDrErr:=TRUE;
+                    END_IF;    
+                ELSE:
+                    ;    
+            END_CASE;    (*A7f8*)    
+        END_IF; (*A7f1*)
+    END_IF;    
+    IF (SwRdReq=W#16#0) AND (SwWrReq=W#16#0) THEN (*A805*)
+        SxRdWrCfgAct:=FALSE;
+    END_IF;(*A805*)
+    IF SxReadDr THEN (*A806*)
+        SrReadDrWait:=SrReadDrWait+SampleTime;
+    ELSE (*A806*)
+        SrReadDrWait:=0.0;
+    END_IF;(*A807*)
+    IF SrReadDrWait>5.0 THEN (*A808*)
+        SxReadDr:=FALSE;
+        SrReadDrWait:=0.0;
+        SwRdReq_b[1]:=SwWrReq_b[0];
+    END_IF;(*A808*)
+    IF NOT(OosAct.Value) THEN (*A809*)
+        dwStatus2_b[13]:=CyclData.Csf;
+        dwStatus2_b[14]:=SxRdDrErr;
+        dwStatus2_b[15]:=SxWrDrErr;
+        dwStatus2_b[7]:=MsgLock.Value;
+    ELSE (*A809*)
+        dwStatus2:=DW#16#0;
+    END_IF;(*A80a*)
+    Status2:=dwStatus2;
+    IF ((SnRunUpCyc=0) AND xOB_Cycle) OR xOB_Start THEN (*A80b*)
+        SdwStepNoLoc:=StepNo;
+        SdwBatchId:=BatchID;
+        IF SdwPrevBatchId<>SdwBatchId THEN (*A80c*)
+            FOR SnErr:=1 TO 32 BY 1 DO
+                SarBatchName[SnErr]:=B#16#0;
+            END_FOR;(*A80e*)
+            SnErr:=BLKMOV(SRCBLK := BatchName
+                   ,DSTBLK := SarBatchName
+                   ); 
+            SdwPrevBatchId:=SdwBatchId;
+        END_IF;(*A80c*)
+        IF OosAct.Value THEN (*A80f*)
+            SbMsgEff1:=B#16#0;
+        ELSE (*A80f*)
+            SbMsgEff1_b[0]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND NewAlrmsPen.Value;
+            SbMsgEff1_b[1]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND BuffModeAct.Value;
+            SbMsgEff1_b[2]:=(NOT(RdyForBuff.Value)) AND (NOT((MsgLock.Value) AND xFeatMsgLockAll));
+            SbMsgEff1_b[3]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND CyclData.Csf;
+            SbMsgEff1_b[4]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND SxRdDrErr;
+            SbMsgEff1_b[5]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND SxWrDrErr;
+            SbMsgEff1_b[6]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND ExtMsg1.Value;
+            SbMsgEff1_b[7]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND ExtMsg2.Value;
+        END_IF;(*A810*)
+        IF ((SbMsgEff1Old<>SbMsgEff1) OR SxShowAlarm1) OR (((NOT(OosAct.Value)) AND xFeat_MsgAck) AND (((MsgAckn AND W#16#FF)<>W#16#FF) OR (ALARM_8P_1.STATUS<>W#16#0))) THEN (*A811*)
+        
+            ALARM_8P_1(EN_R := TRUE
+                           ,ID := W#16#EEEE
+                           ,EV_ID := MsgEvId
+                           ,SIG_1 := SbMsgEff1_b[0]
+                           ,SIG_2 := SbMsgEff1_b[1]
+                           ,SIG_3 := SbMsgEff1_b[2]
+                           ,SIG_4 := SbMsgEff1_b[3]
+                           ,SIG_5 := SbMsgEff1_b[4]
+                           ,SIG_6 := SbMsgEff1_b[5]
+                           ,SIG_7 := SbMsgEff1_b[6]
+                           ,SIG_8 := SbMsgEff1_b[7]
+                           ,SD_1 :=  SarBatchName
+                           ,SD_2 :=  SdwStepNoLoc
+                           ,SD_3 :=  SdwBatchId
+                           ,SD_4 :=  ExtVa104
+                           ,SD_5 :=  ExtVa105
+                           ,SD_6 :=  ExtVa106
+                           ,SD_7 :=  ExtVa107
+                           ,SD_8 :=  ExtVa108
+                           ); 
+            IF xFeat_MsgAck THEN (*A812*)
+                MsgErr:=ALARM_8P_1.ERROR;
+                MsgStat:=ALARM_8P_1.STATUS;
+                MsgAckn:=ALARM_8P_1.ACK_STATE;
+            ELSE (*A812*)
+                MsgErr:=FALSE;
+                MsgStat:=W#16#0;
+                MsgAckn:=W#16#0;
+            END_IF;(*A813*)
+            SbMsgEff1Old:=SbMsgEff1;
+            SxShowAlarm1:=ALARM_8P_1.STATUS=W#16#14;
+        END_IF;(*A811*)
+        IF ((ALARM_8P_1.STATUS<>W#16#19) AND (ALARM_8P_1.STATUS<>W#16#B)) OR ((MsgLock.Value) AND xFeatMsgLockAll) THEN (*A80b*)
+            SxRdDrErr:=FALSE;
+            SxWrDrErr:=FALSE;
+        END_IF;
+    END_IF;(*A80b*)
+    IF NOT(OosAct.Value) THEN (*A815*)
+        dwStatus1_b[24]:=Occupied;
+        dwStatus1_b[25]:=BatchEn;
+        dwStatus1_b[23]:=CyclData.InpVoltOK.Value;
+        dwStatus1_b[8]:=CyclData.BuffModeAct.Value;
+        dwStatus1_b[9]:=CyclData.RdyForBuff.Value;
+        dwStatus1_b[10]:=CyclData.ChrgSuffic.Value;
+        dwStatus1_b[11]:=CyclData.BattChngRec.Value;
+        dwStatus1_b[12]:=CyclData.NewAlrmsPen.Value;
+        dwStatus1_b[13]:=CyclData.UnknownBatt.Value;
+        dwStatus1_b[6]:=NOT(UserAna1.ST=B#16#FF);
+        dwStatus1_b[7]:=NOT(UserAna2.ST=B#16#FF);
+    ELSE (*A815*)
+        dwStatus1:=DW#16#0;
+        dwStatus3:=DW#16#0;
+        dwStatus4:=DW#16#0;
+    END_IF;(*A816*)
+    dwStatus1_b[27]:=OosAct.Value;
+    dwStatus1_b[28]:=OosLi.Value;
+    dwStatus1_b[30]:=OnAct.Value;
+    Status1:=dwStatus1;
+    Status3:=dwStatus3;
+    Status4:=dwStatus4;
+    dwOS_Perm_b[3]:=OS_Perm_b[0];
+    dwOS_Perm_b[2]:=OS_Perm_b[1];
+    dwOS_Perm_b[1]:=OS_Perm_b[2];
+    dwOS_Perm_b[0]:=OS_Perm_b[3];
+    OS_PermOut:=dwOS_Perm;
+    IF xOB_Start THEN (*A817*)
+        OS_PermLog:=DW#16#0;
+    ELSIF OosAct.Value THEN (*A819*)
+        OS_PermLog:=DW#16#2 AND OS_PermOut;
+    ELSE (*A819*)
+        dwOS_Perm:=OS_Perm_d;
+        dwOS_Perm_bool[1]:=xOS_Perm_On;
+        dwOS_Perm_bool[3]:=xOS_Perm_Oos;
+        dwOS_Perm_bool[27]:=(NOT(SxRdWrCfgAct)) AND xOSPerRdCfg;
+        byTemp:=dwOS_Perm_b[3];
+        dwOS_Perm_b[3]:=dwOS_Perm_b[0];
+        dwOS_Perm_b[0]:=byTemp;
+        byTemp:=dwOS_Perm_b[2];
+        dwOS_Perm_b[2]:=dwOS_Perm_b[1];
+        dwOS_Perm_b[1]:=byTemp;
+        OS_PermLog:=dwOS_Perm;
+    END_IF;(*A818*)
+    IF NOT(OosAct.Value) THEN (*A81a*)
+        SxRstUPSLi:=RstUPSLi.Value;
+        OnOp:=FALSE;
+        RdDataOp:=FALSE;
+    END_IF;(*A81a*)
+    OosOp:=FALSE;
+END_IF;(*A7e8*)
+
+END_FUNCTION_BLOCK
+
+
+
