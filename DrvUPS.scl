@@ -1,0 +1,785 @@
+// Name: FB1492
+// Symbolic Name: DrvUPS
+// Symbol Comment:
+// Family: SITOP
+// Version: 1.2
+// Author: Siemens
+// Last modified: 08/14/2015
+// Use: SFB52,SFB53,SFC14,SFC6,SFC64
+// Size: 1360 byte
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB11492
+TITLE ='PCS 7 Driver Block for SITOP UPS1600'
+{ S7_driver := 'chn'; S7_language := '7(1) German (Germany)  31.05.2016  15:54:12' }
+AUTHOR : Siemens
+FAMILY : SITOP
+NAME : DrvUPS
+VERSION : '1.2'
+ 
+ 
+VAR_INPUT
+  AddrIn : BYTE ;    //Input address of the SITOP UPS1600
+  Addr { S7_visible := 'false' }: STRUCT     //Address information of the SITOP UPS1600
+   Input : INT  := -1;    //Input address of the SITOP UPS1600
+  END_STRUCT ;   
+  Csf { S7_visible := 'false' }: BOOL ;    //1 = Control system fault
+  Rackf : BOOL ;    //1=Rack Failure
+  MS : DWORD ;    //Maintenance state
+  MS_b AT MS : ARRAY[0..31] OF BOOL;
+END_VAR
+VAR_OUTPUT
+  QCsf : BOOL ;    //1=Control system fault
+  OosAct : STRUCT     //SITOP UPS1600 out of service, maintenance in progress
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  CyclData : STRUCT     //Cyclic SITOP data
+   Csf : BOOL ;    //Control System Fault
+   InpVoltOK : STRUCT     //1=Input voltage OK
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   BuffModeAct : STRUCT     //1=Buffer mode active
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   RdyForBuff : STRUCT     //1=Ready for buffering
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   ChrgSuffic : STRUCT     //1=Charge sufficient
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   BattChngRec : STRUCT     //1=Battery change recommended
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   NewAlrmsPen : STRUCT     //1=New alarms pending
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   UnknownBatt : STRUCT     //1=Unknown battery
+    Value : BOOL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+   BattChrgLvl : STRUCT     //Battery charge level
+    Value : REAL ;    // Value
+    ST : BYTE  := B#16#80;    // Signal Status
+   END_STRUCT ;   
+  END_STRUCT ;   
+  AcyclData : STRUCT     //Acyclic SITOP data
+   SlotRd : INT  := -1;    //Number of slot for read request
+   ReqRd : INT  := -1;    //Request to read parameter with this absolute index
+   LenRd : INT ;    //Length of parameter in byte to be read
+   SlotWr : INT  := -1;    //Number of slot for write request
+   ReqWr : INT  := -1;    //Request to write parameter with this absolute index
+   LenWr : INT ;    //Length of parameter in byte to be written
+   RdyRead : INT ;    //Parameter with this ID was read
+   RdyWrite : INT ;    //Parameter with this ID was written
+   RetValRd : WORD ;    //Return value of read request
+   RetValWr : WORD ;    //Return value of write request
+   Input : STRUCT    
+    Para0 : DWORD ;    //Value input parameter
+    Para1 : DWORD ;    //Value input parameter
+    Para2 : DWORD ;    //Value input parameter
+    Para3 : DWORD ;    //Value input parameter
+    Para4 : DWORD ;    //Value input parameter
+    Para5 : DWORD ;    //Value input parameter
+    Para6 : DWORD ;    //Value input parameter
+    Para7 : DWORD ;    //Value input parameter
+    Para8 : DWORD ;    //Value input parameter
+    Para9 : DWORD ;    //Value input parameter
+    Para10 : DWORD ;    //Value input parameter
+    Para11 : DWORD ;    //Value input parameter
+    Para12 : DWORD ;    //Value input parameter
+    Para13 : DWORD ;    //Value input parameter
+    Para14 : DWORD ;    //Value input parameter
+    Para15 : DWORD ;    //Value input parameter
+    Para16 : DWORD ;    //Value input parameter
+    Para17 : DWORD ;    //Value input parameter
+    Para18 : DWORD ;    //Value input parameter
+    Para19 : DWORD ;    //Value input parameter
+    Para20 : DWORD ;    //Value input parameter
+    Para21 : DWORD ;    //Value input parameter
+    Para22 : DWORD ;    //Value input parameter
+    Para23 : DWORD ;    //Value input parameter
+    Para24 : DWORD ;    //Value input parameter
+    Para25 : DWORD ;    //Value input parameter
+    Para26 : DWORD ;    //Value input parameter
+    Para27 : DWORD ;    //Value input parameter
+    Para28 : DWORD ;    //Value input parameter
+    Para29 : DWORD ;    //Value input parameter
+    Para30 : DWORD ;    //Value input parameter
+    Para31 : DWORD ;    //Value input parameter
+    Para32 : DWORD ;    //Value input parameter
+    Para33 : DWORD ;    //Value input parameter
+    Para34 : DWORD ;    //Value input parameter
+    Para35 : DWORD ;    //Value input parameter
+    Para36 : DWORD ;    //Value input parameter
+    Para37 : DWORD ;    //Value input parameter
+    Para38 : DWORD ;    //Value input parameter
+    Para39 : DWORD ;    //Value input parameter
+    Para40 : DWORD ;    //Value input parameter
+    Para41 : DWORD ;    //Value input parameter
+    Para42 : DWORD ;    //Value input parameter
+    Para43 : DWORD ;    //Value input parameter
+    Para44 : DWORD ;    //Value input parameter
+    Para45 : DWORD ;    //Value input parameter
+    Para46 : DWORD ;    //Value input parameter
+    Para47 : DWORD ;    //Value input parameter
+    Para48 : DWORD ;    //Value input parameter
+    Para49 : DWORD ;    //Value input parameter
+    Para50 : DWORD ;    //Value input parameter
+    Para51 : DWORD ;    //Value input parameter
+    Para52 : DWORD ;    //Value input parameter
+    Para53 : DWORD ;    //Value input parameter
+    Para54 : DWORD ;    //Value input parameter
+    Para55 : DWORD ;    //Value input parameter
+    Para56 : DWORD ;    //Value input parameter
+    Para57 : DWORD ;    //Value input parameter
+    Para58 : DWORD ;    //Value input parameter
+    Para59 : DWORD ;    //Value input parameter
+    Para60 : DWORD ;    //Value input parameter
+    Para61 : DWORD ;    //Value input parameter
+    Para62 : DWORD ;    //Value input parameter
+    Para63 : DWORD ;    //Value input parameter
+    Para64 : DWORD ;    //Value input parameter
+    Para65 : DWORD ;    //Value input parameter
+    Para66 : DWORD ;    //Value input parameter
+    Para67 : DWORD ;    //Value input parameter
+    Para68 : DWORD ;    //Value input parameter
+    Para69 : DWORD ;    //Value input parameter
+    Para70 : DWORD ;    //Value input parameter
+    Para71 : DWORD ;    //Value input parameter
+    Para72 : DWORD ;    //Value input parameter
+    Para73 : DWORD ;    //Value input parameter
+    Para74 : DWORD ;    //Value input parameter
+    Para75 : DWORD ;    //Value input parameter
+    Para76 : DWORD ;    //Value input parameter
+    Para77 : DWORD ;    //Value input parameter
+    Para78 : DWORD ;    //Value input parameter
+    Para79 : DWORD ;    //Value input parameter
+    Para80 : DWORD ;    //Value input parameter
+    Para81 : DWORD ;    //Value input parameter
+    Para82 : DWORD ;    //Value input parameter
+    Para83 : DWORD ;    //Value input parameter
+    Para84 : DWORD ;    //Value input parameter
+    Para85 : DWORD ;    //Value input parameter
+    Para86 : DWORD ;    //Value input parameter
+    Para87 : DWORD ;    //Value input parameter
+    Para88 : DWORD ;    //Value input parameter
+    Para89 : DWORD ;    //Value input parameter
+    Para90 : DWORD ;    //Value input parameter
+    Para91 : DWORD ;    //Value input parameter
+    Para92 : DWORD ;    //Value input parameter
+    Para93 : DWORD ;    //Value input parameter
+    Para94 : DWORD ;    //Value input parameter
+    Para95 : DWORD ;    //Value input parameter
+    Para96 : DWORD ;    //Value input parameter
+    Para97 : DWORD ;    //Value input parameter
+    Para98 : DWORD ;    //Value input parameter
+    Para99 : DWORD ;    //Value input parameter
+    Para100 : DWORD ;    //Value input parameter
+    Para101 : DWORD ;    //Value input parameter
+    Para102 : DWORD ;    //Value input parameter
+    Para103 : DWORD ;    //Value input parameter
+    Para104 : DWORD ;    //Value input parameter
+    Para105 : DWORD ;    //Value input parameter
+    Para106 : DWORD ;    //Value input parameter
+    Para107 : DWORD ;    //Value input parameter
+    Para108 : DWORD ;    //Value input parameter
+    Para109 : DWORD ;    //Value input parameter
+    Para110 : DWORD ;    //Value input parameter
+    Para111 : DWORD ;    //Value input parameter
+    Para112 : DWORD ;    //Value input parameter
+    Para113 : DWORD ;    //Value input parameter
+    Para114 : DWORD ;    //Value input parameter
+    Para115 : DWORD ;    //Value input parameter
+    Para116 : DWORD ;    //Value input parameter
+    Para117 : DWORD ;    //Value input parameter
+    Para118 : DWORD ;    //Value input parameter
+    Para119 : DWORD ;    //Value input parameter
+    Para120 : DWORD ;    //Value input parameter
+    Para121 : DWORD ;    //Value input parameter
+    Para122 : DWORD ;    //Value input parameter
+    Para123 : DWORD ;    //Value input parameter
+    Para124 : DWORD ;    //Value input parameter
+    Para125 : DWORD ;    //Value input parameter
+    Para126 : DWORD ;    //Value input parameter
+    Para127 : DWORD ;    //Value input parameter
+    Para128 : DWORD ;    //Value input parameter
+    Para129 : DWORD ;    //Value input parameter
+    Para130 : DWORD ;    //Value input parameter
+    Para131 : DWORD ;    //Value input parameter
+    Para132 : DWORD ;    //Value input parameter
+    Para133 : DWORD ;    //Value input parameter
+    Para134 : DWORD ;    //Value input parameter
+    Para135 : DWORD ;    //Value input parameter
+    Para136 : DWORD ;    //Value input parameter
+    Para137 : DWORD ;    //Value input parameter
+    Para138 : DWORD ;    //Value input parameter
+    Para139 : DWORD ;    //Value input parameter
+    Para140 : DWORD ;    //Value input parameter
+    Para141 : DWORD ;    //Value input parameter
+    Para142 : DWORD ;    //Value input parameter
+    Para143 : DWORD ;    //Value input parameter
+    Para144 : DWORD ;    //Value input parameter
+    Para145 : DWORD ;    //Value input parameter
+    Para146 : DWORD ;    //Value input parameter
+    Para147 : DWORD ;    //Value input parameter
+    Para148 : DWORD ;    //Value input parameter
+    Para149 : DWORD ;    //Value input parameter
+    Para150 : DWORD ;    //Value input parameter
+    Para151 : DWORD ;    //Value input parameter
+    Para152 : DWORD ;    //Value input parameter
+    Para153 : DWORD ;    //Value input parameter
+    Para154 : DWORD ;    //Value input parameter
+    Para155 : DWORD ;    //Value input parameter
+    Para156 : DWORD ;    //Value input parameter
+    Para157 : DWORD ;    //Value input parameter
+    Para158 : DWORD ;    //Value input parameter
+    Para159 : DWORD ;    //Value input parameter
+    Para160 : DWORD ;    //Value input parameter
+    Para161 : DWORD ;    //Value input parameter
+    Para162 : DWORD ;    //Value input parameter
+    Para163 : DWORD ;    //Value input parameter
+    Para164 : DWORD ;    //Value input parameter
+    Para165 : DWORD ;    //Value input parameter
+    Para166 : DWORD ;    //Value input parameter
+    Para167 : DWORD ;    //Value input parameter
+    Para168 : DWORD ;    //Value input parameter
+    Para169 : DWORD ;    //Value input parameter
+    Para170 : DWORD ;    //Value input parameter
+    Para171 : DWORD ;    //Value input parameter
+    Para172 : DWORD ;    //Value input parameter
+    Para173 : DWORD ;    //Value input parameter
+    Para174 : DWORD ;    //Value input parameter
+    Para175 : DWORD ;    //Value input parameter
+    Para176 : DWORD ;    //Value input parameter
+    Para177 : DWORD ;    //Value input parameter
+    Para178 : DWORD ;    //Value input parameter
+    Para179 : DWORD ;    //Value input parameter
+    Para180 : DWORD ;    //Value input parameter
+    Para181 : DWORD ;    //Value input parameter
+    Para182 : DWORD ;    //Value input parameter
+    Para183 : DWORD ;    //Value input parameter
+    Para184 : DWORD ;    //Value input parameter
+    Para185 : DWORD ;    //Value input parameter
+    Para186 : DWORD ;    //Value input parameter
+    Para187 : DWORD ;    //Value input parameter
+    Para188 : DWORD ;    //Value input parameter
+    Para189 : DWORD ;    //Value input parameter
+    Para190 : DWORD ;    //Value input parameter
+    Para191 : DWORD ;    //Value input parameter
+    Para192 : DWORD ;    //Value input parameter
+    Para193 : DWORD ;    //Value input parameter
+    Para194 : DWORD ;    //Value input parameter
+    Para195 : DWORD ;    //Value input parameter
+    Para196 : DWORD ;    //Value input parameter
+    Para197 : DWORD ;    //Value input parameter
+    Para198 : DWORD ;    //Value input parameter
+    Para199 : DWORD ;    //Value input parameter
+    Para200 : DWORD ;    //Value input parameter
+    Para201 : DWORD ;    //Value input parameter
+    Para202 : DWORD ;    //Value input parameter
+    Para203 : DWORD ;    //Value input parameter
+    Para204 : DWORD ;    //Value input parameter
+    Para205 : DWORD ;    //Value input parameter
+    Para206 : DWORD ;    //Value input parameter
+    Para207 : DWORD ;    //Value input parameter
+    Para208 : DWORD ;    //Value input parameter
+    Para209 : DWORD ;    //Value input parameter
+    Para210 : DWORD ;    //Value input parameter
+    Para211 : DWORD ;    //Value input parameter
+    Para212 : DWORD ;    //Value input parameter
+    Para213 : DWORD ;    //Value input parameter
+    Para214 : DWORD ;    //Value input parameter
+    Para215 : DWORD ;    //Value input parameter
+    Para216 : DWORD ;    //Value input parameter
+    Para217 : DWORD ;    //Value input parameter
+    Para218 : DWORD ;    //Value input parameter
+    Para219 : DWORD ;    //Value input parameter
+    Para220 : DWORD ;    //Value input parameter
+    Para221 : DWORD ;    //Value input parameter
+    Para222 : DWORD ;    //Value input parameter
+    Para223 : DWORD ;    //Value input parameter
+    Para224 : DWORD ;    //Value input parameter
+    Para225 : DWORD ;    //Value input parameter
+    Para226 : DWORD ;    //Value input parameter
+    Para227 : DWORD ;    //Value input parameter
+    Para228 : DWORD ;    //Value input parameter
+    Para229 : DWORD ;    //Value input parameter
+    Para230 : DWORD ;    //Value input parameter
+    Para231 : DWORD ;    //Value input parameter
+    Para232 : DWORD ;    //Value input parameter
+    Para233 : DWORD ;    //Value input parameter
+    Para234 : DWORD ;    //Value input parameter
+    Para235 : DWORD ;    //Value input parameter
+    Para236 : DWORD ;    //Value input parameter
+    Para237 : DWORD ;    //Value input parameter
+    Para238 : DWORD ;    //Value input parameter
+    Para239 : DWORD ;    //Value input parameter
+    Para240 : DWORD ;    //Value input parameter
+    Para241 : DWORD ;    //Value input parameter
+    Para242 : DWORD ;    //Value input parameter
+    Para243 : DWORD ;    //Value input parameter
+    Para244 : DWORD ;    //Value input parameter
+    Para245 : DWORD ;    //Value input parameter
+    Para246 : DWORD ;    //Value input parameter
+    Para247 : DWORD ;    //Value input parameter
+    Para248 : DWORD ;    //Value input parameter
+    Para249 : DWORD ;    //Value input parameter
+    Para250 : DWORD ;    //Value input parameter
+    Para251 : DWORD ;    //Value input parameter
+    Para252 : DWORD ;    //Value input parameter
+    Para253 : DWORD ;    //Value input parameter
+    Para254 : DWORD ;    //Value input parameter
+    Para255 : DWORD ;    //Value input parameter
+   END_STRUCT ;   
+   Output : STRUCT    
+    Para0 : DWORD ;    //Value output parameter
+    Para1 : DWORD ;    //Value output parameter
+    Para2 : DWORD ;    //Value output parameter
+    Para3 : DWORD ;    //Value output parameter
+    Para4 : DWORD ;    //Value output parameter
+    Para5 : DWORD ;    //Value output parameter
+    Para6 : DWORD ;    //Value output parameter
+    Para7 : DWORD ;    //Value output parameter
+    Para8 : DWORD ;    //Value output parameter
+    Para9 : DWORD ;    //Value output parameter
+    Para10 : DWORD ;    //Value output parameter
+    Para11 : DWORD ;    //Value output parameter
+    Para12 : DWORD ;    //Value output parameter
+    Para13 : DWORD ;    //Value output parameter
+    Para14 : DWORD ;    //Value output parameter
+    Para15 : DWORD ;    //Value output parameter
+    Para16 : DWORD ;    //Value output parameter
+    Para17 : DWORD ;    //Value output parameter
+    Para18 : DWORD ;    //Value output parameter
+    Para19 : DWORD ;    //Value output parameter
+    Para20 : DWORD ;    //Value output parameter
+    Para21 : DWORD ;    //Value output parameter
+    Para22 : DWORD ;    //Value output parameter
+    Para23 : DWORD ;    //Value output parameter
+    Para24 : DWORD ;    //Value output parameter
+    Para25 : DWORD ;    //Value output parameter
+    Para26 : DWORD ;    //Value output parameter
+    Para27 : DWORD ;    //Value output parameter
+    Para28 : DWORD ;    //Value output parameter
+    Para29 : DWORD ;    //Value output parameter
+    Para30 : DWORD ;    //Value output parameter
+    Para31 : DWORD ;    //Value output parameter
+    Para32 : DWORD ;    //Value output parameter
+    Para33 : DWORD ;    //Value output parameter
+    Para34 : DWORD ;    //Value output parameter
+    Para35 : DWORD ;    //Value output parameter
+    Para36 : DWORD ;    //Value output parameter
+    Para37 : DWORD ;    //Value output parameter
+    Para38 : DWORD ;    //Value output parameter
+    Para39 : DWORD ;    //Value output parameter
+    Para40 : DWORD ;    //Value output parameter
+    Para41 : DWORD ;    //Value output parameter
+    Para42 : DWORD ;    //Value output parameter
+    Para43 : DWORD ;    //Value output parameter
+    Para44 : DWORD ;    //Value output parameter
+    Para45 : DWORD ;    //Value output parameter
+    Para46 : DWORD ;    //Value output parameter
+    Para47 : DWORD ;    //Value output parameter
+    Para48 : DWORD ;    //Value output parameter
+    Para49 : DWORD ;    //Value output parameter
+    Para50 : DWORD ;    //Value output parameter
+    Para51 : DWORD ;    //Value output parameter
+    Para52 : DWORD ;    //Value output parameter
+    Para53 : DWORD ;    //Value output parameter
+    Para54 : DWORD ;    //Value output parameter
+    Para55 : DWORD ;    //Value output parameter
+    Para56 : DWORD ;    //Value output parameter
+    Para57 : DWORD ;    //Value output parameter
+    Para58 : DWORD ;    //Value output parameter
+    Para59 : DWORD ;    //Value output parameter
+    Para60 : DWORD ;    //Value input parameter
+    Para61 : DWORD ;    //Value input parameter
+    Para62 : DWORD ;    //Value input parameter
+    Para63 : DWORD ;    //Value input parameter
+    Para64 : DWORD ;    //Value input parameter
+    Para65 : DWORD ;    //Value input parameter
+    Para66 : DWORD ;    //Value input parameter
+    Para67 : DWORD ;    //Value input parameter
+    Para68 : DWORD ;    //Value input parameter
+    Para69 : DWORD ;    //Value input parameter
+    Para70 : DWORD ;    //Value input parameter
+    Para71 : DWORD ;    //Value input parameter
+    Para72 : DWORD ;    //Value input parameter
+    Para73 : DWORD ;    //Value input parameter
+    Para74 : DWORD ;    //Value input parameter
+    Para75 : DWORD ;    //Value input parameter
+    Para76 : DWORD ;    //Value input parameter
+    Para77 : DWORD ;    //Value input parameter
+    Para78 : DWORD ;    //Value input parameter
+    Para79 : DWORD ;    //Value input parameter
+    Para80 : DWORD ;    //Value input parameter
+    Para81 : DWORD ;    //Value input parameter
+    Para82 : DWORD ;    //Value input parameter
+    Para83 : DWORD ;    //Value input parameter
+    Para84 : DWORD ;    //Value input parameter
+    Para85 : DWORD ;    //Value input parameter
+    Para86 : DWORD ;    //Value input parameter
+    Para87 : DWORD ;    //Value input parameter
+    Para88 : DWORD ;    //Value input parameter
+    Para89 : DWORD ;    //Value input parameter
+    Para90 : DWORD ;    //Value input parameter
+    Para91 : DWORD ;    //Value input parameter
+    Para92 : DWORD ;    //Value input parameter
+    Para93 : DWORD ;    //Value input parameter
+    Para94 : DWORD ;    //Value input parameter
+    Para95 : DWORD ;    //Value input parameter
+    Para96 : DWORD ;    //Value input parameter
+    Para97 : DWORD ;    //Value input parameter
+    Para98 : DWORD ;    //Value input parameter
+    Para99 : DWORD ;    //Value input parameter
+    Para100 : DWORD ;    //Value input parameter
+    Para101 : DWORD ;    //Value input parameter
+    Para102 : DWORD ;    //Value input parameter
+    Para103 : DWORD ;    //Value input parameter
+    Para104 : DWORD ;    //Value input parameter
+    Para105 : DWORD ;    //Value input parameter
+    Para106 : DWORD ;    //Value input parameter
+    Para107 : DWORD ;    //Value input parameter
+    Para108 : DWORD ;    //Value input parameter
+    Para109 : DWORD ;    //Value input parameter
+    Para110 : DWORD ;    //Value input parameter
+    Para111 : DWORD ;    //Value input parameter
+    Para112 : DWORD ;    //Value input parameter
+    Para113 : DWORD ;    //Value input parameter
+    Para114 : DWORD ;    //Value input parameter
+    Para115 : DWORD ;    //Value input parameter
+    Para116 : DWORD ;    //Value input parameter
+    Para117 : DWORD ;    //Value input parameter
+    Para118 : DWORD ;    //Value input parameter
+    Para119 : DWORD ;    //Value input parameter
+    Para120 : DWORD ;    //Value input parameter
+    Para121 : DWORD ;    //Value input parameter
+    Para122 : DWORD ;    //Value input parameter
+    Para123 : DWORD ;    //Value input parameter
+    Para124 : DWORD ;    //Value input parameter
+    Para125 : DWORD ;    //Value input parameter
+    Para126 : DWORD ;    //Value input parameter
+    Para127 : DWORD ;    //Value input parameter
+    Para128 : DWORD ;    //Value input parameter
+    Para129 : DWORD ;    //Value input parameter
+    Para130 : DWORD ;    //Value input parameter
+    Para131 : DWORD ;    //Value input parameter
+    Para132 : DWORD ;    //Value input parameter
+    Para133 : DWORD ;    //Value input parameter
+    Para134 : DWORD ;    //Value input parameter
+    Para135 : DWORD ;    //Value input parameter
+    Para136 : DWORD ;    //Value input parameter
+    Para137 : DWORD ;    //Value input parameter
+    Para138 : DWORD ;    //Value input parameter
+    Para139 : DWORD ;    //Value input parameter
+    Para140 : DWORD ;    //Value input parameter
+    Para141 : DWORD ;    //Value input parameter
+    Para142 : DWORD ;    //Value input parameter
+    Para143 : DWORD ;    //Value input parameter
+    Para144 : DWORD ;    //Value input parameter
+    Para145 : DWORD ;    //Value input parameter
+    Para146 : DWORD ;    //Value input parameter
+    Para147 : DWORD ;    //Value input parameter
+    Para148 : DWORD ;    //Value input parameter
+    Para149 : DWORD ;    //Value input parameter
+    Para150 : DWORD ;    //Value input parameter
+    Para151 : DWORD ;    //Value input parameter
+    Para152 : DWORD ;    //Value input parameter
+    Para153 : DWORD ;    //Value input parameter
+    Para154 : DWORD ;    //Value input parameter
+    Para155 : DWORD ;    //Value input parameter
+    Para156 : DWORD ;    //Value input parameter
+    Para157 : DWORD ;    //Value input parameter
+    Para158 : DWORD ;    //Value input parameter
+    Para159 : DWORD ;    //Value input parameter
+    Para160 : DWORD ;    //Value input parameter
+    Para161 : DWORD ;    //Value input parameter
+    Para162 : DWORD ;    //Value input parameter
+    Para163 : DWORD ;    //Value input parameter
+    Para164 : DWORD ;    //Value input parameter
+    Para165 : DWORD ;    //Value input parameter
+    Para166 : DWORD ;    //Value input parameter
+    Para167 : DWORD ;    //Value input parameter
+    Para168 : DWORD ;    //Value input parameter
+    Para169 : DWORD ;    //Value input parameter
+    Para170 : DWORD ;    //Value input parameter
+    Para171 : DWORD ;    //Value input parameter
+    Para172 : DWORD ;    //Value input parameter
+    Para173 : DWORD ;    //Value input parameter
+    Para174 : DWORD ;    //Value input parameter
+    Para175 : DWORD ;    //Value input parameter
+    Para176 : DWORD ;    //Value input parameter
+    Para177 : DWORD ;    //Value input parameter
+    Para178 : DWORD ;    //Value input parameter
+    Para179 : DWORD ;    //Value input parameter
+    Para180 : DWORD ;    //Value input parameter
+    Para181 : DWORD ;    //Value input parameter
+    Para182 : DWORD ;    //Value input parameter
+    Para183 : DWORD ;    //Value input parameter
+    Para184 : DWORD ;    //Value input parameter
+    Para185 : DWORD ;    //Value input parameter
+    Para186 : DWORD ;    //Value input parameter
+    Para187 : DWORD ;    //Value input parameter
+    Para188 : DWORD ;    //Value input parameter
+    Para189 : DWORD ;    //Value input parameter
+    Para190 : DWORD ;    //Value input parameter
+    Para191 : DWORD ;    //Value input parameter
+    Para192 : DWORD ;    //Value input parameter
+    Para193 : DWORD ;    //Value input parameter
+    Para194 : DWORD ;    //Value input parameter
+    Para195 : DWORD ;    //Value input parameter
+    Para196 : DWORD ;    //Value input parameter
+    Para197 : DWORD ;    //Value input parameter
+    Para198 : DWORD ;    //Value input parameter
+    Para199 : DWORD ;    //Value input parameter
+    Para200 : DWORD ;    //Value input parameter
+    Para201 : DWORD ;    //Value input parameter
+    Para202 : DWORD ;    //Value input parameter
+    Para203 : DWORD ;    //Value input parameter
+    Para204 : DWORD ;    //Value input parameter
+    Para205 : DWORD ;    //Value input parameter
+    Para206 : DWORD ;    //Value input parameter
+    Para207 : DWORD ;    //Value input parameter
+    Para208 : DWORD ;    //Value input parameter
+    Para209 : DWORD ;    //Value input parameter
+    Para210 : DWORD ;    //Value input parameter
+    Para211 : DWORD ;    //Value input parameter
+    Para212 : DWORD ;    //Value input parameter
+    Para213 : DWORD ;    //Value input parameter
+    Para214 : DWORD ;    //Value input parameter
+    Para215 : DWORD ;    //Value input parameter
+    Para216 : DWORD ;    //Value input parameter
+    Para217 : DWORD ;    //Value input parameter
+    Para218 : DWORD ;    //Value input parameter
+    Para219 : DWORD ;    //Value input parameter
+    Para220 : DWORD ;    //Value input parameter
+    Para221 : DWORD ;    //Value input parameter
+    Para222 : DWORD ;    //Value input parameter
+    Para223 : DWORD ;    //Value input parameter
+    Para224 : DWORD ;    //Value input parameter
+    Para225 : DWORD ;    //Value input parameter
+    Para226 : DWORD ;    //Value input parameter
+    Para227 : DWORD ;    //Value input parameter
+    Para228 : DWORD ;    //Value input parameter
+    Para229 : DWORD ;    //Value input parameter
+    Para230 : DWORD ;    //Value input parameter
+    Para231 : DWORD ;    //Value input parameter
+    Para232 : DWORD ;    //Value input parameter
+    Para233 : DWORD ;    //Value input parameter
+    Para234 : DWORD ;    //Value input parameter
+    Para235 : DWORD ;    //Value input parameter
+    Para236 : DWORD ;    //Value input parameter
+    Para237 : DWORD ;    //Value input parameter
+    Para238 : DWORD ;    //Value input parameter
+    Para239 : DWORD ;    //Value input parameter
+    Para240 : DWORD ;    //Value input parameter
+    Para241 : DWORD ;    //Value input parameter
+    Para242 : DWORD ;    //Value input parameter
+    Para243 : DWORD ;    //Value input parameter
+    Para244 : DWORD ;    //Value input parameter
+    Para245 : DWORD ;    //Value input parameter
+    Para246 : DWORD ;    //Value input parameter
+    Para247 : DWORD ;    //Value input parameter
+    Para248 : DWORD ;    //Value input parameter
+    Para249 : DWORD ;    //Value input parameter
+    Para250 : DWORD ;    //Value input parameter
+    Para251 : DWORD ;    //Value input parameter
+    Para252 : DWORD ;    //Value input parameter
+    Para253 : DWORD ;    //Value input parameter
+    Para254 : DWORD ;    //Value input parameter
+    Para255 : DWORD ;    //Value input parameter
+   END_STRUCT ;   
+  END_STRUCT ;   
+END_VAR
+VAR
+  RDREC_1 : SFB52;    //Mulit instance RDREC
+  WRREC_1 : SFB53;    //Mulit instance WRREC
+  SdiStartTempErrRdRec : DINT ;   
+  SdiStartTempErrWrRec : DINT ;   
+  SiCntTempErrRdRec : INT ;   
+  SiCntTempErrWrRec : INT ;   
+  sxDoDelayRdRec : BOOL ;   
+  sxDoDelayWrRec : BOOL ;   
+END_VAR
+VAR_TEMP
+  taInput : ARRAY  [0 .. 6 ] OF BYTE ;   
+  TOP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  START_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  ERROR : INT ;    //Error information
+  xOB_Cycle : BOOL ;    //block is running in a cyclic interrupt OB
+  xBusy : BOOL ;   
+  xRetVal : INT ;   
+  xdiCountTime : DINT ;   
+END_VAR
+BEGIN
+ 
+ERROR:=RD_SINFO(TOP_SI :=  TOP_SI
+         ,START_UP_SI :=  START_UP_SI
+         );
+ 
+xOB_Cycle:=(BYTE_TO_INT(TOP_SI.NUM)>=30) AND (BYTE_TO_INT(TOP_SI.NUM)<=39);
+IF Addr.Input=-1 THEN (*A7d0*)
+    CyclData.InpVoltOK.ST:=B#16#FF;
+    CyclData.BuffModeAct.ST:=B#16#FF;
+    CyclData.RdyForBuff.ST:=B#16#FF;
+    CyclData.ChrgSuffic.ST:=B#16#FF;
+    CyclData.BattChngRec.ST:=B#16#FF;
+    CyclData.NewAlrmsPen.ST:=B#16#FF;
+    CyclData.UnknownBatt.ST:=B#16#FF;
+    CyclData.BattChrgLvl.ST:=B#16#FF;
+END_IF; (*A7d0*)
+ 
+IF (Csf) OR Rackf THEN (*A7d1*)
+    IF Addr.Input<>-1 THEN (*A7d2*)
+        CyclData.InpVoltOK.ST:=B#16#0;
+        CyclData.BuffModeAct.ST:=B#16#0;
+        CyclData.RdyForBuff.ST:=B#16#0;
+        CyclData.ChrgSuffic.ST:=B#16#0;
+        CyclData.BattChngRec.ST:=B#16#0;
+        CyclData.NewAlrmsPen.ST:=B#16#0;
+        CyclData.UnknownBatt.ST:=B#16#0;
+        CyclData.BattChrgLvl.ST:=B#16#0;
+    END_IF; (*A7d2*)
+    QCsf:=TRUE;
+ELSE (*A7d1*)
+    QCsf:=FALSE;
+    IF Addr.Input<>-1 THEN (*A7d3*)
+    ERROR:=DPRD_DAT(LADDR :=  INT_TO_WORD(Addr.Input)
+         ,RECORD :=  taInput
+         );
+        IF ERROR=0 THEN (*A7d5*)
+            CyclData.InpVoltOK.Value:=taInput[0]=B#16#FF;
+            CyclData.BuffModeAct.Value:=taInput[1]=B#16#FF;
+            CyclData.InpVoltOK.ST:=B#16#80;
+            CyclData.BuffModeAct.ST:=B#16#80;
+            CyclData.RdyForBuff.Value:=taInput[2]=B#16#FF;
+            CyclData.ChrgSuffic.Value:=taInput[3]=B#16#FF;
+            CyclData.RdyForBuff.ST:=B#16#80;
+            CyclData.ChrgSuffic.ST:=B#16#80;
+            CyclData.BattChngRec.Value:=taInput[4]=B#16#FF;
+            CyclData.NewAlrmsPen.Value:=taInput[5]=B#16#FF;
+            CyclData.BattChngRec.ST:=B#16#80;
+            CyclData.NewAlrmsPen.ST:=B#16#80;
+            CyclData.UnknownBatt.Value:=taInput[6]=B#16#FF;
+            CyclData.UnknownBatt.ST:=B#16#80;
+            IF NOT(CyclData.UnknownBatt.Value) THEN (*A7d6*)
+                CyclData.BattChrgLvl.Value:=INT_TO_REAL(BYTE_TO_INT(taInput[6]));
+                CyclData.BattChrgLvl.ST:=B#16#80;
+            ELSE (*A7d6*)
+                CyclData.BattChrgLvl.ST:=B#16#0;
+            END_IF;
+        ELSE (*A7d5*)
+            QCsf:=TRUE;
+        END_IF;
+    END_IF;
+END_IF; (*A7d3*)
+ 
+IF xOB_Cycle THEN (*A7d9*)
+    IF (AcyclData.ReqRd=-1) AND (AcyclData.SlotRd=-1) THEN (*A7da*)
+        AcyclData.RdyRead:=-1;
+        SiCntTempErrRdRec:=0;
+    ELSE
+        IF (AcyclData.RdyRead=-1) AND (NOT(sxDoDelayRdRec)) THEN (*A7db*)
+            RDREC_1(REQ := TRUE
+                ,ID := INT_TO_DWORD(Addr.Input)
+                ,INDEX := AcyclData.ReqRd
+                ,MLEN := AcyclData.LenRd
+                ,RECORD := AcyclData.Input
+                );
+            xBusy:=RDREC_1.BUSY;
+            xRetVal:=DWORD_TO_INT(SHR(IN:=(RDREC_1.STATUS AND DW#16#FFFF00),N:=8));
+            IF NOT(xBusy) THEN (*A7db*)
+                IF ((-32576<=xRetVal) AND (xRetVal<=-32572)) AND (SiCntTempErrRdRec<5) THEN (*A7de*)
+                    sxDoDelayRdRec:=TRUE;
+                    SdiStartTempErrRdRec:=TIME_TO_DINT(TIME_TCK());
+                    SiCntTempErrRdRec:=SiCntTempErrRdRec+1;
+                ELSE (*A7de*)
+                    AcyclData.RdyRead:=AcyclData.ReqRd;
+                    AcyclData.RetValRd:=INT_TO_WORD(xRetVal);
+                    SiCntTempErrRdRec:=0;
+                END_IF;
+            END_IF;
+        END_IF;   
+    END_IF; (*A7db*)
+ 
+    IF sxDoDelayRdRec THEN (*A7e0*)
+        xdiCountTime:=TIME_TO_DINT(TIME_TCK())-SdiStartTempErrRdRec;
+        IF xdiCountTime<0 THEN (*A7e1*)
+            xdiCountTime:=xdiCountTime--2147483648;
+        END_IF; (*A7e1*)
+        sxDoDelayRdRec:=xdiCountTime<=2000;
+    END_IF; (*A7e0*)
+ 
+    IF (AcyclData.ReqWr=-1) AND (AcyclData.SlotWr=-1) THEN (*A7e2*)
+        AcyclData.RdyWrite:=-1;
+        SiCntTempErrWrRec:=0;
+    ELSE (*A7e2*)
+        IF (AcyclData.RdyWrite=-1) AND (NOT(sxDoDelayWrRec)) THEN (*A7e3*)
+            WRREC_1(REQ :=  TRUE
+                        ,ID := INT_TO_DWORD(Addr.Input)
+                        ,INDEX :=  AcyclData.ReqWr
+                        ,LEN := AcyclData.LenWr
+                        ,RECORD := AcyclData.Output
+                        );
+            xBusy:=WRREC_1.BUSY;
+            xRetVal:=DWORD_TO_INT(SHR(IN:=(WRREC_1.STATUS AND DW#16#FFFF00),N:=8));
+            IF NOT(xBusy) THEN (*A7e3*)
+                IF ((-32576<=xRetVal) AND (xRetVal<=-32572)) AND (SiCntTempErrWrRec<5) THEN (*A7e6*)
+                    sxDoDelayWrRec:=TRUE;
+                    SdiStartTempErrWrRec:=TIME_TO_DINT(TIME_TCK());
+                    SiCntTempErrWrRec:=SiCntTempErrWrRec+1;
+                ELSE (*A7e6*)
+                    AcyclData.RdyWrite:=AcyclData.ReqWr;
+                    AcyclData.RetValWr:=INT_TO_WORD(xRetVal);
+                END_IF;
+            END_IF;
+        END_IF;
+    END_IF; (*A7e3*)
+    IF sxDoDelayWrRec THEN (*A7d9*)
+        xdiCountTime:=TIME_TO_DINT(TIME_TCK())-SdiStartTempErrWrRec;
+        IF xdiCountTime<0 THEN (*A7e9*)
+            xdiCountTime:=xdiCountTime--2147483648;
+        END_IF; (*A7e9*)
+        sxDoDelayWrRec:=xdiCountTime<=2000;
+    END_IF;   
+END_IF; (*A7d9*)
+CyclData.Csf:=QCsf;
+OosAct.Value:=MS_b[2];
+END_FUNCTION_BLOCK
