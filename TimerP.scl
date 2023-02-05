@@ -1,12 +1,12 @@
-Name: FB1810
-Symbolic Name: TimerP
-Symbol Comment: Impulsefunction and delayed On/Off Timer
-Family: TIME
-Version: 2.1
-Author: AdvLib80
-Last modified: 10/24/2011
-Use: UDT15,UDT16,FC260
-Size: 980 byte
+// Name: FB1810
+// Symbolic Name: TimerP
+// Symbol Comment: Impulsefunction and delayed On/Off Timer
+// Family: TIME
+// Version: 2.1
+// Author: AdvLib80
+// Last modified: 10/24/2011
+// Use: UDT15,UDT16,FC260
+// Size: 980 byte
 
 
 FUNCTION_BLOCK FB11810

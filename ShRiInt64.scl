@@ -1,0 +1,89 @@
+// Name: FС371
+// Symbolic Name: ShRiInt64
+// Symbol Comment: Right shift of an Int64 variable
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 07/04/2011
+// Use: UDT23
+// Size: 326 byte
+// Signature: compiled by SCL compiler version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+
+
+ 
+FUNCTION FC1371 : VOID
+TITLE ='Right shift of an Int64 variable'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : ShRiIn64
+VERSION : '2.0'
+ 
+VAR_INPUT
+  IN : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  Shift : INT ;   
+END_VAR
+ 
+VAR_OUTPUT
+  OutInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_TEMP
+  N : INT ;   
+  TempInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  TempInt64_dw AT TempInt64: STRUCT    
+   UpperDInt : DWORD  ;   
+   LowerDInt : DWORD  ;   
+  END_STRUCT ;   
+ 
+  retval : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  retval_dw AT retval  : STRUCT    
+   UpperDInt : DWORD  ;   
+   LowerDInt : DWORD  ;   
+  END_STRUCT ;   
+ 
+  Mask : DWORD ;   
+  BitsFromUpperDWord : DWORD ;   
+END_VAR
+BEGIN
+ 
+retval.UpperDInt:=0;
+retval.LowerDInt:=0;
+N:=Shift;
+IF N>=0 AND N<=63
+THEN
+    TempInt64.UpperDInt:=IN.UpperDInt;
+    TempInt64.LowerDInt:=IN.LowerDInt;
+    IF N>=32
+    THEN        
+        TempInt64.LowerDInt:=TempInt64.UpperDInt;
+        TempInt64.UpperDInt:=0;
+        N:=N-32;   
+    END_IF;
+   
+    retval_dw.LowerDInt:=SHR(IN:=TempInt64_dw.LowerDInt,N:=N);
+    Mask:=SHR(IN:=DW#16#FFFFFFFF,N:=32-N);
+ 
+    BitsFromUpperDWord:=Mask AND TempInt64_dw.UpperDInt;
+    BitsFromUpperDWord:=SHL(IN:=BitsFromUpperDWord,N:=32-N);
+   
+    retval_dw.LowerDInt:=BitsFromUpperDWord OR retval_dw.LowerDInt;
+    retval_dw.UpperDInt:=SHR(IN:=TempInt64_dw.UpperDInt,N:=N);
+END_IF;
+ 
+OutInt64.UpperDInt:=retval.UpperDInt;   
+OutInt64.LowerDInt:=retval.LowerDInt;
+ 
+END_FUNCTION

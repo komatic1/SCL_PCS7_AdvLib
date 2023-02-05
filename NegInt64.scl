@@ -1,0 +1,63 @@
+// Name: FС362
+// Symbolic Name: NegInt64
+// Symbol Comment: Negation of an Int64 variable
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 07/04/2011
+// Use: UDT23, FC353, FC357
+// Size: 272 bytes
+// Original SCL source name: ExtendedPrecision
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+FUNCTION FC1362 : VOID
+TITLE ='Negation of an Int64 variable'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : NegInt64
+VERSION : '2.0'
+ 
+ 
+VAR_INPUT
+  theInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_OUTPUT
+  OutInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_TEMP
+  retval : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  Int64_One : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+BEGIN
+ 
+retval.LowerDInt:=DWORD_TO_DINT(DINT_TO_DWORD(theInt64.LowerDInt) XOR DW#16#FFFFFFFF);
+retval.UpperDInt:=DWORD_TO_DINT(DINT_TO_DWORD(theInt64.UpperDInt) XOR DW#16#FFFFFFFF);
+ 
+DiToInt64(theDInt :=  1
+          ,OutInt64 :=Int64_One 
+          );
+ 
+AddInt64(Int64_1 := retval 
+         ,Int64_2 := Int64_One 
+         ,OutInt64 := retval
+         );
+ 
+OutInt64.UpperDInt:=retval.UpperDInt;
+OutInt64.LowerDInt:=retval.LowerDInt;    
+ 
+END_FUNCTION

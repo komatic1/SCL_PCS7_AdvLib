@@ -1,0 +1,60 @@
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'y' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+
+// Name: FС357
+// Symbolic Name: DiToInt64
+// Symbol Comment: Converting from DINT to Int64
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 07/04/2011
+// Use: UDT23
+// Size: 144 bytes
+// Original SCL source name: ExtendedPrecision
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+FUNCTION FC1357 : VOID
+TITLE ='Converting from DINT to Int64'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : DiToIn64
+VERSION : '2.0'
+ 
+VAR_INPUT
+  theDInt    : DINT ;   
+END_VAR
+ 
+VAR_OUTPUT
+  OutInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_TEMP
+  temp : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+BEGIN
+    temp.LowerDInt:=theDInt;
+    temp.UpperDInt:=0;
+   
+    IF theDInt < 0 THEN temp.UpperDInt:=-1; END_IF;
+   
+    OutInt64.UpperDInt:=temp.UpperDInt;
+    OutInt64.LowerDInt:=temp.LowerDInt;
+ 
+END_FUNCTION

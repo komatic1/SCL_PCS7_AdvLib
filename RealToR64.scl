@@ -1,0 +1,165 @@
+// Name: FС368
+// Symbolic Name: RealToR64
+// Symbol Comment: Converting REAL to Real64
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 04/13/2011
+// Use: FC371
+// Size: 828 byte
+// Signature: compiled by SCL compiler version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'n' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'y' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION FC1368 : VOID
+TITLE ='Converting REAL to Real64'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : ReaToR64
+VERSION : '2.0'
+//reversed
+ 
+VAR_INPUT
+  TheReal : REAL ;   
+END_VAR
+ 
+VAR_OUTPUT
+  OutReal64 : STRUCT    
+   Top4Bytes : DWORD ;   
+   Bottom4Bytes : DWORD ;   
+END_STRUCT ;   
+END_VAR
+ 
+VAR_TEMP
+  retval : STRUCT    
+   Top4Bytes : DWORD ;   
+   Bottom4Bytes : DWORD ;
+   END_STRUCT ;
+ 
+  retval_i AT retval : STRUCT
+       x0 : INT ;
+  END_STRUCT ;
+ 
+  retval_w AT retval : STRUCT
+       x0 : WORD ;
+  END_STRUCT ;
+ 
+  retval_b AT retval : STRUCT
+       x0 : BYTE ;
+       x1 : BYTE ;
+       x2 : BYTE ;
+       x3 : BYTE ;
+       x4 : BYTE ;
+       x5 : BYTE ;
+       x6 : BYTE ;
+       x7 : BYTE ;
+  END_STRUCT ;
+ 
+  retval_shift AT retval : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;
+   END_STRUCT ;
+   
+  CopyTheReal : REAL ;  
+  CopyTheReal_dw AT CopyTheReal : DWORD ;
+  CopyTheReal_di AT CopyTheReal : DINT ;
+  CopyTheReal_w AT CopyTheReal: STRUCT
+        x1: WORD;
+  END_STRUCT;     
+ 
+  TempWORD : WORD ;
+  TempWORD_i AT TempWORD : INT ;   
+  IsZERO : BOOL ;   
+  IsNAN : BOOL ;   
+  IsINFINITY : BOOL ;   
+  IsDENORM : BOOL ;   
+  SignMask : DWORD ;   
+END_VAR
+BEGIN
+ 
+CopyTheReal:=TheReal;
+retval.Top4Bytes:=(DW#16#0);
+retval.Bottom4Bytes:=(DW#16#0);
+ 
+IsZERO:=(CopyTheReal_dw AND DW#16#7FFFFFFF) = DW#16#0;
+ 
+IsINFINITY:=(CopyTheReal_dw AND DW#16#7FFFFFFF) = DW#16#7F800000;
+ 
+IsNAN:=((CopyTheReal_dw AND DW#16#7F800000) = DW#16#7F800000) AND NOT IsINFINITY;
+ 
+IsDENORM:=((DW#16#7F800000 AND CopyTheReal_dw) = DW#16#0) AND NOT IsZERO;
+ 
+IF IsZERO
+THEN
+    retval.Top4Bytes:=CopyTheReal_dw AND DW#16#80000000;
+    retval.Bottom4Bytes:=DW#16#0; 
+ELSE
+    IF IsNAN   
+    THEN
+        retval.Top4Bytes:=CopyTheReal_dw;
+ 
+        ShRiInt64(IN := retval_shift,Shift := 3,OutInt64 := retval_shift);
+        
+        retval.Top4Bytes:=retval.Top4Bytes  AND DW#16#7FFFF;
+        retval.Top4Bytes:=retval.Top4Bytes OR DW#16#7FF80000;
+        retval.Top4Bytes:=CopyTheReal_dw AND DW#16#80000000 OR retval.Top4Bytes;
+        retval.Bottom4Bytes:=retval.Bottom4Bytes AND DW#16#E0000000;
+ 
+    ELSE
+        IF IsINFINITY
+        THEN
+            retval.Top4Bytes:=CopyTheReal_dw AND DW#16#80000000;
+            retval.Top4Bytes:=retval.Top4Bytes OR DW#16#7FF00000;
+            retval.Bottom4Bytes:=DW#16#0;
+        ELSE
+           
+            TempWORD:=SHR(IN:=(CopyTheReal_w.x1 AND W#16#7F80) ,N:=7);
+            TempWORD_i:=TempWORD_i+896;
+           
+            IF IsDENORM
+            THEN
+                SignMask:=CopyTheReal_dw AND DW#16#80000000;
+                CopyTheReal_dw:=CopyTheReal_dw AND DW#16#7FFFFFFF;
+                retval.Top4Bytes:=DW#16#38000000; 
+               
+                WHILE DWORD_TO_DINT(CopyTheReal_dw) < 8388608 DO
+                    retval_i.x0:=retval_i.x0-16;
+                    CopyTheReal_di:=CopyTheReal_di+CopyTheReal_di;
+                END_WHILE;
+ 
+                retval.Top4Bytes:=retval.Top4Bytes OR SignMask;
+            END_IF;
+           
+            IF WORD_TO_INT(CopyTheReal_w.x1) < 0 THEN TempWORD:=TempWORD OR W#16#800; END_IF;
+           
+            retval_w.x0:=SHL(IN:=TempWORD ,N:=4);
+            retval.Bottom4Bytes:=SHL(IN:=CopyTheReal_dw AND DW#16#7FFFFF,N:= 5);
+            retval_b.x1:= (retval_b.x1 AND B#16#F0) OR (retval_b.x4 AND B#16#F);
+            retval_b.x2:=retval_b.x5;
+            retval_b.x3:=retval_b.x6;
+            retval_b.x4:=retval_b.x7;
+            retval_b.x5:=B#16#0;
+            retval_b.x6:=B#16#0;
+            retval_b.x7:=B#16#0;
+ 
+        END_IF;
+    END_IF;
+END_IF;                          
+ 
+OutReal64.Top4Bytes:=retval.Top4Bytes;
+OutReal64.Bottom4Bytes:=retval.Bottom4Bytes;
+ 
+END_FUNCTION

@@ -1,0 +1,145 @@
+// Name: FС367
+// Symbolic Name: R64ToReal
+// Symbol Comment: Converting Real64 to REAL
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 04/13/2011
+// Use: FC371, UDT22, UDT23
+// Signature: compiled by SCL compiler version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'n' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'y' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+FUNCTION FC1367 : REAL
+TITLE ='Converting Real64 to REAL'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : R64ToRea
+VERSION : '2.0'
+//reversed
+ 
+VAR_INPUT
+  TheDPReal : STRUCT    
+    Top4Bytes   : DWORD ;   
+    Bottom4Bytes: DWORD ;   
+END_STRUCT ;   
+  TheDPReal_w AT TheDPReal  : STRUCT    
+    x0          : WORD ;   
+END_STRUCT ;   
+  TheDPReal_b AT TheDPReal  : STRUCT
+    x0          : BYTE;
+    x1          : BYTE;
+    x2          : BYTE;
+    x3          : BYTE;
+    x4          : BYTE;
+END_STRUCT;
+END_VAR
+ 
+VAR_TEMP
+  retval    : REAL ;  
+  retval_dw AT retval       : DWORD;
+  retval_di AT retval       : DINT;
+  retval_b  AT retval       : STRUCT
+    x0          : BYTE;
+    x1          : BYTE;
+    x2          : BYTE;
+    x3          : BYTE;
+    END_STRUCT;
+  retval_w  AT retval       : STRUCT
+    x0          : WORD;
+    END_STRUCT;
+  
+  Exponent  : INT ;  
+  Exponent_w AT Exponent    : WORD;
+   
+  Int64Temp : STRUCT    
+   UpperDInt    : DINT ;   
+   LowerDInt    : DINT ;   
+  END_STRUCT ;
+  Int64Temp_dw AT Int64Temp : STRUCT    
+   UpperDInt    : DWORD ;   
+   LowerDInt    : DWORD ;   
+  END_STRUCT ;   
+   
+  IsZERO        : BOOL ;   
+  IsNAN         : BOOL ;   
+  IsINFINITY    : BOOL ;   
+  IsDENORM      : BOOL ;   
+END_VAR
+BEGIN
+ 
+retval_di:=0;
+IsZERO:=  (TheDPReal_w.x0 AND W#16#7FF0) = W#16#0;
+IsNAN:= (TheDPReal_w.x0 AND W#16#7FF8) = W#16#7FF8;
+IsINFINITY:= ((TheDPReal.Top4Bytes AND DW#16#7FFFFFFF) = DW#16#7FF00000) AND ((TheDPReal.Bottom4Bytes AND DW#16#7FFFFFFF) = DW#16#7FF00000);
+ 
+Exponent_w:=SHR(IN:=TheDPReal_w.x0 AND W#16#7FF0, N:=4);    
+Exponent:=Exponent - 1023;
+ 
+IF IsZERO
+THEN
+    retval_dw:=TheDPReal.Top4Bytes;
+ELSE
+    IF IsNAN
+    THEN
+        Int64Temp_dw.UpperDInt:=TheDPReal.Top4Bytes;
+        Int64Temp_dw.LowerDInt:=TheDPReal.Bottom4Bytes;
+       
+        ShLeInt64(IN := Int64Temp, Shift := 3,OutInt64 :=Int64Temp );
+       
+        Int64Temp_dw.UpperDInt:=Int64Temp_dw.UpperDInt AND DW#16#3FFFFF;
+        Int64Temp_dw.UpperDInt:=Int64Temp_dw.UpperDInt OR DW#16#7FC00000;
+        retval_dw:=TheDPReal.Top4Bytes AND DW#16#80000000 OR Int64Temp_dw.UpperDInt;
+    ELSE
+        IF  (Exponent>=128) OR IsINFINITY
+        THEN
+            retval_dw:=DW#16#7F800000;  
+            retval_b.x0:=TheDPReal_b.x0 AND B#16#80 OR retval_b.x0;
+        ELSE
+            IF Exponent>=-151
+            THEN
+                retval_b.x0:=TheDPReal_b.x1 AND B#16#F OR B#16#10;
+                retval_b.x1:=TheDPReal_b.x2;
+                retval_b.x2:=TheDPReal_b.x3;
+                retval_b.x3:=TheDPReal_b.x4;
+                retval_di:=retval_di+16;
+                IF (retval_b.x0 AND B#16#20) <> B#16#0
+                THEN
+                    Exponent:=Exponent+1;
+                    retval_dw:=SHR(IN:=retval_dw,N:=1);
+                END_IF;
+                IF Exponent<-127
+                THEN
+                    retval_dw:=SHR(IN:=retval_dw,N:=(132-Exponent));
+                ELSE
+                    IF Exponent<128
+                    THEN
+                        retval_b.x0:=retval_b.x0 AND B#16#F;
+                        retval_dw:=SHR(IN:=retval_dw,N:=5);
+                        Exponent:=Exponent+127;
+                        retval_w.x0:=SHL(IN:=Exponent_w,N:=7) OR retval_w.x0;
+                    ELSE
+                        retval_dw:=DW#16#7F800000;
+                    END_IF;
+                END_IF;
+                retval_b.x0:= TheDPReal_b.x0 AND B#16#80 OR retval_b.x0;
+            END_IF;
+        END_IF;
+    END_IF;
+END_IF;
+ 
+FC1367:=retval;
+ 
+END_FUNCTION

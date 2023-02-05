@@ -1,0 +1,29 @@
+// Name: FС359
+// Symbolic Name: Int64ToDi
+// Symbol Comment: Converting from Int64 to DINT
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 07/04/2011
+// Use: UDT23
+// Size: 80 bytes
+// Original SCL source name: ExtendedPrecision
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+FUNCTION FC1359 : DINT
+TITLE ='Converting from Int64 to DINT'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : In64ToDi
+VERSION : '2.0'
+ 
+VAR_INPUT
+  TheInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+BEGIN
+    FC1359:=TheInt64.LowerDInt;
+END_FUNCTION

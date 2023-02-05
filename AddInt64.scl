@@ -1,0 +1,99 @@
+// Name: FС353
+// Symbolic Name: AddInt64
+// Symbol Comment: Addition of two 64-bit integer variables
+// Family: System
+// Version: 2.0
+// Author: AdvLib80
+// Last modified: 07/04/2011
+// Use: UDT23
+// Size: 422 bytes
+// Original SCL source name: ExtendedPrecision
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+FUNCTION FC1353 : VOID
+TITLE ='Addition of two 64-bit integer variables'
+AUTHOR : AdvLib80
+FAMILY : System
+NAME : AddInt64
+VERSION : '2.0'
+//reversed
+ 
+VAR_INPUT
+  Int64_1 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  Int64_1_dw AT Int64_1 : STRUCT    
+   x0        : DWORD ;   
+   x1        : DWORD ;   
+  END_STRUCT ;   
+ 
+ 
+  Int64_2 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+  Int64_2_dw AT Int64_2 : STRUCT    
+   x0        : DWORD ;   
+   x1        : DWORD ;   
+  END_STRUCT ;   
+ 
+END_VAR
+ 
+VAR_OUTPUT
+  OutInt64 : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_TEMP
+  retval : STRUCT    
+   UpperDInt : DINT ;   
+   LowerDInt : DINT ;   
+  END_STRUCT ;   
+   retval_dw AT retval : STRUCT    
+   x0 : DWORD ;   
+   x1 : DWORD ;   
+  END_STRUCT ;   
+ 
+ 
+  TempDINT1 : DINT ;   
+  TempDINT2 : DINT ;   
+  l1_lowbit : DINT ;  
+  l1_lowbit_dw AT l1_lowbit : DWORD ;    
+ 
+  l2_lowbit : DINT ;   
+  l2_lowbit_dw AT l2_lowbit : DWORD ; 
+ 
+  AddOne : DINT ;   
+  AddTwo : DINT ;   
+  carry : DINT ;   
+END_VAR
+BEGIN
+ 
+l1_lowbit:=DWORD_TO_DINT(Int64_1_dw.x1 AND DW#16#1);
+l2_lowbit:=DWORD_TO_DINT(Int64_2_dw.x1 AND DW#16#1);
+ 
+AddOne:=DWORD_TO_DINT(DINT_TO_DWORD(l1_lowbit) XOR DINT_TO_DWORD(l2_lowbit));
+AddTwo:=DWORD_TO_DINT(DINT_TO_DWORD(l1_lowbit) AND DINT_TO_DWORD(l2_lowbit));
+carry:=0;
+TempDINT1:=DWORD_TO_DINT(SHR(IN:=Int64_1_dw.x1,N:=1));
+TempDINT2:=DWORD_TO_DINT(SHR(IN:=Int64_2_dw.x1,N:=1));
+ 
+retval.LowerDInt:=TempDINT1 + TempDINT2 + AddTwo;
+ 
+IF retval.LowerDInt<0
+THEN
+    carry:=1;
+END_IF;
+ 
+retval.LowerDInt:=DWORD_TO_DINT(SHL(IN:=retval_dw.x1,N:=1));
+retval.LowerDInt:=retval.LowerDInt + AddOne;
+ 
+retval.UpperDInt:=Int64_1.UpperDInt + Int64_2.UpperDInt + carry;
+ 
+OutInt64.UpperDInt:=retval.UpperDInt;
+OutInt64.LowerDInt:=retval.LowerDInt;
+ 
+END_FUNCTION

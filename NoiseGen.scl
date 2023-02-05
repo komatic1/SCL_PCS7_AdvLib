@@ -1,0 +1,73 @@
+Name: FB1863
+Symbolic Name: NoiseGen
+Symbol Comment: Noise Generator
+Family: Genrator
+Version: 5.0
+Author: AdvLib80
+Last modified: 04/13/2011 Size: 358 byte
+
+
+FUNCTION_BLOCK FB11863 // FB1863
+TITLE ='Noise Generator'
+AUTHOR : AdvLib80
+FAMILY : Genrator
+NAME : NoiseGen
+VERSION : '2.0'
+ 
+VAR_INPUT
+  StdDev                        : REAL  := 1.000000e+000;   //standard deviation of the noise signal (variance=StdDev^2)
+  Offset { S7_edit := 'para' }  : REAL := 2.000000e+001;   //meanvalue of the noise signal
+  Enable                        : BOOL  := TRUE;            //noise-enabling
+  Restart                       : BOOL  := TRUE;            //complete restart
+END_VAR
+VAR_OUTPUT
+  Noise                         : STRUCT                    //output noise sample
+   Value                        : REAL ;                    // Value
+   ST                           : BYTE  := B#16#80;         // Signal Status
+  END_STRUCT;   
+END_VAR
+VAR
+  xn                            : DINT ;   
+  m                             : DINT ;                    //parameter
+  d                             : REAL ;   
+  _reserve                      : ARRAY  [0 .. 7 ] OF BYTE  := B#16#0;   
+END_VAR
+VAR_TEMP
+  xnp1                          : DINT ;   
+  produkt                       : DINT ;   
+  ynp1                          : REAL ;   
+  i                             : INT ;   
+END_VAR
+BEGIN
+ 
+IF Restart
+THEN
+    xn:= 11;
+    Restart:=false;
+    Noise.Value:=0.000000e+000;
+    m:=59049;
+    d:=DINT_TO_REAL(m/9);
+ELSE
+    IF Enable
+    THEN
+        produkt:=5*xn+1;
+        xnp1:=produkt MOD m;
+       
+        FOR i:= 1 TO 9 BY 1 DO
+           
+            IF INT_TO_REAL(i-1)*d <= DINT_TO_REAL(xnp1)  AND  INT_TO_REAL(i)*d -1.0 >= DINT_TO_REAL(xnp1)
+            THEN
+                ynp1:=INT_TO_REAL(i);
+            END_IF;
+      
+        END_FOR;
+   
+       ynp1:=(ynp1-5.130000e+000) / 2.592716e+000 - 6.595402e-003;    
+       Noise.Value:=ynp1 * StdDev + Offset;
+       xn:=xnp1;  
+    ELSE
+        Noise.Value:=0.000000e+000;   
+    END_IF;;
+END_IF;
+ 
+END_FUNCTION_BLOCK
