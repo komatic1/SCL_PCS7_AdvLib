@@ -1,0 +1,211 @@
+Name: FB1810
+Symbolic Name: TimerP
+Symbol Comment: Impulsefunction and delayed On/Off Timer
+Family: TIME
+Version: 2.1
+Author: AdvLib80
+Last modified: 10/24/2011
+Use: UDT15,UDT16,FC260
+Size: 980 byte
+
+
+FUNCTION_BLOCK FB11810
+TITLE ='Impulsefunction and delayed On/Off Timer'
+AUTHOR : AdvLib80
+FAMILY : 'TIME'
+NAME : TimerP
+VERSION : '2.1'
+ 
+VAR_INPUT
+  SampleTime    { S7_visible := 'false'; S7_link := 'false'; S7_sampletime := 'true'; S7_param := 'false' }: REAL  := 1.000000e-001;    //Sampling Time [s]
+  Ti            { S7_edit := 'para'; S7_dynamic := 'true' }: REAL ;    //Time [s]
+  Mode          { S7_edit := 'para'; S7_dynamic := 'true' }: INT  := 2;    //0=Pulse,1=ExtP,2=OnDel,3=RetOn-D,4=Off-D
+  Reset         { S7_dynamic := 'true' }: STRUCT    //1=Reset
+   Value    : BOOL ;                                // Value
+   ST       : BYTE  := B#16#80;                     // Signal Status
+  END_STRUCT ;   
+  In            { S7_dynamic := 'true' }: STRUCT    //Value input
+   Value    : BOOL ;                                // Value
+   ST       : BYTE  := B#16#80;                     // Signal Status
+  END_STRUCT ;   
+END_VAR
+ 
+VAR_OUTPUT
+  ErrorNum      { S7_visible := 'false'; S7_dynamic := 'true' }: INT  := -1;    //Error number
+ 
+  Out           { S7_dynamic := 'true' }: STRUCT    //Output
+   Value    : BOOL ;                                // Value
+   ST       : BYTE  := B#16#80;                     // Signal Status
+  END_STRUCT ;   
+ 
+  InvOut        { S7_dynamic := 'true' }: STRUCT    //inverted output Out
+   Value    : BOOL  := TRUE;                        //Value
+   ST       : BYTE  := B#16#80;                     //Signal Status
+  END_STRUCT ;   
+ 
+  TimeRemaining { S7_dynamic := 'true' }: STRUCT     //Time remaining [s]
+   Value    : REAL ;                                 // Value
+   ST       : BYTE  := B#16#80;                      // Signal Status
+  END_STRUCT ;   
+END_VAR
+ 
+VAR
+  SxFirstStart  : BOOL  := TRUE;                    //Initial run.
+  SxEdgeHlp     : BOOL ;                            //pos. edge on input In.Value
+  SxResetHlp    : BOOL ;                            //output was reset by reset comand
+  SxNoTiErr     : BOOL ;                            //No Error
+  SxModeHlp     : INT ;                             //Merker fьr Mode
+  SrPrevTi      : REAL  := -1.000000e-002;          //previous value of Ti
+END_VAR
+ 
+VAR_TEMP
+  nTiErr : INT ;   
+END_VAR
+ 
+BEGIN
+ 
+IF SxFirstStart                                     // first start
+THEN
+    ErrorNum:=0;
+    SxResetHlp:=true;
+    SxFirstStart:=false;
+END_IF;
+ 
+IF Reset.Value                                      // reset
+THEN
+    SxResetHlp:=true;
+    TimeRemaining.Value:=0.000000e+000;
+    Out.Value:=false;
+ELSE                                                // normal work
+    IF  Ti < SampleTime                             // wrong time set
+    THEN
+        ErrorNum:=11;  
+        TimeRemaining.Value:=0.000000e+000;
+        Out.Value:=false;
+    ELSE
+        IF REAL_TO_DWORD(Ti)<>REAL_TO_DWORD(SrPrevTi)  // if time changed
+        THEN
+            SrPrevTi:=Ti;
+            nTiErr:=0;
+           
+            Ti:=ChkREAL(In :=Ti,ErrNum :=nTiErr);      // check if time is good number       
+ 
+            IF nTiErr = 1 OR nTiErr = 3 THEN ErrorNum:=33; ELSE ErrorNum:=0; END_IF;
+ 
+            SxNoTiErr:=ErrorNum = 0;
+ 
+        END_IF;
+           
+ 
+        IF TimeRemaining.Value>=SampleTime              // calculate rest of time
+        THEN
+            TimeRemaining.Value:=TimeRemaining.Value-SampleTime;
+        ELSE      
+            TimeRemaining.Value:=0.000000e+000; 
+        END_IF;     
+ 
+        IF Mode>4 OR Mode<0                             // check if mode is correct
+        THEN
+            ErrorNum:=1;
+        ELSE
+            IF SxNoTiErr THEN ErrorNum:=0; END_IF;
+            SxModeHlp:=Mode;
+        END_IF;     
+ 
+        IF NOT SxEdgeHlp AND In.Value                   // front on the input
+        THEN
+            IF SxModeHlp < 4
+            THEN
+                TimeRemaining.Value:=Ti;
+                SxResetHlp:=false;
+            END_IF;
+        END_IF;   
+ 
+       
+    CASE SxModeHlp OF                                   //0=Pulse,1=ExtP,2=OnDel,3=RetOn-D,4=Off-D
+        0 :
+            IF In.Value
+            THEN
+                IF TimeRemaining.Value>0.000000e+000
+                THEN
+                    Out.Value:=true;
+                ELSE
+                    Out.Value:=false;
+                END_IF;
+            ELSE
+                TimeRemaining.Value:=0.000000e+000;
+                Out.Value:=false;
+            END_IF;
+           
+        1 :
+            IF TimeRemaining.Value>0.000000e+000
+            THEN
+                Out.Value:=true;
+            ELSE
+                Out.Value:=false;
+            END_IF;
+           
+        2 :
+            IF In.Value
+            THEN
+                IF TimeRemaining.Value>0.000000e+000
+                THEN
+                    Out.Value:=false;
+                ELSE
+                    Out.Value:= NOT SxResetHlp;
+                END_IF;
+            ELSE
+                TimeRemaining.Value:=0.000000e+000;
+                Out.Value:=false;
+            END_IF;
+ 
+        3 :
+            IF TimeRemaining.Value>0.000000e+000
+            THEN
+                Out.Value:=false;
+            ELSE
+                IF SxResetHlp
+                THEN
+                    Out.Value:=false;
+                ELSE
+                    Out.Value:=true;
+                END_IF;
+            END_IF;
+                
+        4 :
+            IF NOT In.Value AND SxEdgeHlp
+            THEN
+                IF Ti<=SampleTime
+                THEN
+                    OK:=false;
+                    TimeRemaining.Value:=0.000000e+000;
+                    Out.Value:=false;
+                ELSE
+                    TimeRemaining.Value:=Ti;
+                END_IF;
+            END_IF;
+           
+            IF TimeRemaining.Value>0.000000e+000
+            THEN
+                Out.Value:=true;
+            ELSE
+                Out.Value:=In.Value;   
+            END_IF;
+    ELSE:                                                           // wrong mode
+        ErrorNum:=1;
+        TimeRemaining.Value:=0.000000e+000;
+        Out.Value:=false;
+    END_CASE;
+ 
+    END_IF;       
+END_IF;
+ 
+SxEdgeHlp:=In.Value;
+InvOut.Value:= NOT Out.Value;
+Out.ST:=In.ST;
+ 
+IF ErrorNum = 33 AND In.ST <> B#16#0 THEN Out.ST:=B#16#28; END_IF;
+ 
+InvOut.ST:=Out.ST;
+ 
+END_FUNCTION_BLOCK
