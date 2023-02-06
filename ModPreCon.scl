@@ -1,0 +1,240 @@
+// Name: FB1843
+// Symbolic Name: ModPreCon
+// Symbol Comment: Model predictive controller
+// Family: Control
+// Version: 2.1
+// Author: AdvLib80
+// Last modified: 09/10/2012
+// Use: FB1444,SFB36,FC260,FC369,SFC20,SFC6
+// Size: 27040 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+DV[1]:=DV1.Value;
+MV_Traj[1]:=ChkREAL(In :=  MV1Traj
+            ,ErrNum := nTemp
+            );
+IF     nTemp=1 OR     nTemp=3 THEN
+    ErrorNum:=36;
+END_IF;
+MV_Traj[2]:=ChkREAL(In :=  MV2Traj
+            ,ErrNum := nTemp
+            );
+IF     nTemp=1 OR     nTemp=3 THEN
+    ErrorNum:=37;
+END_IF;
+MV_Traj[3]:=ChkREAL(In :=  MV3Traj
+            ,ErrNum := nTemp
+            );
+IF     nTemp=1 OR     nTemp=3 THEN
+    ErrorNum:=38;
+END_IF;
+MV_Traj[4]:=ChkREAL(In :=  MV4Traj
+            ,ErrNum := nTemp
+            );
+IF     nTemp=1 OR     nTemp=3 THEN
+    ErrorNum:=39;
+END_IF;
+MV_Excite[1]:=MV1Excite.Value;
+MV_Excite[2]:=MV2Excite.Value;
+MV_Excite[3]:=MV3Excite.Value;
+MV_Excite[4]:=MV4Excite.Value;
+IF xSimAct THEN
+    IF AutAct.Value THEN
+        CV[1]:=SP1Out.Value;
+        CV[2]:=SP2Out.Value;
+        CV[3]:=SP3Out.Value;
+        CV[4]:=SP4Out.Value;
+    ELSIF SimOnLi.Value AND SimLiOp.Value THEN
+        CV[1]:=SimCV1Li.Value;
+        CV[2]:=SimCV2Li.Value;
+        CV[3]:=SimCV3Li.Value;
+        CV[4]:=SimCV4Li.Value;
+    ELSE
+        CV[1]:=SimCV1;
+        CV[2]:=SimCV2;
+        CV[3]:=SimCV3;
+        CV[4]:=SimCV4;
+    END_IF;   
+    CV1Out.Value:=CV[1];
+    CV2Out.Value:=CV[2];
+    CV3Out.Value:=CV[3];
+    CV4Out.Value:=CV[4];
+    CV1Out.ST:=B#16#60;
+    CV2Out.ST:=B#16#60;
+    CV3Out.ST:=B#16#60;
+    CV4Out.ST:=B#16#60;
+ELSE
+    CV1Out.Value:=CV[1];
+    CV2Out.Value:=CV[2];
+    CV3Out.Value:=CV[3];
+    CV4Out.Value:=CV[4];
+    CV1Out.ST:=CV1.ST;
+    CV2Out.ST:=CV2.ST;
+    CV3Out.ST:=CV3.ST;
+    CV4Out.ST:=CV4.ST;
+END_IF;
+SimCV1:=CV[1];
+SimCV2:=CV[2];
+SimCV3:=CV[3];
+SimCV4:=CV[4];
+IF SimLiOp.Value THEN
+    SimOn:=SimOnLi.Value;
+END_IF;
+IF     ModLiOp.Value THEN
+    IF xFeat_OnlyActPos THEN
+        IF AutModLi.Value AND DB_Loaded THEN
+            AutAct.Value:=true;
+        ELSE
+            AutAct.Value:=false;
+        END_IF;   
+        ManModLi.Value:=false;
+    ELSE
+        IF AutModLi.Value AND DB_Loaded THEN
+            AutAct.Value:=true;
+        ELSIF ManModLi.Value THEN
+            AutAct.Value:=false;
+        END_IF;
+    END_IF;
+ELSE
+    IF ManModOp THEN
+        AutAct.Value:=false;
+    ELSE
+        IF AutModOp AND DB_Loaded THEN
+            AutAct.Value:=true;
+        END_IF;
+    END_IF;       
+END_IF;
+ManModOp:=false;
+AutModOp:=false;
+IF xFeat_ResetInLi THEN
+    ManModLi.Value:=false;
+    AutModLi.Value:=false;
+END_IF;
+ManAct.Value:= NOT     AutAct.Value;
+IF AutAct.Value THEN
+    xOS_Perm_TypeMan:=false;
+END_IF;
+IF NOT     AutAct.Value AND SP_TrkCV THEN
+    SP1.Value:=CV1.Value;
+    SP2.Value:=CV2.Value;
+    SP3.Value:=CV3.Value;
+    SP4.Value:=CV4.Value;
+    SP[1]:=SP1.Value;
+    SP[2]:=SP2.Value;
+    SP[3]:=SP3.Value;
+    SP[4]:=SP4.Value;
+    xOS_Perm_TypeSP_Int1:=false;
+    xOS_Perm_TypeSP_Int2:=false;
+    xOS_Perm_TypeSP_Int3:=false;
+    xOS_Perm_TypeSP_Int4:=false;
+ELSIF NOT Optimizer.Bad AND OptimAct THEN
+    SP[1]:=Optimizer.X1Opt;
+    SP[2]:=Optimizer.X2Opt;
+    SP[3]:=Optimizer.X3Opt;
+    SP[4]:=Optimizer.X4Opt;
+ELSE
+    SP[1]:=SP1.Value;
+    SP[2]:=SP2.Value;
+    SP[3]:=SP3.Value;
+    SP[4]:=SP4.Value;
+END_IF;
+J_Actual:=J0;
+FOR laufy:=1 TO NumberCVs BY 1 DO
+    J_Actual:=GradY[laufy]*CV[laufy]+J_Actual;
+END_FOR;
+FOR laufu:=1 TO NumberMVs BY 1 DO
+    J_Actual:=GradU[laufu]*uout[laufu]+J_Actual;
+END_FOR;
+FOR laufy:=1 TO NumberCVs BY 1 DO
+    IF SP[laufy]>SPHiLim[laufy] THEN
+        SP[laufy]:=SPHiLim[laufy];
+    END_IF;   
+    IF SP[laufy]<SPLoLim[laufy] THEN
+        SP[laufy]:=SPLoLim[laufy];
+    END_IF;   
+END_FOR;
+SP1Out.Value:=SP[1];
+SP2Out.Value:=SP[2];
+SP3Out.Value:=SP[3];
+SP4Out.Value:=SP[4];
+SP1OpOut.Value:=SP1.Value;
+SP2OpOut.Value:=SP2.Value;
+SP3OpOut.Value:=SP3.Value;
+SP4OpOut.Value:=SP4.Value;
+IF ufaktorzaehler=1 THEN
+    ddvhilf:=ddv;
+    FOR laufu:=1 TO NumberDVs BY 1 DO
+        ddv[(laufu-1)*n+1]:=DV[laufu]-dalt[laufu];
+        FOR lauf:=2 TO n BY 1 DO
+            ddv[(laufu-1)*n+lauf]:=ddvhilf[(laufu-1)*n+lauf-1];
+        END_FOR;
+    END_FOR;
+    dalt[1]:=DV[1];
+    FOR laufy:=1 TO NumberCVs BY 1 DO
+        IF PreFilt[laufy]>rSampleTime THEN
+            alpha[laufy]:=EXP(-rSampleTime*INT_TO_REAL(ufaktor)*6.0/PreFilt[laufy]);
+        ELSE;
+            alpha[laufy]:=0.0;
+        END_IF;
+        w[(laufy-1)*np+1]:=CV[laufy];
+        FOR laufp:=2 TO np BY 1 DO
+            w[(laufy-1)*np+laufp]:=(alpha[laufy]*w[(laufy-1)*np+laufp-1])+(1.0-alpha[laufy])*SP[laufy];
+        END_FOR;
+    END_FOR;
+    IF DB_Loaded THEN
+        FOR laufy:=1 TO NumberCVs BY 1 DO
+            FOR laufp:=1 TO np BY 1 DO
+                faltungssumme:=0.0;
+                FOR laufu:=1 TO NumberMVs BY 1 DO
+                    index1:=(laufu-1)*n;
+                    FOR lauf:=1 TO n BY 1 DO
+                        faltungssumme:=(g[laufy,laufu,laufp+lauf]-g[laufy,laufu,lauf])*duv[index1+lauf]+faltungssumme;
+                    END_FOR;
+                END_FOR;
+                IF DV_On THEN
+                    FOR laufu:=1 TO NumberDVs BY 1 DO
+                        index1:=(laufu-1)*n;
+                        FOR lauf:=1 TO n BY 1 DO
+                            faltungssumme:=(gz[laufy,laufu,laufp+lauf]-gz[laufy,laufu,lauf])*ddv[index1+lauf]+faltungssumme;
+                        END_FOR;
+                    END_FOR;
+                END_IF;
+                f[(laufy-1)*np+laufp]:=CV[laufy]+faltungssumme;
+            END_FOR;
+        END_FOR;
+    END_IF;   
+    IF AutAct.Value OR PredictMode THEN
+        FOR laufy:=1 TO NumberCVs BY 1 DO
+            FOR lauf:=(laufy-1)*np+1 TO laufy*np BY 1 DO
+                w[lauf]:=w[lauf]-f[lauf];
+                IF SP_DeadBand[laufy]<>0.0  THEN
+                    IF w[lauf]<0.0 THEN
+                        w[lauf]:=w[lauf]+SP_DeadBand[laufy];
+                        IF w[lauf]>0.0 THEN
+                            w[lauf]:=0.0;
+                        END_IF;
+                    ELSE
+                        w[lauf]:=w[lauf]-SP_DeadBand[laufy];
+                        IF w[lauf]<0.0 THEN
+                            w[lauf]:=0.0;
+                        END_IF;
+                    END_IF;   
+                END_IF;
+            END_FOR;
+        END_FOR;
+        FOR laufu:=1 TO NumberMVs BY 1 DO
+            du[laufu]:=0.0;
+            FOR lauf:=1 TO NumberCVs*np BY 1 DO
+                du[laufu]:=du[laufu]+C[laufu,lauf]*w[lauf];
+            END_FOR;
+            du[laufu]:=du[laufu]+MV_Traj[laufu]-MV_TrajAlt[laufu];
+            MV_TrajAlt[laufu]:=MV_Traj[laufu];
+            MV_Pred[laufu]:=MV_Trk[laufu]+du[laufu];
+            IF MV_Pred[laufu]>MVHiLim[laufu] THEN
+                MV_Pred[laufu]:=MVHiLim[laufu];
+            ELSIF MV_Pred[laufu]<MVLoLim[laufu] THEN
+                MV_Pred[laufu]:=MVLoLim[laufu];
+            END_IF;
+        END_FOR;
+    END_IF;   
+ELSE 

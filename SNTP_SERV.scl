@@ -1,0 +1,417 @@
+(*
+    08/2013
+    Author: GER I S WEST IA APPS   
+   
+    Simple Network Time Protocol - RFC 4330
+    SNTP - Server implementation using UDP with OUC (Open User Communication)
+   
+    This Fb answers NTP Client requests. The internal clock is used as source.
+    Be sure to set the clock to UTC!
+   
+    Parameter:
+    Startup: Use System Flag "First Run"
+   
+    ReferenceIdentifier: Set to LOCL (uncalibrated local Clock) if not Set. If a external Reference (recommended)
+    set to '1' for DCF77 or '2' for GPS
+   
+    LastTimeSet: Set only if GPS or DCF77 time source is used. Update every time the internal clock is synchronized
+   
+    OUC_Con_ID: Connection reference used bei connection blocks. Default is 0FFF. Change if 0FFF is allready used.
+    *)
+ 
+    FUNCTION_BLOCK "SNTP_SERV"
+    TITLE = 'SNTP Server'
+    AUTHOR : AV
+    FAMILY : NET
+    VERSION : '0.1'
+    //Answers NTP requests
+     
+     
+     
+       VAR_INPUT
+          Startup : Bool;   // Detect first run
+          ReferenceIdentifier : BYTE := 0;   // 0=LOCL (uncalibrated local Clock); 1=DCF; 2=GPS
+          LastTimeSet : DT := DT#1990-01-01-00:00:00;   // Should be set when Sytem time is set by DCF or GPS
+          LastTimeSetStuff AT LastTimeSet : STRUCT
+            Year : BYTE;
+            Month : BYTE;
+            Day : BYTE;
+            Hour : BYTE;
+            Minute : BYTE;
+            Second : BYTE;
+            MilliSecond : WORD;
+          END_STRUCT;
+          OUC_Con_ID : WORD := W#16#1;   // ID must be unique
+     
+          // Valid Values for Local Device ID
+          // B#16#01 (IF1) bei WinAC RTX, IM151-8 PN/DP CPU, S7-1200
+          // B#16#02 CPU31x-2 PN/DP, CPU314C-2 PN/DP und IM154-8 CPU
+          // B#16#03 CPU319-3 PN/DP, CPU315T-3 PN/DP, CPU317T-3 PN/DP, CPU317TF-3 PN/DP
+          // B#16#05 CPU412-2 PN, CPU414-3 PN/DP, CPU416-3 PN/DP und CPU41x-5H PN/DP (Rack 0)
+          // B#16#06 (IF2) bei WinAC RTX
+          // B#16#0B (IF3) bei WinAC RTX
+          // B#16#0F (IF4) bei WinAC RTX
+          // B#16#15 CPU 41x-5H PN/DP (Rack 1)
+          LocDevID : BYTE := 0;
+       END_VAR
+      
+     
+       VAR_OUTPUT
+          ERROR : BOOL;   // ERROR bit
+          STATUS : DWORD;
+       END_VAR
+     
+       VAR
+          Send_Buf : Struct   // Data to Client
+             Flags : Array[0..3] of Byte;
+             Root_Delay : DWord;
+             Root_Dispersion : DWord;
+             Reference_identifier : ARRAY [0..3] of Char;
+             Reference_TimeStamp_Sec : DWORD;
+             Reference_TimeSTamp_Frac : DWORD;  
+             Originate_TimeStamp_Sec : DWORD;
+             Originate_TimeStamp_Frac : DWORD;
+             Receive_TimeStamp_Sec : DWORD;
+             Receive_TimeSTamp_Frac : DWORD; 
+             Transmit_TimeStamp_Sec : DWORD;
+             Transmit_TimeStamp_Frac : DWORD;        
+            
+          END_STRUCT;
+          Receive_Buf : Struct   // Date from Client
+             Flags : Array[0..3] of Byte;
+             Root_Delay : DWord;
+             Root_Dispersion : DWord;
+             Reference_identifier : DWord;
+             Reference_TimeStamp_Sec : DWord;
+             Reference_TimeSTamp_Frac : DWord;
+             Originate_TimeStamp_Sec : DWord;
+             Originate_TimeSTamp_Frac : DWord;
+             Receive_TimeStamp_Sec : DWord;
+             Receive_TimeSTamp_Frac : DWord;
+             Transmit_TimeStamp_Sec : DWord;
+             Transmit_TimeSTamp_Frac : DWord;
+             KeyIdentifier : DWord;
+             MessageDigest : Array[0..15] of Byte;
+          END_STRUCT;
+          TURCV_Instance : TURCV;
+          RecSenderData  : TADDR_Par;   // Client Address Data
+          RecBusy : Bool;
+          RecError : Bool;
+          RecNdr : Bool;
+          RecLen : INT; //UINT
+          RecStatus : WORD;
+          TCON_Instance  : TCON;
+          ConReq : Bool;
+          ConPar  : TCON_PAR;
+          ConDone : Bool;
+          ConBusy : Bool;
+          ConError : Bool;
+          ConStatus : Word;
+          State : Int;   // 0 = Startup; 1 = Wait for Client request; 2 = Send Time to Client
+          TUSEND_Instance  : TUSEND;
+          SendReq : Bool;
+          SendDone : Bool;
+          SendBusy : Bool;
+          SendError : Bool;
+          SendStatus : Word;
+          SendData : TADDR_PAR;
+          RecReq : Bool;
+          SendReqDone : BOOL;
+          LastStartup: BOOL;
+       END_VAR
+     
+       VAR_TEMP
+          SysTime : DT;   // System Time
+          SysTimeStuff AT SysTime : STRUCT
+            Year : BYTE;
+            Month : BYTE;
+            Day : BYTE;
+            Hour : BYTE;
+            Minute : BYTE;
+            Second : BYTE;
+            MilliSecond : WORD;
+        END_STRUCT;
+          YEAR : INT;               
+          MONTH : INT;              
+          DAY : INT;                
+          HOUR : INT;               
+          MINUTE : INT;             
+          SECOND : INT;             
+          MILLISECOND : INT;        
+          WDAY : INT;                 // WeekDay [1..7] 1=Sunday
+          ret : Int;   // Function Return value
+          tmp : WORD;   // UINT Temporaray Variable
+          xms : DWORD;
+          NTPTime_frac : DWORD;
+          NTPTime_sec : DWORD;
+       END_VAR
+     
+     
+    BEGIN
+    // Init everything on first run
+    IF Startup AND NOT LastStartup THEN
+       ConReq := FALSE;
+       ConDone := FALSE;
+       ConBusy := FALSE ;
+       ConError := FALSE;
+       ConStatus := 0;
+     
+        
+       RecReq := FALSE;
+       RecBusy := FALSE;
+       RecError := FALSE;
+       RecNdr := FALSE;
+       RecStatus := 0;
+     
+       
+       SendReq := FALSE;
+       SendBusy := FALSE;
+       SendError := FALSE;
+       SendDone := FALSE;
+       RecStatus := 0;
+       SendReqDone := FALSE;
+     
+        
+       STATUS := 0;
+        
+       // Set connection parameters
+       ConPar.BLOCK_LENGTH := 64;
+       ConPar.ID :=  OUC_Con_ID;       // Highest Connection ID used, change if already in use
+       ConPar.ACTIVE_EST := FALSE;
+       ConPar.CONNECTION_TYPE := 19; // 19: UDP -> SNTP uses UDP
+       ConPar.LOCAL_DEVICE_ID := 1;  // S7-1200 1: local IE Interface
+       ConPar.LOCAL_TSAP_ID_LEN := 2;
+       ConPar.REM_SUBNET_ID_LEN := 0;
+       ConPar.REM_STADDR_LEN := 0;
+       ConPar.REM_TSAP_ID_LEN := 0;
+       ConPar.LOCAL_TSAP_ID[1] := 0;   // Port No High Byte
+       ConPar.LOCAL_TSAP_ID[2] := 123; // Port No Low Byte -> SNTP uses Port 123 (7Bh)
+        
+       State := 0;
+    END_IF;
+     
+    //Check Local Device ID 
+    IF LocDevID = B#16#01 OR LocDevID = B#16#02 OR LocDevID = B#16#03 OR LocDevID = B#16#05
+          OR LocDevID = B#16#06 OR LocDevID = B#16#0B OR LocDevID = B#16#0F  OR LocDevID = B#16#15 THEN
+      ConPar.LOCAL_DEVICE_ID := LocDevID;
+      STATUS := STATUS AND W#2#01111111;
+    ELSE
+      ERROR:= TRUE;
+      STATUS := STATUS OR W#2#10000000;
+      RETURN;
+    END_IF;   
+       
+    IF State = 0 THEN // Initiate connection
+      IF Startup = False THEN ConReq := True; END_IF;
+      
+      TCON_Instance(REQ:=ConReq, ID:=OUC_Con_ID, CONNECT:= ConPar);
+      ConBusy := TCON_Instance.Busy;
+      ConDone := TCON_Instance.Done;
+      ConError := TCON_Instance.Error;
+      ConStatus := TCON_Instance.Status;
+         
+      IF ConDone = true AND ConError = false THEN
+     
+        State := 1; //Change State to TCON OK
+      END_IF;
+         
+     
+    END_IF;
+       
+    IF State = 1 THEN // Wait for NTP-Client request
+      IF RecBusy = FALSE THEN
+        RecReq := True;
+      END_IF;
+         
+      TURCV_Instance(ID:=OUC_Con_ID, EN_R := RecReq, LEN := 68, DATA := Receive_Buf, ADDR:=RecSenderData);
+      RecBusy := TURCV_Instance.BUSY;
+      RecError := TURCV_Instance.ERROR;
+      RecNdr := TURCV_Instance.NDR;
+      RecLen := TURCV_Instance.RCVD_LEN;
+      RecStatus := TURCV_Instance.STATUS; 
+         
+     
+      // Check if new data arrived
+      IF RecNdr = TRUE AND RecError = FALSE THEN
+     
+        RecReq := FALSE;
+        // Check received length and MODE  ( 3 = Client)  |LI | VN  |MODE | 
+        IF RecLen = 48 AND ((Receive_Buf.Flags[0] AND BYTE#2#00000011) =  BYTE#2#00000011) THEN 
+          State := 2;
+        END_IF; 
+      END_IF;
+    END_IF;
+       
+    // Send time to client
+    IF State = 2 THEN
+      IF SendDone = TRUE OR SendError = TRUE THEN
+        SendReq := FALSE;
+        SendDone := FALSE;
+        SendError := FALSE;
+        SendReqDone := False;
+        State := 1;
+        RETURN;
+      END_IF;
+           
+      IF SendReqDone = False THEN
+        // Set Address and port for client
+        SendData.REM_IP_ADDR[1] := RecSenderData.REM_IP_ADDR[1];
+        SendData.REM_IP_ADDR[2] := RecSenderData.REM_IP_ADDR[2];
+        SendData.REM_IP_ADDR[3] := RecSenderData.REM_IP_ADDR[3];
+        SendData.REM_IP_ADDR[4] := RecSenderData.REM_IP_ADDR[4];
+      
+        SendData.REM_PORT_NR := RecSenderData.REM_PORT_NR;
+         
+        // Set NTP Data
+        Send_Buf.Root_Delay  := 0;
+        Send_Buf.Root_Dispersion  := 0;
+         
+        // Read System Time
+        // Asume invalid time if year < 2010
+        ret := READ_CLK(CDT := SysTime);
+         
+          //IF ret <> 0 OR SysTime.YEAR < 2010 THEN
+          IF ret <> 0 OR (BCD_TO_INT(SysTimeStuff.YEAR) < 10) THEN
+            Send_Buf.Flags[1] := 0;                // Stratum
+          ELSE
+            Send_Buf.Flags[1] := 1;                // Stratum
+          END_IF;
+       
+        // Calculate NTP Time as secs since 1900-1-1
+        NTPTime_sec := DINT_TO_DWORD((DATE_TO_DINT(DT_DATE(SysTime)) * 86400) + (TOD_TO_DINT(DT_TOD(SysTime)) / 1000) + DINT#631152000 + DINT#2208988800);
+       
+        // Calculate fractional part of NTP - Timestamp
+        // Eliminate Weekday to get ms  
+        xms := DINT_TO_DWORD(BCD_TO_DINT(SHR(IN := SysTimeStuff.MILLISECOND AND W#16#FFF0, N := 4)));
+       
+        // Convert to pico seconds wit ms precision ms * 2^32 / 1000
+        NTPTime_frac := DINT_TO_DWORD((DWORD_TO_DINT(xms) * DINT#65536) / DINT#1000);
+        NTPTime_frac := SHL(IN := NTPTime_frac, N := 16);
+       
+        // Fill buffer with Reiceive and Transmit Timestamp
+        Send_Buf.Receive_TimeStamp_sec := NTPTime_sec;
+        Send_Buf.Receive_TimeStamp_frac := NTPTime_frac;
+       
+        Send_Buf.Transmit_TimeStamp_sec := NTPTime_sec;
+        Send_Buf.Transmit_TimeStamp_frac := NTPTime_frac;
+       
+        // Set Reference Timestamp to actual time if no other information available
+        IF LastTimeSet = DT#1990-01-01-00:00:00 THEN
+          Send_Buf.Reference_TimeStamp_sec := NTPTime_sec;
+          Send_Buf.Reference_TimeStamp_frac := NTPTime_frac;
+        ELSE   
+          // Calculate Reference Timestamp
+          // Calculate NTP Time as secs since 1900-1-1
+          Send_Buf.Reference_TimeStamp_sec := DINT_TO_DWORD((DATE_TO_DINT(DT_DATE(LastTimeSet)) * 86400) + (TOD_TO_DINT(DT_TOD(LastTimeSet)) / 1000) + DINT#631152000 + DINT#2208988800);
+       
+          // Calculate fractional part of NTP - Timestamp
+          // Eliminate Weekday to get ms  
+          xms := DINT_TO_DWORD(BCD_TO_DINT(SHR(IN := LastTimeSetStuff.MILLISECOND AND W#16#FFF0, N := 4)));
+       
+          // Convert to pico seconds wit ms precision ms * 2^32 / 1000
+          Send_Buf.Reference_TimeStamp_frac := DINT_TO_DWORD((DWORD_TO_DINT(xms) * DINT#65536) / DINT#1000);
+          Send_Buf.Reference_TimeStamp_frac := SHL(IN := Send_Buf.Reference_TimeStamp_frac, N := 16);   
+        END_IF;    
+                 
+        // Fill Send Buffer according to RFC 4330
+        Send_Buf.Flags[0] := Byte#2#00011100;         // Mode - No Warning, NTP Version 3, Server
+        Send_Buf.Flags[2] := Receive_Buf.Flags[2];    // Poll - Peer polling intervall copied from request
+        Send_Buf.Flags[3] := Byte#16#FA;              // Clock Precision -6 =-0,015625s
+        Send_Buf.Root_Delay := 0;                     // Root Delay
+        Send_Buf.Root_Delay := 0;                     // Root Dispersion
+         
+        //Set reference identifier according to RFC 4330, only LOCL, DCF and GPS used
+        IF ReferenceIdentifier = 1 THEN
+          Send_Buf.Reference_identifier[0] := 'D';
+          Send_Buf.Reference_identifier[1] := 'C';
+          Send_Buf.Reference_identifier[2] := 'F';
+        ELSIF ReferenceIdentifier = 2 THEN 
+          Send_Buf.Reference_identifier[0] := 'G';
+          Send_Buf.Reference_identifier[1] := 'P';
+          Send_Buf.Reference_identifier[2] := 'S';
+        ELSE
+          Send_Buf.Reference_identifier[0] := 'L';
+          Send_Buf.Reference_identifier[1] := 'O';
+          Send_Buf.Reference_identifier[2] := 'C';
+          Send_Buf.Reference_identifier[3] := 'L';
+        END_IF;       
+       
+        // Copy received originate Timestamp to Transmit Timestamp
+        Send_Buf.Originate_TimeStamp_Sec := Receive_Buf.Transmit_TimeStamp_Sec;
+        Send_Buf.Originate_TimeSTamp_Frac := Receive_Buf.Transmit_TimeSTamp_Frac;
+         
+        SendReq := TRUE; // Send
+        SendReqDone := TRUE;
+     
+        END_IF;
+      END_IF;
+       
+    TUSEND_Instance(REQ:=SendReq,ID:=OUC_Con_ID, LEN:= 48, DATA:=Send_Buf, ADDR:=SendData);
+    SendDone := TUSEND_Instance.DONE;
+    SendBusy := TUSEND_Instance.BUSY;
+    SendError := TUSEND_Instance.ERROR;  
+    SendStatus := TUSEND_Instance.STATUS;
+     
+    SendReq := FALSE;
+         
+    //set output values
+         
+      IF ConError OR SendError OR RecError THEN
+        ERROR := 1;
+        IF ConError THEN
+          STATUS:=(STATUS AND 16#10000);
+          STATUS:= (STATUS OR ConStatus);     
+        ELSIF SendError THEN
+          STATUS:=(STATUS AND 16#20000);
+          STATUS:= (STATUS OR SendStatus);
+        ELSIF RecError THEN
+          STATUS:=(STATUS AND 16#30000);
+          STATUS:= (STATUS OR RecStatus);
+        END_IF;
+       
+      ELSE
+        ERROR:= 0;
+        STATUS:= 16#0;
+    END_IF;
+       
+    LastStartup := Startup;  
+    (*
+    NTP Packet Header - Details see RFC 4330
+                                   1                   2                   3
+               0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |LI | VN  |Mode |    Stratum    |     Poll      |   Precision  |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                          Root  Delay                          |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                       Root  Dispersion                        |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                     Reference Identifier                      |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                                                               |
+              |                    Reference Timestamp (64)                   |
+              |                                                               |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                                                               |
+              |                    Originate Timestamp (64)                   |
+              |                                                               |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                                                               |
+              |                     Receive Timestamp (64)                    |
+              |                                                               |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                                                               |
+              |                     Transmit Timestamp (64)                   |
+              |                                                               |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                 Key Identifier (optional) (32)                |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+              |                                                               |
+              |                                                               |
+              |                 Message Digest (optional) (128)               |
+              |                                                               |
+              |                                                               |
+              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    *)
+          
+    END_FUNCTION_BLOCK

@@ -1,0 +1,3271 @@
+// Name: FB1809
+// Symbolic Name: DoseL
+// Symbol Comment: Dose measurement - Large
+// Family: Dosage
+// Version: 4.0
+// Author: AdvLib82
+// Last modified: 11/19/2015
+// Use: SFB35,FC260,FC369,SFC20,SFC6
+// Size: 23178 bytes
+// Signature: generiert vom SCL Ьbersetzer Version: SCLCOMP K05.03.08.02_01.02.00.01 release
+
+{
+Scl_ResetOptions ; 
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ; 
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ; 
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+
+FUNCTION_BLOCK FB11809
+TITLE ='Dose Measurement - Large'
+{ S7_m_c := 'true'; S7_alarm_ui := '1'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLib82
+FAMILY : Dosage
+NAME : DoseL
+VERSION : '4.0'
+
+
+VAR_INPUT
+  MeterType { S7_visible := 'false' }: BOOL ;    //Upsizing/Downsizing Metering: 0=Upsizing  1=Downsizing
+  Gain { S7_edit := 'para'; S7_visible := 'false' }: STRUCT     //Adjustable Factor
+   Value : REAL  := 1.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  NumSample { S7_visible := 'false' }: INT ;    //No. of Samples for Moving Average
+  TI { S7_edit := 'para'; S7_dynamic := 'true' }: STRUCT     //Integral Time Constant [s]
+   Value : REAL  := 1.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  StandStill { S7_dynamic := 'true' }: STRUCT     //Feedback from Dose Device
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  DribbIn { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: REAL ;    //Dribble Value
+  DribbMax { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: REAL  := 100.0;    //Dribble Value Maximum
+  DCF { Op_Level := '2'; S7_visible := 'false'; S7_m_c := 'true' }: REAL  := 2.500000e+001;    //Dribbling Correction Factor [%]
+  DribbCor { Op_Level := '2'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Dribbling Correction On/Off
+  RelaxTime { Op_Level := '2'; S7_edit := 'para'; S7_visible := 'false'; S7_m_c := 'true' }: REAL  := 3.0;    //Relax Time [s]
+  SP_LiOp { S7_edit := 'para'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Select: 1=Linking, 0=Operator Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_ExtOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Input to Select External Setpoint
+  SP_IntOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator Input to Select Internal Setpoint
+  SP_ExtLi { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Linkable Input to Select External Setpoint
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_IntLi { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Linkable Input to Select Internal Setpoint
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_TrkExt { Op_Level := '3'; S7_edit := 'para'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL  := TRUE;    //1: Internal SPs tracks to external SPs in external mode
+  DQ_Int { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Quantity setpoint internal
+  DQ_Ext { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Quantity setpoint external
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_HiLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint high limit
+   Value : REAL  := 100.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  DQ_LoLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint low limit
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_Int { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Quantity setpoint factor internal (fine dose)
+  DQ2_Ext { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Quantity setpoint factor external (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_HiLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint factor high limit (fine dose)
+   Value : REAL  := 100.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  DQ2_LoLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint factor low limit (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_AH_Tol { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: REAL ;    //Quantity high alarm tolerance band (overdose)
+  DQ_AL_Tol { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: REAL ;    //Quantity lower alarm tolerance band (underdose)
+  DQ_A_DC { S7_visible := 'false'; S7_edit := 'para' }: REAL ;    //Quantity alarm delay time coming [s]
+  DQ_A_DG { S7_visible := 'false'; S7_edit := 'para' }: REAL ;    //Quantity alarm delay time going [s]
+  DQ_AH_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Quantity high alarm enable (overdose)
+  DQ_AL_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Quantity low alarm enable (underdose)
+  DQ_AH_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Message enable for quantity high alarm (overdose)
+  DQ_AL_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Message enable for quantity low alarm (underdose)
+  DQ_Unit { S7_m_c := 'true'; S7_unit := ''; S7_edit := 'para' }: INT  := 1088;    //Engineering units of dosing quantity
+  SP_Int { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: REAL ;    //Flow rate internal setpoint
+  SP_Ext { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Flow rate external setpoint (coarse dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_HiLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Flow rate setpoint high limit (coarse dose)
+   Value : REAL  := 100.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  SP_LoLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Flow rate setpoint low limit (coarse dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2_Int { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Flow rate internal setpoint (fine dose)
+  SP2_Ext { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Flow rate external setpoint (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2_HiLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Flow rate setpoint high limit (fine dose)
+   Value : REAL  := 100.0;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  SP2_LoLim { Op_Level := '2'; S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Flow rate setpoint low limit (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Process value (Analog input)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_Unit { S7_m_c := 'true'; S7_unit := ''; S7_edit := 'para' }: INT  := 1349;    //Engineering units of PV
+  SimPV { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //PV Simulation Value, tracks when not in simulation
+  SimPV_Li { S7_visible := 'false' }: STRUCT     //Linkable simulation value PV
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SimDQ { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Dosing quantity simulation value, tracks when not in simulation
+  SimDQ_Li { S7_visible := 'false' }: STRUCT     //Linkable simulation value DQ
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_AH_Lim { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL  := 100.0;    //PV - Flow rate high alarm limit (coarse dose)
+  PV_AL_Lim { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL ;    //PV - Flow rate low alarm limit (coarse dose)
+  PV_Hyst { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL  := 1.0;    //PV - Flow rate hysteresis (coarse dose)
+  PV_AH2_Lim { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL  := 100.0;    //PV - Flow rate high alarm limit (fine dose)
+  PV_AL2_Lim { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL ;    //PV - Flow rate low alarm limit (fine dose)
+  PV_Hyst2 { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL  := 1.0;    //PV - Flow rate hysteresis (fine dose)
+  PV_A_DC { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //PV - Flow rate alarm delay time coming (coarse dose)[s]
+  PV_A_DG { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //PV - Flow rate alarm delay time going (coarse dose)[s]
+  PV_A2_DC { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //PV - Flow rate alarm delay time coming (fine dose)[s]
+  PV_A2_DG { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //PV - Flow rate alarm delay time going (fine dose)[s]
+  PV_AH_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate high alarm enable (coarse dose)
+  PV_AL_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate low alarm enable (coarse dose)
+  PV_AH2_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate high alarm enable (fine dose)
+  PV_AL2_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate low alarm enable (fine dose)
+  PV_AH_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate high alarm message enable (coarse dose)
+  PV_AL_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate low alarm message enable (coarse dose)
+  PV_AH2_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate high alarm message enable (fine dose)
+  PV_AL2_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: PV - Flow rate low alarm message enable (fine dose)
+  CR_AH_Lim { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL ;    //Creep flow - High alarm limit
+  CR_Hyst { Op_Level := '2'; S7_visible := 'false'; S7_edit := 'para'; S7_m_c := 'true' }: REAL ;    //Creep flow - Hysteresis
+  CR_A_DC { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //Creep flow - Alarm delay time coming [s]
+  CR_A_DG { S7_visible := 'false'; S7_edit := 'para' }: REAL  := 3.0;    //Creep flow - Alarm delay time going [s]
+  CR_AH_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Creep flow - High alarm enable
+  CR_AH_MsgEn { Op_Level := '2'; S7_m_c := 'true'; S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Creep flow - High alarm message enable
+  PV_OpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //PV - Bar display limits for OS
+   High : REAL  := 100.0;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;    
+  DQ_OpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Dose Quantity SP - Bar display limits for OS
+   High : REAL  := 100.0;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;    
+  StartAut { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Start: Start Command in Auto Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  CancelAut { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Cancel: Cancel Command in Auto Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PauseAut { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Pause: Pause Command in Auto Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ContAut { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Continue: Continue Command in Auto Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  StartMan { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Start: Start Command in Manual Mode
+  CancelMan { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Cancel: Cancel Command in Manual Mode
+  PauseMan { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Pause: Pause Command in Manual Mode
+  ContMan { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Continue: Continue Command in Manual Mode
+  ModLiOp { S7_edit := 'para'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Link/Auto,0=Manual: Input to auto/manual commands
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  AutModOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //1=Auto mode: auto mode by operator
+  ManModOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL  := TRUE;    //1=Manual mode: manual mode by operator
+  AutModLi { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Auto mode: Auto mode by linked or SFC
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ManModLi { S7_dynamic := 'true' }: STRUCT     //1=Manual mode: Manual mode by linked or SFC
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  LocalLi { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //1=Local Mode: Local operation by field signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  LocalOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Local Mode: Local operation by operator
+  MS_RelOp { Op_Level := '3'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator input for MS Release, 1: MS release requirement
+  OosOp { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Oos mode: Oos mode by operator
+  OosLi { S7_dynamic := 'true' }: STRUCT     //1=Oos mode: Oos mode by field signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  StartLocal { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //1=Start: Start Command in Local Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  CancelLocal { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //1=Cancel: Cancel Command in Local Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PauseLocal { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //1=Pause: Pause Command in Local Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ContLocal { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //1=Continue: Continue Command in Local Mode
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  LocalSetting { S7_visible := 'false' }: INT ;    //Local mode behavior
+  PulseWidth { S7_edit := 'para'; S7_visible := 'false' }: REAL  := 3.0;    //Control output pulse width [s]
+  P_DoseTime { Op_Level := '2'; S7_edit := 'para'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Post dose time [s]
+  DosCancelMsgEn { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1: Dose cancelled message enable
+  RstLi { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Linked reset signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RstOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Operator reset signal
+  RstDQ_Li { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Linked signal to reset dosed quantity
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RstDQ_Op { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //Operator signal to reset dosed quantity
+  U_AckLi { S7_visible := 'false'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Over- and underdose acknowledge link
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  U_AckOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Over- and underdose acknowledge operator
+  BypProt { S7_edit := 'para'; S7_visible := 'false' }: BOOL ;    //Bypass protection in simulation/local modes
+  Permit { BLK_Jump := '1'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_read_back := 'never' }: STRUCT     //1=Permit is OK, 0=Not allowed to activate the dosage
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#FF;    //Signal Status
+  END_STRUCT ;
+  Permit_b AT Permit : ARRAY[0..15] OF BOOL;  
+  Perm_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1=Permit enabled, 0=Permit disabled
+  Intlock { BLK_Jump := '1'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_read_back := 'never' }: STRUCT     //1=Dosage is not interlocked ,0=Dosage is interlocked (no reset is required)
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#FF;    //Signal Status
+  END_STRUCT ; 
+  Intlock_b AT Intlock : ARRAY[0..15] OF BOOL;
+  Intl_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1=Interlock enabled, 0=Interlock disabled
+  Protect { BLK_Jump := '1'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_read_back := 'never' }: STRUCT     //0=Protection is active, 1= Protection is not active
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#FF;    //Signal Status
+  END_STRUCT ; 
+    Protect_b AT Protect : ARRAY[0..15] OF BOOL;  
+  
+  Prot_En { S7_edit := 'para'; S7_visible := 'false' }: BOOL  := TRUE;    //1=Protection enabled, 0=Protection disabled
+  StartForce { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //1=Start: Start Command in forced operation
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  CancelForce { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //1=Cancel: Cancel Command in forced operation
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PauseForce { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //1=Pause: Pause Command in forced operation
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ContForce { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //1=Continue: Continue Command in forced operation
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  UserAna1 { S7_visible := 'false'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xshortcut := 'Value,;'; S7_read_back := 'never' }: STRUCT     //User analog input 1
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal status
+  END_STRUCT ;    
+  UA1unit { S7_visible := 'false'; S7_m_c := 'true'; S7_unit := '' }: INT ;    //Unit of UserAna1
+  UserAna2 { S7_visible := 'false'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xshortcut := 'Value,;'; S7_read_back := 'never' }: STRUCT     //User analog input 2
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal status
+  END_STRUCT ;    
+  UA2unit { S7_visible := 'false'; S7_m_c := 'true'; S7_unit := '' }: INT ;    //Unit of UserAna2
+  CtrlChnST { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Output channel state of Ctrl
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal status
+  END_STRUCT ;    
+  Ctrl2ChnST { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Output channel state of Ctrl2
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#FF;    // Signal status
+  END_STRUCT ;    
+  MsgLock { S7_visible := 'false' }: STRUCT     //Inhibit process message
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SampleTime { S7_visible := 'false'; S7_link := 'false'; S7_sampletime := 'true'; S7_param := 'false' }: REAL  := 1.000000e-001;    //Sampling time [s]
+  SimLiOp { S7_edit := 'para'; S7_visible := 'false' }: STRUCT     //Simulation on/off via 0 = Operator, 1 = Interconnection or SFC
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SimOnLi { S7_visible := 'false' }: STRUCT     //1 = Simulation activated by interconnection or SFC (controlled by SimLiOp = 1)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SimOn { Op_Level := '3'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Simulation on/off
+  RunUpCyc { S7_visible := 'false' }: INT  := 3;    //Number of cycles for which all messages are suppressed
+  MsgEvId1 { S7_visible := 'false'; S7_param := 'false'; S7_link := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Message Event ID
+  MsgEvId2 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Message Event ID
+  BatchEn { S7_visible := 'false' }: BOOL ;    //Enable remote operation of controller by Batch recipe
+  BatchID { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Current Batch ID (number)
+  BatchName { S7_visible := 'false'; S7_m_c := 'true' }: STRING  [32 ];    //Current Batch name
+  BatchName_ar AT BatchName : ARRAY[1..32] OF BYTE;
+  
+  StepNo { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Batch step number
+  Occupied { S7_visible := 'false' }: BOOL ;    //Occupied by Batch
+  FaultExt { S7_dynamic := 'true' }: STRUCT     //External Error
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  CSF { S7_dynamic := 'true' }: STRUCT     //Control system fault message - External error
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtMsg1 { S7_visible := 'false' }: STRUCT     //External message 1
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtMsg2 { S7_visible := 'false' }: STRUCT     //External message 2
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtMsg3 { S7_visible := 'false' }: STRUCT     //External message 3
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ExtVa106 { S7_visible := 'false' }: ANY ;    //External value 6 MsgEvId1
+  ExtVa107 { S7_visible := 'false' }: ANY ;    //External value 7 MsgEvId1
+  ExtVa108 { S7_visible := 'false' }: ANY ;    //External value 7 MsgEvId1
+  ExtVa204 { S7_visible := 'false' }: ANY ;    //External value 4 MsgEvId2
+  ExtVa205 { S7_visible := 'false' }: ANY ;    //External value 5 MsgEvId2
+  ExtVa206 { S7_visible := 'false' }: ANY ;    //External value 6 MsgEvId2
+  ExtVa207 { S7_visible := 'false' }: ANY ;    //External value 7 MsgEvId2
+  ExtVa208 { S7_visible := 'false' }: ANY ;    //External value 8 MsgEvId2
+  UserStatus { S7_m_c := 'true'; S7_visible := 'false' }: BYTE ;    //User status bits
+  SelFp1 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 1
+  SelFp2 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 2
+  OS_Perm { S7_visible := 'false' }: STRUCT     //Operator permissions
+   Bit0 : BOOL  := TRUE;    //1 = Operator can shift to automatic mode
+   Bit1 : BOOL  := TRUE;    //1 = Operator can shift to manual mode
+   Bit2 : BOOL  := TRUE;    //1 = Operator can shift to local mode
+   Bit3 : BOOL  := TRUE;    //1 = Operator can shift to out of service mode
+   Bit4 : BOOL  := TRUE;    //1 = Operator can start dosage
+   Bit5 : BOOL  := TRUE;    //1 = Operator can pause dosage
+   Bit6 : BOOL  := TRUE;    //1 = Operator can continue dosage
+   Bit7 : BOOL  := TRUE;    //1 = Operator can cancel dosage
+   Bit8 : BOOL  := TRUE;    //1 = Operator can reset protection and flow rate alarm
+   Bit9 : BOOL  := TRUE;    //1 = Operator can reset dosage quantity
+   Bit10 : BOOL  := TRUE;    //1 = Operator can acknowledge over- and underdosage
+   Bit11 : BOOL  := TRUE;    //1 = Operator can switch the setpoint to external
+   Bit12 : BOOL  := TRUE;    //1 = Operator can switch the setpoint to internal
+   Bit13 : BOOL  := TRUE;    //1 = Operator can change the setpoint quantity
+   Bit14 : BOOL  := TRUE;    //1 = Operator can change the setpoint quantity factor (fine dosage)
+   Bit15 : BOOL  := TRUE;    //1 = Operator can change the setpoint flow rate
+   Bit16 : BOOL  := TRUE;    //1 = Operator can change the setpoint flow rate factor (fine dosage)
+   Bit17 : BOOL  := TRUE;    //1 = Operator can activate the bumpless changeover from ext. to int. funct.
+   Bit18 : BOOL  := TRUE;    //1 = Operator can enable function simulation
+   Bit19 : BOOL  := TRUE;    //1 = Operator can enable function maintenance release
+   Bit20 : BOOL  := TRUE;    //Reserved
+   Bit21 : BOOL  := TRUE;    //1 = Operator can change the dribble value
+   Bit22 : BOOL  := TRUE;    //1 = Operator can change the dribble value maximum
+   Bit23 : BOOL  := TRUE;    //1 = Operator can switch the dribble correction on/off
+   Bit24 : BOOL  := TRUE;    //1 = Operator can change the dribble weighting factor
+   Bit25 : BOOL  := TRUE;    //1 = Operator can change the simulation value SimPV
+   Bit26 : BOOL  := TRUE;    //1 = Operator can change the simulation value SimDQ
+   Bit27 : BOOL  := TRUE;    //Reserved
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;    
+  OS_Perm_b AT OS_Perm : ARRAY[0..3] OF BYTE;
+  OS_Perm_dw AT OS_Perm : DWORD;
+  OS1Perm { S7_visible := 'false' }: STRUCT     //Operator Permissions 2
+   Bit0 : BOOL  := TRUE;    //1 = Operator can change the limit value for the H alarm of PV_Out (coarse d.)
+   Bit1 : BOOL  := TRUE;    //1 = Operator can change the LIMIT value FOR the L alarm OF PV_Out (coarse d.)
+   Bit2 : BOOL  := TRUE;    //1 = Operator can change the limit value for the hyst. of PV_Out (coarse dos.)
+   Bit3 : BOOL  := TRUE;    //1 = Operator can change the limit value for the H alarm of PV_Out (fine dos.)
+   Bit4 : BOOL  := TRUE;    //1 = Operator can change the limit value for the L alarm of PV_Out (fine dos.)
+   Bit5 : BOOL  := TRUE;    //1 = Operator can change the limit value for the hyst. of PV_Out (fine dosage)
+   Bit6 : BOOL  := TRUE;    //1 = Operator can change maximum usage limit of setpoint quantity
+   Bit7 : BOOL  := TRUE;    //1 = Operator can change minimum usage limit of setpoint quantity
+   Bit8 : BOOL  := TRUE;    //1 = Operator can change maximum usage limit of SP quantity factor (fine dos.)
+   Bit9 : BOOL  := TRUE;    //1 = Operator can change minimum usage limit of SP quantity factor (fine dos.)
+   Bit10 : BOOL  := TRUE;    //1 = Operator can change the limit value for overdose quantity
+   Bit11 : BOOL  := TRUE;    //1 = Operator can change the limit value for underdose quantity
+   Bit12 : BOOL  := TRUE;    //1 = Operator can change maximum usage limit of setpoint flow rate
+   Bit13 : BOOL  := TRUE;    //1 = Operator can change minimum usage limit of setpoint flow rate
+   Bit14 : BOOL  := TRUE;    //1 = Operator can change maximum usage limit of SP flow rate factor (fine dos.)
+   Bit15 : BOOL  := TRUE;    //1 = Operator can change minimum usage limit of SP flow rate factor (fine dos.)
+   Bit16 : BOOL  := TRUE;    //1 = Operator can change the relax time
+   Bit17 : BOOL  := TRUE;    //1 = Operator can change the post dose time
+   Bit18 : BOOL  := TRUE;    //1 = Operator can change the limit value for the H alarm of PV_Out (creep flow)
+   Bit19 : BOOL  := TRUE;    //1 = Operator can change the limit value for the hyst. of PV_Out (creep flow)
+   Bit20 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over DQ_AH_MsgEn
+   Bit21 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over DQ_AL_MsgEn
+   Bit22 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over PV_AH_MsgEn
+   Bit23 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over PV_AL_MsgEn
+   Bit24 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over PV_AH2_MsgEn
+   Bit25 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over PV_AL2_MsgEn
+   Bit26 : BOOL  := TRUE;    //1 = Operator can activate/deactivate message over CR_AH_MsgEn
+   Bit27 : BOOL  := TRUE;    //Reserved
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;  
+    OS1Perm_byte AT OS1Perm : ARRAY[0..3] OF BYTE;
+  OpSt_In { BLK_Jump := '1'; S7_visible := 'false' }: DWORD ;    //Enabled operator stations
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //0 = Start up with defined initializing in OB100; 1 = keep last stored values
+   Bit1 : BOOL ;    //1 = OosLi can switch to Out of Service
+   Bit2 : BOOL ;    //1 = Resetting the commands for changing the mode
+   Bit3 : BOOL ;    //1 = Enabling resetting of commands for the control settings
+   Bit4 : BOOL ;    //0 = Button mode; 1 = Switch mode
+   Bit5 : BOOL ;    //0 = Measurement type: Flow; 1 = Measurement type: Weight
+   Bit6 : BOOL ;    //1 = Reset dose quantity on dose start
+   Bit7 : BOOL ;    //1 = Calculation of flow rate in measurement type Weight
+   Bit8 : BOOL ;    //1 = Display and input of fine quantity absolute
+   Bit9 : BOOL ;    //1 = Resetting interlock via automatic input signals in automatic mode
+   Bit10 : BOOL ;    //1 = Switch to the last setting of Auto/Man mode when local mode is exited
+   Bit11 : BOOL ;    //1 = Stop metering on flow rate alarm
+   Bit12 : BOOL ;    //1 = Perform postdose if underdose detected
+   Bit13 : BOOL ;    //1 = Creep flow is always calculated into the quantity
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //1 = Display in OS flow rate setpoints as percent
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //1 = Enabling bumpless changeover to automatic mode
+   Bit18 : BOOL ;    //1 = Motor, valve or dosage switch to External error if CSF is active
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //1 = Enabling bumpless changeover to automatic mode only for operator
+   Bit22 : BOOL ;    //1 = Enable message state actualization
+   Bit23 : BOOL ;    //1 = Bad PV.ST switch off dosage
+   Bit24 : BOOL ;    //1 = Local authorization active
+   Bit25 : BOOL ;    //1 = Suppress all messages if MsgLock = 1
+   Bit26 : BOOL ;    //1 = Reset switching points if switching to Out of Service
+   Bit27 : BOOL ;    //1 = Enable the parameterization of the dribbling quantity
+   Bit28 : BOOL ;    //1 = Disable switching points if MsgLock =1
+   Bit29 : BOOL ;    //1 = Signal value =0 (0 active) if limit is violated
+   Bit30 : BOOL ;    //1 = Resetting interlock via input signal in autom. via faceplate in manual mode
+   Bit31 : BOOL ;    //1 = Resetting Protection/Errors in manual mode
+  END_STRUCT ;    
+  Feature2 { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //Reserved
+   Bit1 : BOOL ;    //Reserved
+   Bit2 : BOOL ;    //1 = Separate evaluation of bypassed and simulated interlock signals
+   Bit3 : BOOL ;    //1 = In case of invalid input command the control changes to rest position
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //1 = Ignore bad signal state in interlock signals
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //1 = with acknowledge overdosage
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;    
+  EventTsIn { S7_visible := 'false' }: ANY ;    //Timestamp parameters
+  EventTsIn_st AT EventTsIn : STRUCT 
+    b0 : BYTE;
+    b1 : BYTE;
+    w2 : WORD;
+    W3 : WORD;
+    dw4 : DWORD;
+  END_STRUCT;
+END_VAR
+VAR_OUTPUT
+  MS_Release : STRUCT     //1: Maintenance status release
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Ctrl { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Control output coarse dosing
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  P_Ctrl { S7_visible := 'false' }: STRUCT     //Pulsive control output coarse dosing
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Ctrl2 { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Control output fine dosing
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  P_Ctrl2 { S7_visible := 'false' }: STRUCT     //Pulsive control output fine dosing
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosStart { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing have started
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosEnd { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing have completed
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosOn { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing is on
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosRelax { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing relax
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosOff { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing is off
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DosPause { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Dosing pauses
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  LockAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //1: Interlock (Permit, Interlock or Protect) is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  GrpErr { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1 = Group error is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RdyToStart { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1 = ready to start
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  RdyToReset { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1 = ready to reset via RstLi or automatic commands
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  OosAct { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;' }: STRUCT     //Out of service is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  P_Rst { S7_dynamic := 'true'; S7_visible := 'false' }: STRUCT     //Reset Impulse
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  LocalAct { S7_dynamic := 'true' }: STRUCT     //1: Local operation mode is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  AutAct { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: Automatic mode is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  ManAct { S7_dynamic := 'true' }: STRUCT     //1: Manual mode is active
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;    
+  SP_ExtAct { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: External setpoint is active, 0: Internal setpoint is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_SP { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xtrend := 'Value,DQ_OpScale.Low,DQ_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Quantity active setpoint
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ1_SP { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint (coarse dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_SP { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_SP_Tol { S7_visible := 'false'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity setpoint to calculate the tolarance limits
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_ExtOut { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Quantity Setpoint External - Limited
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_ExtOut : STRUCT     //Quantity Setpoint External(fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_ExHiAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - External setpoint high limit is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_ExLoAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - External setpoint low limit is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_ExHiAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - External setpoint high limit is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ2_ExLoAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - External setpoint low limit is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_Out { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xtrend := 'Value,DQ_OpScale.Low,DQ_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Quantity dosed output
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_AH_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - Overdosed
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_AL_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Quantity - Underdosed
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DribbOut { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true' }: STRUCT     //Quantity - Calculated dribble value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  DQ_Tare { S7_visible := 'false' }: STRUCT     //Tare memory in weight measurement
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xtrend := 'Value,PV_OpScale.Low,PV_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Flow rate active setpoint
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP1 : STRUCT     //Flow rate setpoint (coarse dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2 : STRUCT     //Flow rate setpoint (fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_ExtOut : STRUCT     //Flow rate Setpoint External(coarse dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2_ExtOut : STRUCT     //Flow rate Setpoint External(fine dose)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_ExHiAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - External setpoint high limit is active (coarse dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP_ExLoAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - External setpoint low limit is active (coarse dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2_ExHiAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - External setpoint high limit is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SP2_ExLoAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - External setpoint low limit is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_Out { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true'; S7_xtrend := 'Value,PV_OpScale.Low,PV_OpScale.High;'; S7_edit := 'para' }: STRUCT     //Flow rate - Process value (analog output)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_AH_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - PV alarm high is active (coarse dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_AL_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - PV - alarm low is active (coarse dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_AH2_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - PV alarm high is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  PV_AL2_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Flow rate - PV - alarm low is active (fine dose)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  CR_AH_Act { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Creep flow rate - PV - alarm high is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SumMsgAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //Summary message, 1 = Any of the process, external or system messages is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  Status1 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 1, defined in the online help
+  Status2 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 2, defined in the online help
+  Status3 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 3, defined in the online help
+  Status4 { S7_visible := 'false'; S7_dynamic := 'true'; S7_m_c := 'true' }: DWORD ;    //Status Word 4, defined in the online help
+  Status5 { S7_visible := 'false'; S7_dynamic := 'true' }: DWORD ;    //Status Word 5, defined in the online help
+  ErrorNum { S7_visible := 'false'; S7_dynamic := 'true' }: INT  := -1;    //Error defined in the online help
+  OS_PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS_Perm
+  OS_PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS_Perm with changes from FB algorithm
+  OS1PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS1Perm
+  OS1PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator permissions OS1Perm with changes from FB algorithm
+  OpSt_Out { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Enabled operator stations
+  ST_Worst { S7_visible := 'false'; S7_m_c := 'true' }: BYTE  := B#16#80;    //Worst Quality Code
+  MsgErr1 { S7_visible := 'false' }: BOOL ;    //1=Messaging error occurs
+  MsgStat1 { S7_visible := 'false' }: WORD ;    //Message status
+  MsgAckn1 { S7_visible := 'false' }: WORD ;    //Message acknowledgement status
+  MsgErr2 { S7_visible := 'false' }: BOOL ;    //1=Messaging error occurs
+  MsgStat2 { S7_visible := 'false' }: WORD ;    //Message status
+  MsgAckn2 { S7_visible := 'false' }: WORD ;    //Message acknowledgement status
+END_VAR
+VAR
+  ALARM_8P_1 : SFB35;    //Multiple instances of ALARM_8P
+  ALARM_8P_2 : SFB35;    //Multiple instances of ALARM_8P
+  SarBatchName : ARRAY  [1 .. 32 ] OF BYTE  := 32 (B#16#0) ;    
+  //SarBatchName_str AT SarBatchName : STRING[32];
+  SarPV : ARRAY  [1 .. 17 ] OF STRUCT     
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;    
+  SnErr : INT ;    //Error information
+  SnRunUpCyc : INT ;    //Counters of run-up-cycle
+  SnPrevCmd : INT  := 7;    //Previous command input
+  SnCurrPointer : INT ;    //Variable for pulse measurement
+  SdwPrevBatchId : DWORD ;    //Previous BA_ID
+  SdwStepNoLoc : DWORD ;    //Variable for StepNo
+  SdwBatchId : DWORD ;    //Variable for BatchId
+  SrPrevDQ_Out : REAL ;    //Previous DQ_Out.Value in flow measurement
+  SrDQ_Out : REAL ;    //Auxiliary variable in flow measurement
+  SrPVOut : REAL ;    //Auxiliary variable in flow measurement
+  srPulseTime1 : REAL ;    //Counter for pulse width
+  srPulseTime2 : REAL ;    //Counter for pulse width
+  SrPrevCoarseSetPt : REAL ;    //Variable for coarse quantity dosing
+  SrPrevFineSetPt : REAL ;    //Variable for fine quantity dosing
+  SrPrevFlowSetPt : REAL ;    //Variable for flow rate quantity dosing
+  SrPrevFineFlowSetPt : REAL ;    //Variable for fine flow rate quantity dosing
+  SrRelaxTimeLeft : REAL ;    //Variable for relax time left
+  SrRelaxTime : REAL ;    //Variable for relax time
+  SrPostDoseTimer : REAL ;    //Variable for post dose timer
+  SrPrevPostDoseTime : REAL ;    //Variable for previous post dose time
+  SrPV_Quant : REAL ;    //Variable for mean value quantity
+  SrDQ_AH_Tol : REAL ;    //Variable for quantity alarm high limit(overdose)
+  SrDQ_AL_Tol : REAL ;    //Variable for quantity alarm low limit(underdose)
+  SrDQ_AH_OnTimer : REAL ;    //Variable for on Timer for Alarm High
+  SrDQ_AH_OffTimer : REAL ;    //Variable for off Timer for Alarm High
+  SrDQ_AL_OnTimer : REAL ;    //Variable for on Timer for Alarm Low
+  SrDQ_AL_OffTimer : REAL ;    //Variable for off Timer for Alarm Low
+  SrDQ_A_DC : REAL ;    //AV Alarm Delay Time Coming [s]
+  SrDQ_A_DG : REAL ;    //AV Alarm Delay Time Going [s]
+  SrPV_AH_OnTimer : REAL ;    //Variable for on Timer for Alarm High
+  SrPV_AH_OffTimer : REAL ;    //Variable for off Timer for Alarm High
+  SrPV_AL_OnTimer : REAL ;    //Variable for on Timer for Alarm Low
+  SrPV_AL_OffTimer : REAL ;    //Variable for off Timer for Alarm Low
+  SrPV_A_DC : REAL ;    //AV Alarm Delay Time Coming [s]
+  SrPV_A_DG : REAL ;    //AV Alarm Delay Time Going [s]
+  SrPV_AH2_OnTimer : REAL ;    //Variable for on Timer for Alarm High
+  SrPV_AH2_OffTimer : REAL ;    //Variable for off Timer for Alarm High
+  SrPV_AL2_OnTimer : REAL ;    //Variable for on Timer for Alarm Low
+  SrPV_AL2_OffTimer : REAL ;    //Variable for off Timer for Alarm Low
+  SrPV_A2_DC : REAL ;    //AV Alarm Delay Time Coming [s]
+  SrPV_A2_DG : REAL ;    //AV Alarm Delay Time Going [s]
+  SrCR_AH_OnTimer : REAL ;    //Variable for on Timer for Alarm High
+  SrCR_AH_OffTimer : REAL ;    //Variable for off Timer for Alarm High
+  SrCR_A_DC : REAL ;    //AV Alarm Delay Time Coming [s]
+  SrCR_A_DG : REAL ;    //AV Alarm Delay Time Going [s]
+  SrPrevSimDQ : REAL ;    //Previous value SimDQ
+  SbMsgEff1 : BYTE ;    //Effective message signal
+  SbMsgEff1_b AT SbMsgEff1 : ARRAY[0..7] OF BOOL;
+  SbMsgEff1Old : BYTE ;    //Effective message signal (Last cycle)
+  SbMsgEff2 : BYTE ;    //Effective message signal
+  SbMsgEff2_b AT SbMsgEff2 : ARRAY[0..7] OF BOOL;
+  SbMsgEff2Old : BYTE ;    //Effective message signal (Last cycle)
+  SnMsgToggle : INT ;    //Reduce frequencey of call of ALARM_8P waiting for ACK
+  SxShowAlarm1 : BOOL  := TRUE;    //Call instance of ALARM_8P
+  SxShowAlarm2 : BOOL  := TRUE;    //Call instance of ALARM_8P
+  SxFirstStart : BOOL  := TRUE;    //Initial run
+  SxRstLi : BOOL ;    //Previous value of ResetLi
+  SxOosLi : BOOL ;    //Rising edge of OosLi
+  SxStartAut : BOOL ;    //Previous value of StartAut
+  SxContAut : BOOL ;    //Previous value of ContAut
+  SxPauseAut : BOOL ;    //Previous value of PauseAut
+  SxStartLocal : BOOL ;    //Previous value of StartLocal
+  SxPauseLocal : BOOL ;    //Previous value of PauseLocal
+  SxCancelLocal : BOOL ;    //Previous value of CancelLocal
+  SxContLocal : BOOL ;    //Previous value of ContLocal
+  SxReset : BOOL ;    //Variable for reset operation
+  SxUAckLi : BOOL ;    //Variable for acknowledged the underdose
+  SxChkDose : BOOL ;    //Variable for checking overdosing/underdosing
+  SxResetNeededProtect : BOOL ;    //1 = Reset is needed for protect signal
+  SxResetNeededFlowErr : BOOL ;    //1 = Reset is needed for flow error
+  SxPostDose : BOOL ;    //Variable for post dosing
+  SxResetDQLi : BOOL ;    //Previous RstDQ_Li.Value
+  SxCoarseFlowAlarms : BOOL ;    //Variable for coarse dose flow rate alarm
+  SxFineFlowAlarms : BOOL ;    //Variable for fine dose flow rate alarm
+  SxLastMode : BOOL ;    //Last Mode before switched to Local Mode 0 = Manual, 1 = Auto
+  SxForceInputActive : BOOL ;    //Forcing is active
+  SxEnableDribCor : BOOL  := TRUE;    //1 = Enable dribbling correction after main dosing (not after post dosing)
+  SxTareDone : BOOL ;    //Remember if taring was done for dosing phase
+  SxStandstillDribble : BOOL ;    //Remember if StandStill was come in dribbling phase
+  SxFeat_SwiPoiFalseActOld : BOOL ;    //Old value of Feature Bit29
+  SxResetQuantityDone : BOOL  := TRUE;    //Reset quantity is done in state "End"
+  SxSPExtAct : BOOL ;    //Previous value of SP_ExtAct.Value
+  SxResetNeededFaultExtCSF : BOOL ;    //1 = Reset is needed for FaultExt or CSF
+  SxChkDoseUntilRdy : BOOL ;    //1 = check dose monitoring until ready
+  SxDosEndWithAckn : BOOL ;    //1 = Dosing ended with acknowledge over-/underdose
+  SxUnderdosage : BOOL ;    //Underdosage indicated
+  SxOverdosage : BOOL ;    //Overdosage indicated
+  _reserve : ARRAY  [0 .. 15 ] OF //16 bytes reserve
+  BYTE ;    //16 bytes reserve
+END_VAR
+VAR_TEMP
+  stcTOP_SI : STRUCT     
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;    
+  stcSTART_UP_SI : STRUCT     
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;    
+  avInit : STRUCT     //Auxiliary variable for initialization
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  dvInit : STRUCT     //Auxiliary variable for initialization
+   Value : BOOL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avPV : STRUCT     //Auxiliary variable for PV_OUT
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avTotalPV : STRUCT     //Auxiliary variable to average PV for PV_OUT
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avQuantPV : STRUCT     //Auxiliary variable to PV quantity for weight mode
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avDQ2 : STRUCT     //Setpoint quantity fine dosing [%] or absolute
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avSPDoseFlow : STRUCT     //Setpoint flow rate coarse dose
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  avSP2DoseFlow : STRUCT     //Setpoint flow rate fine dose
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;    
+  rOut : REAL ;    //Auxiliary variable in flow measurement
+  rTI : REAL ;    //Auxiliary variable in flow measurement
+  rTITemp : REAL ;    //Auxiliary variable in flow measurement
+  rDcf : REAL ;    //Limited DCF
+  rDQ1SP : REAL ;    //Auxiliary variable for DQ1_SP
+  nInfErr : INT ;    //Variable for pvout in case of infinity error
+  nCount : INT ;    //Variable for FOR-statement
+  xErrorNum : INT ;    //Variable for classification ErrorNum
+  nCmd : INT ;    //Variable for command inputs
+  byTemp : BYTE ;    //Variable for temp byte
+  stcInST : STRUCT     //Input 0..15 Signal Status
+   b0 : BYTE ;    
+   b1 : BYTE ;    
+   b2 : BYTE ;    
+   b3 : BYTE ;    
+   b4 : BYTE ;    
+   b5 : BYTE ;    
+   b6 : BYTE ;    
+   b7 : BYTE ;    
+   b8 : BYTE ;    
+   b9 : BYTE ;    
+   b10 : BYTE ;    
+   b11 : BYTE ;    
+   b12 : BYTE ;    
+   b13 : BYTE ;    
+   b14 : BYTE ;    
+   b15 : BYTE ;    
+  END_STRUCT ;    
+  dwStatus1 : DWORD ;    //Variable for status1
+  dwStatus1_b AT dwStatus1 : ARRAY[0..31] OF BOOL;
+  dwStatus2 : DWORD ;    //Variable for status2
+  dwStatus2_b AT dwStatus2 : ARRAY[0..31] OF BOOL;
+  dwStatus3 : DWORD ;    //Variable for status3
+  dwStatus3_b AT dwStatus3 : ARRAY[0..31] OF BOOL;
+  dwStatus4 : DWORD ;    //Variable for status4
+  dwStatus4_b AT dwStatus4 : ARRAY[0..31] OF BOOL;
+  dwStatus4_byte AT dwStatus4 : ARRAY[0..3] OF BYTE;
+  dwStatus5 : DWORD ;    //Variable for status5
+  dwStatus5_b AT dwStatus5 : ARRAY[0..31] OF BOOL;
+  dwStatus5_byte AT dwStatus5 : ARRAY[0..3] OF BYTE;
+  wEventTsIn : WORD ;    //Variable for EventTsIn value
+  wEventTsIn_b AT wEventTsIn : ARRAY[0..1] OF BYTE;
+  wTranferData : WORD ;    //Tranfer data between techn. block and EventTs
+  EvtTs_Mode : STRUCT     //EventTs Mode bits
+   Connected : BOOL ;    
+   MS_Release : BOOL ;    
+   MsgLock : BOOL ;    
+   OosAct : BOOL ;    
+   BatchEn : BOOL ;    
+   Occupied : BOOL ;    
+   Bit6 : BOOL ;    
+   Bit7 : BOOL ;    
+   Bit8 : BOOL ;    
+   Bit9 : BOOL ;    
+   Bit10 : BOOL ;    
+   Bit11 : BOOL ;    
+   Bit12 : BOOL ;    
+   Bit13 : BOOL ;    
+   Bit14 : BOOL ;    
+   Bit15 : BOOL ;    
+  END_STRUCT ;  
+ EvtTs_Mode_w AT EvtTs_Mode : WORD;  
+  diOffset : DINT ;    
+  tempANY : ANY ;    
+  tempANY_st AT tempANY : STRUCT
+    b0 : BYTE;
+    b1 : BYTE;
+    w2 : WORD;
+    w3 : WORD;
+    dw4 : DWORD;
+  END_STRUCT;
+  dwOS_Perm : DWORD ;    //Temporary variable for the value of OS_PermOut/OS_PermLog
+  dwOS_Perm_byte AT dwOS_Perm : ARRAY[0..3] OF BYTE;
+  dwOS_Perm_b AT dwOS_Perm : ARRAY[0..31] OF BOOL;
+  xOSPerAuto : BOOL ;    //1 = Operator enabled to switch to automatic mode
+  xOSPerMan : BOOL ;    //1 = Operator enabled to switch to manual mode
+  xOSPerLocal : BOOL ;    //1 = Operator enabled to switch motor to local mode
+  xOSPerOOS : BOOL ;    //1 = Operator enabled to switch to OOS mode
+  xOSPerSPExt : BOOL ;    //1 = Operator enabled to set setpoint to external
+  xOSPerSPInt : BOOL ;    //1 = Operator enabled to set setpoint to internal
+  xOSPerSPQuantity : BOOL ;    //1 = Operator enabled to set setpoint quantity
+  xOSPerSPQuantityFine : BOOL ;    //1 = Operator enabled to set setpoint quantity (fine dosage)
+  xOSPerSPFlowRate : BOOL ;    //1 = Operator enabled to set setpoint flow rate
+  xOSPerSPFlowRateFine : BOOL ;    //1 = Operator enabled to set setpoint flow rate (fine dosage)
+  xOSPerStart : BOOL ;    //1 = Operator enabled to start dosage
+  xOSPerPause : BOOL ;    //1 = Operator enabled to pause dosage
+  xOSPerContinue : BOOL ;    //1 = Operator enabled to continue dosage
+  xOSPerCancel : BOOL ;    //1 = Operator enabled to cancel dosage
+  xOSPerResetProtect : BOOL ;    //1 = Operator enabled to reset protection and flow rate alarm
+  xOSPerResetQuantity : BOOL ;    //1 = Operator enabled to reset dosage quantity
+  xOSPerAcknOverUnderdose : BOOL ;    //1 = Operator enabled to acknowledge underdose
+  xOSPerSim : BOOL ;    //1 = Operator enabled to simulate mode
+  xOSPerMSRel : BOOL ;    //1 = Operator enabled to switch to MS_Release
+  xOSPerDribbIn : BOOL ;    //1 = Operator enabled to set DribbIn
+  xOSPerSimPV : BOOL ;    //1 = Operator can change SimPV
+  xOSPerSimDQ : BOOL ;    //1 = Operator can change SimDQ
+  xAutoAct : BOOL ;    //Variable for AUTO mode
+  xManAct : BOOL ;    //Variable for Man mode
+  xBumpLessTransfer : BOOL ;    //Variable to check whether Bumpless is enabled but not allowed
+  xInvalidMode : BOOL ;    //Variable for Invalid mode
+  xInvalidCommand : BOOL ;    //Variable for Invalid command.
+  xFrcInvalidCommand : BOOL ;    //Variable for Invalid Force command.
+  xOutStatusWord1x15 : BOOL ;    //Temporary variable for StatusWord1 Bit 21 (Mode switch fail)
+  xStartCmd : BOOL ;    //Variable for start command
+  xContCmd : BOOL ;    //Variable for continue command
+  xInterlocked : BOOL ;    //Variable to check if dose is interlocked
+  xResetEnabled : BOOL ;    //1 = Reset is possible
+  xOpResetRequest : BOOL ;    //1 = Reset via faceplate depends on mode and featurebits
+  xLiResetRequest : BOOL ;    //1 = Reset via input signals depends on mode and featurebits
+  xFlowAlarms : BOOL ;    //Variable for flow rate alarms
+  xStartAutoPostDose : BOOL ;    //Variable for automatic postdose
+  xFeatStartupWithOutInit : BOOL ;    //Bit 0 = 0, Start up with defined init in OB100 (default)  -> Start the motor in
+  xFeatOosLiEn : BOOL ;    //Bit 1 = 0, OosLiEn: OosLi cannґt switch to Out of Service
+  xFeatResetAutModLi : BOOL ;    //Bit 2 = 0, All linkable command modes will not be reset after evaluation
+  xFeatResetAutInLi : BOOL ;    //Bit 3 = 0, All linkable command inputs will not be reset after evaluation xRese
+  xFeatSwitchMode : BOOL ;    //Bit 4 = 0, All positions need a command (button mode)
+  xFeatAutoReset : BOOL ;    //Bit 9 = 0, (Default) In Auto mode on receiving Protect, requires a reset from t
+  xFeatLastActMod : BOOL ;    //Bit 10 = 0, Switch to the Man mode when switched from Local mode through Link.
+  xFeatBumplessMode : BOOL ;    //Bit 17 = 0, (default)Bumpless behavior disabled.
+  xFeatResetQuantity : BOOL ;    //Bit 6 = 0, Disabled
+  xFeatWeightMeasurement : BOOL ;    //Bit 7 = 0, Flow measurement
+  xFeatFineQtyAbsolute : BOOL ;    //Bit 8 = 0, Disabled
+  xFeatStopMetering : BOOL ;    //Bit 11 = 0, Disabled
+  xFeatPostdosage : BOOL ;    //Bit 12 = 0, Disabled
+  xFeatAlwaysCalcFlow : BOOL ;    //Bit 12 = 0, Disabled
+  xFeatCSFwithError : BOOL ;    
+  xFeatLocalAuth : BOOL ;    //Bit 24 = 1, Function local authorization active
+  xFeatBadPvStopsDosage : BOOL ;    //Bit 23 = 1, Bad PV.ST stops dosage
+  xFeatFlowSPInPercent : BOOL ;    //Bit 15 = 1, Display in OS flow rate setpoints as percent
+  xFeatBmpModeOnlyOp : BOOL ;    //Bit 21 = 1, Enabling bumpless changeover to automatic mode only for operator
+  xFeatMsgLockAll : BOOL ;    //Bit 25 = 1, 1 = Suppress all messages if MsgLock = 1
+  xFeatSwiPoiOOS : BOOL ;    //Bit 26 = 1, 1 = Reset switching points if switching to Out of Service
+  xFeatChangeDribbVal : BOOL ;    //Bit 27 = 1, 1 = Enable the parameterization of the dribbling quantity
+  xFeat_SwiPoiDis : BOOL ;    
+  xFeat_SwiPoiFalseAct : BOOL ;    
+  xFeat_FlowInWeightMode : BOOL ;    
+  xFeat_ResetDpdsOnMode : BOOL ;    //Bit 30 = 0, (default) No Resetting interlock via input signal in automatic via 
+  xFeat_ResetinManual : BOOL ;    //Bit 31 = 0, (default) No Resetting interlock in manual mode
+  xFeatBypass : BOOL ;    //Feature2.Bit 2, 1 = Separate evaluation OF bypassed AND simulated interlock sig
+  xFeatControlPriority : BOOL ;    //Feature2.Bit 3, 1 = In case of invalid input command the control changes to res
+  xFeatIgnrBadIntlkState : BOOL ;    //Feature2.Bit 5, 1 = Ignore bad signal state in interlock signals
+  xFeatOvDoseAckn : BOOL ;    //Feature2.Bit 24, 1 = with overdose acknowledge
+  xFaultExtCSF : BOOL ;    //External Fault FautExt or CSF
+  xPermit_N : BOOL ;    //1 = Not allowed to activate the valve
+  xIntlock_N : BOOL ;    //1 = Valve is interlocked
+  xProtect_N : BOOL ;    //1 = Valve is interlocked
+  xPerm_En : BOOL ;    //Permit enabled
+  xIntl_En : BOOL ;    //Intlock enabled
+  xProt_En : BOOL ;    //Protect enabled
+  xFlowProcessing : BOOL ;    //Variable to check whether flow rate processing is enable
+  xSimAct : BOOL ;    //simulation active
+  xOB_Cycle : BOOL ;    //block is running in a cyclic interrupt OB
+  xOB_Start : BOOL ;    //block is running in start OB
+  xAutoResetInDosOff : BOOL ;    //Help variable for better perfomance
+  xAutoResetInDosEnd : BOOL ;    //Help variable for better perfomance
+  xChkDoseRdyDQ_AH : BOOL ;    //Help variable in check dose part DQ AH
+  xChkDoseRdyDQ_AL : BOOL ;    //Help variable in check dose part DQ AL
+END_VAR
+BEGIN
+xFeatStartupWithOutInit:=Feature.Bit0;
+xFeatOosLiEn:=Feature.Bit1;
+xFeatResetAutModLi:=Feature.Bit2;
+xFeatResetAutInLi:=Feature.Bit3;
+xFeatSwitchMode:=Feature.Bit4;
+xFeatWeightMeasurement:=Feature.Bit5;
+xFeatResetQuantity:=Feature.Bit6;
+xFeat_FlowInWeightMode:=Feature.Bit7;
+xFeatFineQtyAbsolute:=Feature.Bit8;
+xFeatAutoReset:=Feature.Bit9;
+xFeatLastActMod:=Feature.Bit10;
+xFeatStopMetering:=Feature.Bit11;
+xFeatPostdosage:=Feature.Bit12;
+xFeatAlwaysCalcFlow:=Feature.Bit13;
+xFeatFlowSPInPercent:=Feature.Bit15;
+xFeatBumplessMode:=Feature.Bit17;
+xFeatCSFwithError:=Feature.Bit18;
+xFeatBmpModeOnlyOp:=Feature.Bit21;
+xFeatBadPvStopsDosage:=Feature.Bit23;
+xFeatLocalAuth:=Feature.Bit24;
+xFeatMsgLockAll:=Feature.Bit25;
+xFeatSwiPoiOOS:=Feature.Bit26;
+xFeatChangeDribbVal:=Feature.Bit27;
+xFeat_SwiPoiDis:=Feature.Bit28;
+xFeat_SwiPoiFalseAct:=Feature.Bit29;
+xFeat_ResetDpdsOnMode:=Feature.Bit30;
+xFeat_ResetinManual:=Feature.Bit31;
+xFeatBypass:=Feature2.Bit2;
+xFeatControlPriority:=Feature2.Bit3;
+xFeatIgnrBadIntlkState:=Feature2.Bit5;
+xFeatOvDoseAckn:=Feature2.Bit24;
+xOSPerAuto:=OS_Perm.Bit0;
+xOSPerMan:=OS_Perm.Bit1;
+xOSPerLocal:=OS_Perm.Bit2;
+xOSPerOOS:=((OS_Perm.Bit3) AND ManAct.Value) AND (NOT(ModLiOp.Value));
+xOSPerStart:=OS_Perm.Bit4;
+xOSPerPause:=OS_Perm.Bit5;
+xOSPerContinue:=OS_Perm.Bit6;
+xOSPerCancel:=OS_Perm.Bit7;
+xOSPerResetProtect:=OS_Perm.Bit8;
+xOSPerResetQuantity:=OS_Perm.Bit9;
+xOSPerAcknOverUnderdose:=OS_Perm.Bit10;
+xOSPerSPExt:=OS_Perm.Bit11;
+xOSPerSPInt:=OS_Perm.Bit12;
+xOSPerSPQuantity:=OS_Perm.Bit13;
+xOSPerSPQuantityFine:=OS_Perm.Bit14;
+xOSPerSPFlowRate:=OS_Perm.Bit15;
+xOSPerSPFlowRateFine:=OS_Perm.Bit16;
+xOSPerSim:=OS_Perm.Bit18;
+xOSPerMSRel:=OS_Perm.Bit19;
+xOSPerDribbIn:=OS_Perm.Bit21;
+xOSPerSimPV:=OS_Perm.Bit25;
+xOSPerSimDQ:=OS_Perm.Bit26;
+xSimAct:=((NOT(SimLiOp.Value)) AND SimOn) OR ((SimOnLi.Value) AND SimLiOp.Value);
+dwStatus1:=Status1;
+dwStatus2:=Status2;
+dwStatus3:=Status3;
+dwStatus4:=Status4;
+dwStatus5:=Status5;
+xInvalidCommand:=FALSE;
+xFrcInvalidCommand:=FALSE;
+xInvalidMode:=FALSE;
+xOutStatusWord1x15:=FALSE;
+avInit.Value:=0.0;
+avInit.ST:=B#16#80;
+dvInit.Value:=FALSE;
+dvInit.ST:=B#16#80;
+nCmd:=SnPrevCmd;
+xFlowProcessing:=(NOT(xFeatWeightMeasurement)) OR xFeat_FlowInWeightMode;
+xResetEnabled:=FALSE;
+xBumpLessTransfer:=FALSE;
+xContCmd:=FALSE;
+avQuantPV:=avInit;
+P_Rst.Value:=FALSE;
+xPerm_En:=(NOT(Permit.ST=B#16#FF)) AND Perm_En;
+xIntl_En:=(NOT(Intlock.ST=B#16#FF)) AND Intl_En;
+xProt_En:=(NOT(Protect.ST=B#16#FF)) AND Prot_En;
+IF xFeatIgnrBadIntlkState THEN (*A7d0*)
+    xPermit_N:=(NOT(Permit.Value)) AND xPerm_En;
+    xIntlock_N:=(NOT(Intlock.Value)) AND xIntl_En;
+    xProtect_N:=(NOT(Protect.Value)) AND xProt_En;
+ELSE (*A7d0*)
+    xPermit_N:=(((NOT(Permit.Value)) OR (Permit.ST=B#16#0)) OR (Permit.ST=B#16#28)) AND xPerm_En;
+    xIntlock_N:=(((NOT(Intlock.Value)) OR (Intlock.ST=B#16#0)) OR (Intlock.ST=B#16#28)) AND xIntl_En;
+    xProtect_N:=(((NOT(Protect.Value)) OR (Protect.ST=B#16#0)) OR (Protect.ST=B#16#28)) AND xProt_En;
+END_IF; (*A7d1*)
+IF (Permit.ST=B#16#FF) OR (NOT(xFeatBypass)) THEN (*A7d2*)
+    Permit_b[1]:=FALSE;
+END_IF; (*A7d2*)
+IF (Intlock.ST=B#16#FF) OR (NOT(xFeatBypass)) THEN (*A7d3*)
+    Intlock_b[1]:=FALSE;
+END_IF; (*A7d3*)
+IF (Protect.ST=B#16#FF) OR (NOT(xFeatBypass)) THEN (*A7d4*)
+    Protect_b[1]:=FALSE;
+END_IF; (*A7d4*)
+xFaultExtCSF:=((xFeatCSFwithError) AND CSF.Value) OR FaultExt.Value;
+
+SnErr:=RD_SINFO(TOP_SI :=  stcTOP_SI
+         ,START_UP_SI :=  stcSTART_UP_SI
+         ); 
+
+xOB_Cycle:=(BYTE_TO_INT(stcTOP_SI.NUM)>=30) AND (BYTE_TO_INT(stcTOP_SI.NUM)<=38);
+xOB_Start:=BYTE_TO_INT(stcTOP_SI.NUM)=100;
+MS_Release.Value:=((ManAct.Value) OR OosAct.Value) AND MS_RelOp;
+IF NOT((ManAct.Value) OR OosAct.Value) THEN (*A7d5*)
+    MS_RelOp:=FALSE;
+END_IF;
+IF xFeatLocalAuth THEN 
+    OpSt_Out:=OpSt_In OR DW#16#80000000;
+ELSE 
+    OpSt_Out:=OpSt_In AND DW#16#7FFFFFFF;
+END_IF; 
+IF (OosAct.Value) OR ManAct.Value THEN 
+    IF ManModOp THEN 
+        ManAct.Value:=TRUE;
+        OosAct.Value:=FALSE;
+    ELSIF (((OosLi.Value) AND xFeatOosLiEn) AND (NOT(SxOosLi))) OR OosOp THEN 
+        ManAct.Value:=FALSE;
+        OosAct.Value:=TRUE;
+    END_IF; 
+    SxOosLi:=OosLi.Value;
+END_IF;
+ 
+IF OosAct.Value THEN (*A7dc*)
+    RdyToStart:=dvInit;
+    AutAct:=dvInit;
+    LocalAct:=dvInit;
+    DosEnd.Value:=TRUE;
+    DosStart:=dvInit;
+    DosRelax:=dvInit;
+    DosOn:=dvInit;
+    DosOff:=dvInit;
+    DosPause:=dvInit;
+    Ctrl:=dvInit;
+    Ctrl2:=dvInit;
+    IF xFeatSwiPoiOOS THEN (*A7dd*)
+        DQ_AH_Act:=dvInit;
+        DQ_AL_Act:=dvInit;
+        PV_AH_Act:=dvInit;
+        PV_AH2_Act:=dvInit;
+        PV_AL_Act:=dvInit;
+        PV_AL2_Act:=dvInit;
+        CR_AH_Act:=dvInit;
+        IF xFeat_SwiPoiFalseAct THEN (*A7dd*)
+            DQ_AH_Act.Value:=TRUE;
+            DQ_AL_Act.Value:=TRUE;
+            PV_AH_Act.Value:=TRUE;
+            PV_AH2_Act.Value:=TRUE;
+            PV_AL_Act.Value:=TRUE;
+            PV_AL2_Act.Value:=TRUE;
+            CR_AH_Act.Value:=TRUE;
+        END_IF;
+    END_IF; (*A7dd*)
+    SP_ExtAct:=dvInit;
+    SxCoarseFlowAlarms:=FALSE;
+    SxFineFlowAlarms:=FALSE;
+    SxChkDose:=FALSE;
+    SxPostDose:=FALSE;
+    SxStartAut:=FALSE;
+    SxResetDQLi:=FALSE;
+    SxReset:=FALSE;
+    SxResetQuantityDone:=TRUE;
+    SxEnableDribCor:=TRUE;
+    SnPrevCmd:=7;
+    nCmd:=7;
+    SnCurrPointer:=0;
+    SimDQ:=0.0;
+    SrPrevSimDQ:=0.0;
+    DribbOut:=avInit;
+    DQ_Tare:=avInit;
+    SxTareDone:=FALSE;
+    SxStandstillDribble:=FALSE;
+    SrPrevCoarseSetPt:=0.0;
+    SrPrevFineSetPt:=0.0;
+    SrPrevFlowSetPt:=0.0;
+    SrPrevFineFlowSetPt:=0.0;
+    SrPostDoseTimer:=0.0;
+    SrPrevPostDoseTime:=0.0;
+    SrPV_Quant:=PV.Value;
+    SrRelaxTimeLeft:=SrPrevPostDoseTime;
+    SrRelaxTime:=0.0;
+    SrDQ_AH_Tol:=0.0;
+    SrDQ_AL_Tol:=0.0;
+    SrDQ_AH_OnTimer:=0.0;
+    SrDQ_AH_OffTimer:=0.0;
+    SrDQ_AL_OnTimer:=0.0;
+    SrDQ_AL_OffTimer:=0.0;
+    SrDQ_A_DC:=0.0;
+    SrDQ_A_DG:=0.0;
+    SrPV_AH_OnTimer:=0.0;
+    SrPV_AH_OffTimer:=0.0;
+    SrPV_AL_OnTimer:=0.0;
+    SrPV_AL_OffTimer:=0.0;
+    SrPV_A_DC:=0.0;
+    SrPV_A_DG:=0.0;
+    SrPV_AH2_OnTimer:=0.0;
+    SrPV_AH2_OffTimer:=0.0;
+    SrPV_AL2_OnTimer:=0.0;
+    SrPV_AL2_OffTimer:=0.0;
+    SrPV_A2_DC:=0.0;
+    SrPV_A2_DG:=0.0;
+    SrCR_AH_OnTimer:=0.0;
+    SrCR_AH_OffTimer:=0.0;
+    SrCR_A_DC:=0.0;
+    SrCR_A_DG:=0.0;
+    SxChkDoseUntilRdy:=FALSE;
+    SxDosEndWithAckn:=FALSE;
+    SxUnderdosage:=FALSE;
+    SxOverdosage:=FALSE;
+    ErrorNum:=0;
+    ST_Worst:=B#16#80;
+    DQ_SP.ST:=B#16#80;
+    DQ_Out.ST:=B#16#80;
+END_IF; (*A7dc*)
+
+IF (SxFirstStart) OR xOB_Start THEN (*A7df*)
+    SxFirstStart:=FALSE;
+    SxShowAlarm1:=TRUE;
+    SxShowAlarm2:=TRUE;
+    IF xOB_Start THEN (*A7e0*)
+        SnRunUpCyc:=RunUpCyc;
+    END_IF; (*A7e0*)
+    SrDQ_AH_Tol:=0.0;
+    SrDQ_AL_Tol:=0.0;
+    IF PulseWidth<SampleTime THEN (*A7e1*)
+        PulseWidth:=SampleTime;
+    END_IF; (*A7e1*)
+    srPulseTime1:=PulseWidth;
+    srPulseTime2:=PulseWidth;
+    IF NOT((xFeatStartupWithOutInit) OR OosAct.Value) THEN (*A7e2*)
+        GrpErr:=dvInit;
+        RdyToStart:=dvInit;
+        AutAct:=dvInit;
+        ManAct.Value:=TRUE;
+        LocalAct:=dvInit;
+        OosAct:=dvInit;
+        DosEnd.Value:=TRUE;
+        DosStart:=dvInit;
+        DosRelax:=dvInit;
+        DosOn:=dvInit;
+        DosOff:=dvInit;
+        DosPause:=dvInit;
+        Ctrl:=dvInit;
+        Ctrl2:=dvInit;
+        DQ_AH_Act:=dvInit;
+        DQ_AL_Act:=dvInit;
+        PV_AH_Act:=dvInit;
+        PV_AH2_Act:=dvInit;
+        PV_AL_Act:=dvInit;
+        PV_AL2_Act:=dvInit;
+        CR_AH_Act:=dvInit;
+        SumMsgAct:=dvInit;
+        IF xFeat_SwiPoiFalseAct THEN (*A7e3*)
+            DQ_AH_Act.Value:=TRUE;
+            DQ_AL_Act.Value:=TRUE;
+            PV_AH_Act.Value:=TRUE;
+            PV_AH2_Act.Value:=TRUE;
+            PV_AL_Act.Value:=TRUE;
+            PV_AL2_Act.Value:=TRUE;
+            CR_AH_Act.Value:=TRUE;
+        END_IF; (*A7e3*)
+        SP_ExtAct:=dvInit;
+        SxCoarseFlowAlarms:=FALSE;
+        SxFineFlowAlarms:=FALSE;
+        SxResetNeededProtect:=FALSE;
+        SxResetNeededFlowErr:=FALSE;
+        SxResetNeededFaultExtCSF:=FALSE;
+        SxEnableDribCor:=TRUE;
+        SxChkDose:=FALSE;
+        SxPostDose:=FALSE;
+        SxStartAut:=FALSE;
+        SxResetDQLi:=FALSE;
+        SxReset:=FALSE;
+        SxResetQuantityDone:=TRUE;
+        SnPrevCmd:=7;
+        nCmd:=7;
+        SnCurrPointer:=0;
+        FOR nCount:=1 TO 17 BY 1 DO
+            SarPV[nCount]:=PV;
+        END_FOR; 
+        DQ_Out:=avInit;
+        DribbOut:=avInit;
+        PV_Out:=avInit;
+        DQ_Tare:=avInit;
+        SxTareDone:=FALSE;
+        SxStandstillDribble:=FALSE;
+        SxFeat_SwiPoiFalseActOld:=xFeat_SwiPoiFalseAct;
+        SrDQ_Out:=0.0;
+        SrPrevDQ_Out:=0.0;
+        SimDQ:=0.0;
+        SrPrevSimDQ:=0.0;
+        SrPVOut:=0.0;
+        SrPrevCoarseSetPt:=0.0;
+        SrPrevFineSetPt:=0.0;
+        SrPrevFlowSetPt:=0.0;
+        SrPrevFineFlowSetPt:=0.0;
+        SrPostDoseTimer:=0.0;
+        SrPrevPostDoseTime:=0.0;
+        SrPV_Quant:=PV.Value;
+        SrRelaxTimeLeft:=SrPrevPostDoseTime;
+        SrRelaxTime:=0.0;
+        SrDQ_AH_Tol:=0.0;
+        SrDQ_AL_Tol:=0.0;
+        SrDQ_AH_OnTimer:=0.0;
+        SrDQ_AH_OffTimer:=0.0;
+        SrDQ_AL_OnTimer:=0.0;
+        SrDQ_AL_OffTimer:=0.0;
+        SrDQ_A_DC:=0.0;
+        SrDQ_A_DG:=0.0;
+        SrPV_AH_OnTimer:=0.0;
+        SrPV_AH_OffTimer:=0.0;
+        SrPV_AL_OnTimer:=0.0;
+        SrPV_AL_OffTimer:=0.0;
+        SrPV_A_DC:=0.0;
+        SrPV_A_DG:=0.0;
+        SrPV_AH2_OnTimer:=0.0;
+        SrPV_AH2_OffTimer:=0.0;
+        SrPV_AL2_OnTimer:=0.0;
+        SrPV_AL2_OffTimer:=0.0;
+        SrPV_A2_DC:=0.0;
+        SrPV_A2_DG:=0.0;
+        SrCR_AH_OnTimer:=0.0;
+        SrCR_AH_OffTimer:=0.0;
+        SrCR_A_DC:=0.0;
+        SrCR_A_DG:=0.0;
+        SxChkDoseUntilRdy:=FALSE;
+        SxDosEndWithAckn:=FALSE;
+        SxUnderdosage:=FALSE;
+        SxOverdosage:=FALSE;
+    END_IF; 
+    IF AutAct.Value THEN 
+        xOSPerAuto:=FALSE;
+    END_IF;
+    IF ManAct.Value THEN 
+        xOSPerMan:=FALSE;
+    END_IF;
+    ErrorNum:=0;
+END_IF; (*A7df*)      
+
+
+
+IF (NOT(OosAct.Value)) AND xOB_Cycle THEN (*A7e8*)
+    IF (xFeat_SwiPoiFalseAct) XOR SxFeat_SwiPoiFalseActOld THEN (*A7e9*)
+        DQ_AH_Act.Value:=NOT(DQ_AH_Act.Value);
+        DQ_AL_Act.Value:=NOT(DQ_AL_Act.Value);
+        PV_AH_Act.Value:=NOT(PV_AH_Act.Value);
+        PV_AH2_Act.Value:=NOT(PV_AH2_Act.Value);
+        PV_AL_Act.Value:=NOT(PV_AL_Act.Value);
+        PV_AL2_Act.Value:=NOT(PV_AL2_Act.Value);
+        CR_AH_Act.Value:=NOT(CR_AH_Act.Value);
+    END_IF; (*A7e9*)
+    SxFeat_SwiPoiFalseActOld:=xFeat_SwiPoiFalseAct;
+    xBumpLessTransfer:=FALSE;
+    xStartAutoPostDose:=FALSE;
+    xErrorNum:=0;
+    xAutoAct:=AutAct.Value;
+    xManAct:=ManAct.Value;
+    avTotalPV:=avInit;
+    avPV:=avInit;
+    xFlowAlarms:=((((xFeat_SwiPoiFalseAct) XOR PV_AL_Act.Value) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH_Act.Value)) OR ((xFeat_SwiPoiFalseAct) XOR PV_AL2_Act.Value)) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH2_Act.Value);
+    IF ((LocalSetting<0) OR (LocalSetting=2)) OR (LocalSetting>3) THEN (*A7ea*)
+        xErrorNum:=41;
+    ELSIF ((LocalSetting=0) OR (LocalSetting=3)) AND LocalLi.Value THEN (*A7ec*)
+        xErrorNum:=42;
+    END_IF;(*A7ec*)
+    IF (TI.Value<=0.0) AND (NOT(xFeatWeightMeasurement)) THEN (*A7ed*)
+        xErrorNum:=11;
+    ELSIF (((((PV_AH_Lim<PV_AL_Lim) OR (PV_AH2_Lim<=PV_AL2_Lim)) OR (DQ_HiLim.Value<=DQ_LoLim.Value)) OR (DQ2_HiLim.Value<=DQ2_LoLim.Value)) OR (SP_HiLim.Value<=SP_LoLim.Value)) OR (SP2_HiLim.Value<=SP2_LoLim.Value) THEN (*A7ef*)
+        xErrorNum:=12;
+    END_IF; (*A7ef*)
+ 
+    IF (SimLiOp.Value) AND SimOnLi.Value THEN (*A7f0*)
+        SimDQ:=SimDQ_Li.Value;
+        SimPV:=SimPV_Li.Value;
+    END_IF; (*A7f0*)
+    
+    IF NOT(xSimAct) THEN (*A7f1*)
+        avPV:=PV;
+        avPV.Value:=ChkREAL(In :=  avPV.Value,ErrNum :=  nInfErr);
+        IF (nInfErr=1) OR (nInfErr=3) THEN (*A7f2*)
+            xErrorNum:=30;
+            avPV:=avInit;
+        END_IF; (*A7f2*)
+        avQuantPV.Value:=avPV.Value*Gain.Value;
+        stcInST.b0:=avPV.ST;
+        stcInST.b1:=Gain.ST;
+        avQuantPV.ST:=SelST16(InST := stcInST
+             ,Num :=  2
+             ,SelPrio := 0
+             ); 
+        IF xFlowProcessing THEN (*A7f3*)
+            IF (NumSample>1) AND (NumSample<=16) THEN (*A7f3*)
+                SnCurrPointer:=SnCurrPointer+1;
+                IF SnCurrPointer>NumSample THEN (*A7f5*)
+                    SnCurrPointer:=1;
+                END_IF; (*A7f5*)
+                SarPV[SnCurrPointer]:=avPV;
+                FOR nCount:=1 TO NumSample BY 1 DO 
+                    avTotalPV.Value:=avTotalPV.Value+SarPV[nCount].Value;
+                    stcInST.b0:=avTotalPV.ST;
+                    stcInST.b1:=SarPV[nCount].ST;
+                    avTotalPV.ST:=SelST16(InST := stcInST
+                         ,Num :=  2
+                         ,SelPrio := 0
+                         ); 
+                END_FOR; (*A7f7*)
+                avPV.Value:=avTotalPV.Value/NumSample;
+                avPV.ST:=avTotalPV.ST;
+                END_IF;
+            END_IF; (*A7f3*)
+            IF (xFeatWeightMeasurement) AND xFeat_FlowInWeightMode THEN (*A7f8*)
+                IF MeterType THEN (*A7f9*)
+                    PV_Out.Value:=((SrPV_Quant-avPV.Value)*Gain.Value)/SampleTime;
+                ELSE (*A7f9*)
+                    PV_Out.Value:=((avPV.Value-SrPV_Quant)*Gain.Value)/SampleTime;
+                END_IF;    
+            ELSE (*A7f8*)
+                PV_Out.Value:=avPV.Value*Gain.Value;
+            END_IF; (*A7fb*)
+            SrPV_Quant:=avPV.Value;
+            stcInST.b0:=avPV.ST;
+            stcInST.b1:=Gain.ST;
+            PV_Out.ST:=SelST16(InST := stcInST
+                 ,Num :=  2
+                 ,SelPrio := 0
+                 ); 
+        ELSE (*A7f1*)
+            IF (xFeatWeightMeasurement) AND xFeat_FlowInWeightMode THEN (*A7fd*)
+                PV_Out.Value:=(SimDQ-SrPV_Quant)/SampleTime;
+            ELSE (*A7fd*)
+                IF xFeatWeightMeasurement THEN (*A7ff*)
+                    PV_Out.Value:=SimDQ;
+                ELSE (*A7ff*)
+                    PV_Out.Value:=SimPV;
+                END_IF;
+            END_IF; (*A7fe*)
+            avQuantPV.Value:=avPV.Value*Gain.Value;
+            avQuantPV.ST:=B#16#60;
+            SrPV_Quant:=SimDQ;
+            PV_Out.ST:=B#16#60;
+        END_IF; (*A7fc*)
+        PV_Out.Value:=ChkREAL(In :=  PV_Out.Value,ErrNum :=  nInfErr);
+        IF (nInfErr=1) OR (nInfErr=3) THEN (*A801*)
+            xErrorNum:=31;
+            PV_Out:=avInit;
+        END_IF; (*A801*)
+        IF xSimAct THEN (*A802*)
+            IF ((NumSample>1) AND xFlowProcessing) AND (NumSample<=16) THEN (*A807*)
+                SnCurrPointer:=SnCurrPointer+1;
+                IF SnCurrPointer>NumSample THEN (*A804*)
+                    SnCurrPointer:=1;
+                END_IF; (*A804*)
+                IF Gain.Value<>0.0 THEN (*A805*)
+                    SarPV[SnCurrPointer].Value:=PV_Out.Value/Gain.Value;
+                ELSE (*A805*)
+                    SarPV[SnCurrPointer].Value:=0.0;
+                END_IF; (*A806*)
+                SarPV[SnCurrPointer].ST:=B#16#60;
+            END_IF;
+        ELSE (*A802*)
+            SimPV:=PV_Out.Value;
+        END_IF; (*A807*)
+        
+        IF xFeatWeightMeasurement THEN (*A808*)
+            IF xSimAct THEN (*A809*)
+                DQ_Out.Value:=SimDQ;
+                DQ_Out.ST:=B#16#60;
+            ELSE    
+                IF (NOT((DosEnd.Value) AND SxResetQuantityDone)) AND SxTareDone THEN (*A80b*)
+                    IF MeterType THEN (*A80c*)
+                        DQ_Out.Value:=DQ_Tare.Value-avQuantPV.Value;
+                    ELSE (*A80c*)
+                        DQ_Out.Value:=avQuantPV.Value-DQ_Tare.Value;
+                    END_IF; (*A80d*)
+                    stcInST.b0:=DQ_Tare.ST;
+                    stcInST.b1:=avQuantPV.ST;
+                    DQ_Out.ST:=SelST16(InST := stcInST
+                         ,Num :=  2
+                         ,SelPrio := 0
+                         ); 
+                END_IF; (*A80b*)
+            END_IF;    
+        ELSE    
+        
+            IF ((((DosOn.Value) OR DosRelax.Value) OR ((PV_Out.Value>0.0) AND xFeatAlwaysCalcFlow)) OR ((PV_Out.Value>CR_AH_Lim) AND CR_AH_En)) AND ((NOT(xFeatBadPvStopsDosage)) OR ((PV.ST<>B#16#0) AND (PV.ST<>B#16#28))) THEN (*A80f*)
+                IF TI.Value=0.0 THEN (*A810*)
+                    rTI:=1.0;
+                ELSE (*A810*)
+                    rTI:=TI.Value;
+                END_IF; (*A811*)
+                rOut:=SampleTime;
+                rTITemp:=2.0*rTI;
+                rOut:=((rOut/rTITemp)*(SrPVOut+PV_Out.Value))+SrDQ_Out;
+                rTITemp:=rOut+SrPrevDQ_Out;
+                SrDQ_Out:=(SrPrevDQ_Out-rTITemp)+rOut;
+                rOut:=rTITemp;
+                SrPrevDQ_Out:=rTITemp;
+                SrPVOut:=PV_Out.Value;
+                DQ_Out.Value:=SrPrevDQ_Out;
+                stcInST.b0:=DQ_Out.ST;
+                stcInST.b1:=PV_Out.ST;
+                DQ_Out.ST:=SelST16(InST := stcInST
+                     ,Num :=  2
+                     ,SelPrio := 0
+                     ); 
+            END_IF; (*A80f*)
+            IF (SimDQ<>SrPrevSimDQ) AND xSimAct THEN (*A812*)
+                DQ_Out.Value:=SimDQ;
+                SrPrevDQ_Out:=SimDQ;
+                DQ_Out.ST:=B#16#60;
+            ELSE (*A812*)
+                SimDQ:=DQ_Out.Value;
+            END_IF; (*A80e*)
+        END_IF;    
+        DQ_Out.Value:=ChkREAL(In :=  DQ_Out.Value,ErrNum :=  nInfErr);
+        IF (nInfErr=1) OR (nInfErr=3) THEN 
+            SrDQ_Out:=DQ_Out.Value;
+            SrPrevDQ_Out:=DQ_Out.Value;
+            xErrorNum:=32;
+            IF nInfErr=1 THEN (*A815*)
+                DQ_Out.ST:=B#16#28;
+            ELSE (*A815*)
+                DQ_Out.ST:=B#16#0;
+            END_IF;
+        END_IF; (*A814*)
+
+        IF NOT(xSimAct) THEN (*A817*)
+            SimDQ:=DQ_Out.Value;
+        END_IF; (*A817*)
+        IF SimLiOp.Value THEN (*A818*)
+            SimOn:=SimOnLi.Value;
+        END_IF; (*A818*)
+        IF (((SP_LiOp.Value) AND SP_IntLi.Value) AND SP_ExtLi.Value) AND (NOT(xFeatSwitchMode)) THEN (*A819*)
+            xErrorNum:=48;
+        ELSE (*A819*)
+            IF ((((NOT(xFeatSwitchMode)) AND SP_IntLi.Value) OR ((NOT(SP_ExtLi.Value)) AND xFeatSwitchMode)) AND SP_LiOp.Value) OR (((xOSPerSPInt) AND SP_IntOp) AND (NOT(SP_LiOp.Value))) THEN (*A81b*)
+                SP_ExtAct.Value:=FALSE;
+            ELSE (*A81b*)
+                IF ((SP_LiOp.Value) AND SP_ExtLi.Value) OR (((xOSPerSPExt) AND SP_ExtOp) AND (NOT(SP_LiOp.Value))) THEN (*A81a*)
+                    SP_ExtAct.Value:=TRUE;
+                END_IF;
+            END_IF;
+        END_IF; (*A81a*) 
+
+        IF (SP_LiOp.Value) OR SP_ExtAct.Value THEN (*A81e*)
+            xOSPerSPExt:=FALSE;
+        END_IF; (*A81e*)
+        IF (NOT(SP_ExtAct.Value)) OR SP_LiOp.Value THEN (*A81f*)
+            xOSPerSPInt:=FALSE;
+        END_IF; (*A81f*)
+        IF (SP_ExtAct.Value) OR LocalAct.Value THEN (*A820*)
+            xOSPerSPQuantity:=FALSE;
+            xOSPerSPQuantityFine:=FALSE;
+        END_IF; (*A820*)
+        IF ((SP_ExtAct.Value) OR xFeatWeightMeasurement) OR LocalAct.Value THEN (*A821*)
+            xOSPerSPFlowRate:=FALSE;
+            xOSPerSPFlowRateFine:=FALSE;
+        END_IF; (*A821*)
+        IF (DQ_Ext.Value>=DQ_HiLim.Value) OR (DQ_HiLim.Value<DQ_LoLim.Value) THEN (*A822*)
+            DQ_ExtOut:=DQ_HiLim;
+            DQ_ExHiAct.Value:=TRUE;
+            DQ_ExLoAct.Value:=FALSE;
+        ELSIF DQ_Ext.Value<=DQ_LoLim.Value THEN (*A824*)
+            DQ_ExtOut:=DQ_LoLim;
+            DQ_ExHiAct.Value:=FALSE;
+            DQ_ExLoAct.Value:=TRUE;
+        ELSE (*A824*)
+            DQ_ExtOut:=DQ_Ext;
+            DQ_ExHiAct.Value:=FALSE;
+            DQ_ExLoAct.Value:=FALSE;
+        END_IF; (*A823*)
+        IF NOT(xFeatFineQtyAbsolute) THEN (*A825*)
+            IF DQ2_HiLim.Value<0.0 THEN (*A826*)
+                DQ2_HiLim.Value:=0.0;
+            ELSIF DQ2_HiLim.Value>100.0 THEN (*A828*)
+                DQ2_HiLim.Value:=100.0;
+            END_IF; (*A828*)
+            IF DQ2_LoLim.Value<0.0 THEN (*A829*)
+                DQ2_LoLim.Value:=0.0;
+            ELSIF DQ2_LoLim.Value>100.0 THEN (*A825*)
+                DQ2_LoLim.Value:=100.0;
+            END_IF;
+        END_IF; (*A825*)
+        IF ((DQ2_Ext.Value>=DQ2_HiLim.Value) OR (DQ2_HiLim.Value<DQ2_LoLim.Value)) OR ((DQ2_Ext.Value>=DQ_ExtOut.Value) AND xFeatFineQtyAbsolute) THEN (*A82c*)
+            IF (DQ2_HiLim.Value<=DQ_ExtOut.Value) OR (NOT(xFeatFineQtyAbsolute)) THEN (*A82d*)
+                DQ2_ExtOut:=DQ2_HiLim;
+            ELSE (*A82d*)
+                DQ2_ExtOut:=DQ_ExtOut;
+            END_IF; (*A82e*)
+            DQ2_ExHiAct.Value:=TRUE;
+            DQ2_ExLoAct.Value:=FALSE;
+        ELSIF DQ2_Ext.Value<=DQ2_LoLim.Value THEN (*A830*)
+            DQ2_ExtOut:=DQ2_LoLim;
+            DQ2_ExHiAct.Value:=FALSE;
+            DQ2_ExLoAct.Value:=TRUE;
+        ELSE (*A830*)
+            DQ2_ExtOut:=DQ2_Ext;
+            DQ2_ExHiAct.Value:=FALSE;
+            DQ2_ExLoAct.Value:=FALSE;
+        END_IF; (*A82f*)        
+        IF NOT(xFeatWeightMeasurement) THEN (*A831*)
+            IF (SP_Ext.Value>=SP_HiLim.Value) OR (SP_HiLim.Value<SP_LoLim.Value) THEN (*A832*)
+                SP_ExtOut:=SP_HiLim;
+                SP_ExHiAct.Value:=TRUE;
+                SP_ExLoAct.Value:=FALSE;
+            ELSIF SP_Ext.Value<=SP_LoLim.Value THEN (*A834*)
+                SP_ExtOut:=SP_LoLim;
+                SP_ExLoAct.Value:=TRUE;
+                SP_ExHiAct.Value:=FALSE;
+            ELSE (*A834*)
+                SP_ExtOut:=SP_Ext;
+                SP_ExHiAct.Value:=FALSE;
+                SP_ExLoAct.Value:=FALSE;
+            END_IF;(*A833*)
+            IF (SP2_Ext.Value>=SP2_HiLim.Value) OR (SP2_HiLim.Value<SP2_LoLim.Value) THEN (*A835*)
+                SP2_ExtOut:=SP2_HiLim;
+                SP2_ExHiAct.Value:=TRUE;
+                SP2_ExLoAct.Value:=FALSE;
+            ELSIF SP2_Ext.Value<=SP2_LoLim.Value THEN (*A837*)
+                SP2_ExtOut:=SP2_LoLim;
+                SP2_ExLoAct.Value:=TRUE;
+                SP2_ExHiAct.Value:=FALSE;
+            ELSE (*A837*)
+                SP2_ExtOut:=SP2_Ext;
+                SP2_ExHiAct.Value:=FALSE;
+                SP2_ExLoAct.Value:=FALSE;
+            END_IF;
+        END_IF; (*A831*)
+        IF SP_ExtAct.Value THEN (*A838*)
+            DQ_SP:=DQ_ExtOut;
+            avDQ2:=DQ2_ExtOut;
+            avSPDoseFlow:=SP_ExtOut;
+            avSP2DoseFlow:=SP2_ExtOut;
+        ELSE    
+            IF SxSPExtAct THEN (*A83a*)
+                DQ_Int:=SrPrevCoarseSetPt;
+            END_IF; (*A83a*)
+            IF (DQ_Int<DQ_LoLim.Value) AND (DQ_LoLim.Value<DQ_HiLim.Value) THEN (*A83b*)
+                IF SrPrevCoarseSetPt<DQ_LoLim.Value THEN (*A83c*)
+                    DQ_Int:=DQ_LoLim.Value;
+                ELSE (*A83c*)
+                    DQ_Int:=SrPrevCoarseSetPt;
+                END_IF; (*A83b*)
+            ELSIF DQ_Int>DQ_HiLim.Value THEN (*A83f*)
+                IF SrPrevCoarseSetPt>DQ_HiLim.Value THEN (*A840*)
+                    DQ_Int:=DQ_HiLim.Value;
+                ELSE (*A840*)
+                    DQ_Int:=SrPrevCoarseSetPt;
+                END_IF;
+            END_IF; (*A83f*)
+            DQ_SP.Value:=DQ_Int;
+            SrPrevCoarseSetPt:=DQ_Int;
+            DQ_SP.ST:=B#16#80;
+            IF SxSPExtAct THEN (*A842*)
+                DQ2_Int:=SrPrevFineSetPt;
+            END_IF; (*A842*)        
+            IF (DQ2_Int<DQ2_LoLim.Value) AND (DQ2_LoLim.Value<DQ2_HiLim.Value) THEN (*A843*)
+                IF SrPrevFineSetPt<DQ2_LoLim.Value THEN (*A844*)
+                    DQ2_Int:=DQ2_LoLim.Value;
+                ELSE (*A844*)
+                    DQ2_Int:=SrPrevFineSetPt;
+                END_IF;    
+            ELSIF (DQ2_Int>DQ2_HiLim.Value) OR ((DQ2_Int>DQ_Int) AND xFeatFineQtyAbsolute) THEN (*A847*)
+                IF (DQ2_HiLim.Value<=DQ_Int) OR (NOT(xFeatFineQtyAbsolute)) THEN (*A848*)
+                    IF SrPrevFineSetPt>DQ2_HiLim.Value THEN (*A849*)
+                        DQ2_Int:=DQ2_HiLim.Value;
+                    ELSE (*A849*)
+                        DQ2_Int:=SrPrevFineSetPt;
+                    END_IF;    
+                ELSE (*A848*)
+                    DQ2_Int:=DQ_Int;
+                END_IF;
+            END_IF; (*A847*)
+            avDQ2.Value:=DQ2_Int;
+            SrPrevFineSetPt:=DQ2_Int;
+            avDQ2.ST:=B#16#80;
+            IF NOT(xFeatWeightMeasurement) THEN (*A839*)
+                IF SxSPExtAct THEN (*A84d*)
+                    SP_Int:=SrPrevFlowSetPt;
+                END_IF; (*A84d*)
+                IF (SP_Int<SP_LoLim.Value) AND (SP_LoLim.Value<SP_HiLim.Value) THEN (*A84e*)
+                    IF SrPrevFlowSetPt<SP_LoLim.Value THEN (*A84f*)
+                        SP_Int:=SP_LoLim.Value;
+                    ELSE (*A84f*)
+                        SP_Int:=SrPrevFlowSetPt;
+                    END_IF;    
+                ELSIF SP_Int>SP_HiLim.Value THEN (*A852*)
+                    IF SrPrevFlowSetPt>SP_HiLim.Value THEN (*A853*)
+                    SP_Int:=SP_HiLim.Value;
+                    ELSE (*A853*)
+                    SP_Int:=SrPrevFlowSetPt;
+                    END_IF;
+                END_IF; (*A852*)
+                avSPDoseFlow.Value:=SP_Int;
+                SrPrevFlowSetPt:=SP_Int;
+                avSPDoseFlow.ST:=B#16#80;
+                IF SxSPExtAct THEN (*A855*)
+                    SP2_Int:=SrPrevFineFlowSetPt;
+                END_IF; (*A855*)
+                IF (SP2_Int<SP2_LoLim.Value) AND (SP2_LoLim.Value<SP2_HiLim.Value) THEN (*A856*)
+                    IF SrPrevFineFlowSetPt<SP2_LoLim.Value THEN (*A857*)
+                        SP2_Int:=SP2_LoLim.Value;
+                    ELSE (*A857*)
+                        SP2_Int:=SrPrevFineFlowSetPt;
+                    END_IF;
+                ELSIF SP2_Int>SP2_HiLim.Value THEN (*A85a*)
+                    IF SrPrevFineFlowSetPt>SP2_HiLim.Value THEN (*A85b*)
+                        SP2_Int:=SP2_HiLim.Value;
+                    ELSE (*A85b*)
+                        SP2_Int:=SrPrevFineFlowSetPt;
+                    END_IF; (*A85a*)
+                END_IF;    
+                avSP2DoseFlow.Value:=SP2_Int;
+                SrPrevFineFlowSetPt:=SP2_Int;
+                avSP2DoseFlow.ST:=B#16#80;
+            END_IF;    
+        END_IF; (*A839*)
+        IF xFeatWeightMeasurement THEN (*A85d*)
+            SP_ExtOut.Value:=0.0;
+            SP_ExtOut.ST:=B#16#80;
+            SP2_ExtOut.Value:=0.0;
+            SP2_ExtOut.ST:=B#16#80;
+            SP_Int:=0.0;
+            SP2_Int:=0.0;
+        END_IF; (*A85d*)
+        IF NOT(xFeatFineQtyAbsolute) THEN (*A85e*)
+            IF avDQ2.Value>100.0 THEN (*A85f*)
+                avDQ2.Value:=100.0;
+            ELSE
+                IF avDQ2.Value<0.0 THEN (*A85e*)
+                    avDQ2.Value:=0.0;
+                END_IF;    
+            END_IF; (*A85e*)
+        END_IF;    
+        IF DQ_AH_Tol<0.0 THEN (*A862*)
+            DQ_AH_Tol:=SrDQ_AH_Tol;
+        ELSE (*A862*)
+            SrDQ_AH_Tol:=DQ_AH_Tol;
+        END_IF; (*A863*)
+        IF DQ_AL_Tol<0.0 THEN (*A864*)
+            DQ_AL_Tol:=SrDQ_AL_Tol;
+        ELSE (*A864*)
+            SrDQ_AL_Tol:=DQ_AL_Tol;
+        END_IF; (*A865*)        
+        IF SP_ExtAct.Value THEN (*A866*)
+            IF (DQ_SP.Value>DQ_HiLim.Value) OR (DQ_HiLim.Value<DQ_LoLim.Value) THEN (*A867*)
+                DQ_Int:=DQ_HiLim.Value;
+            ELSIF DQ_SP.Value<DQ_LoLim.Value THEN (*A869*)
+                DQ_Int:=DQ_LoLim.Value;
+            ELSE (*A869*)
+                DQ_Int:=DQ_SP.Value;
+            END_IF; (*A868*)
+            IF SP_TrkExt THEN (*A86a*)
+                SrPrevCoarseSetPt:=DQ_Int;
+            END_IF; (*A86a*)
+            IF (avDQ2.Value>DQ2_HiLim.Value) OR (DQ2_HiLim.Value<DQ2_LoLim.Value) THEN (*A86b*)
+                DQ2_Int:=DQ2_HiLim.Value;
+            ELSIF avDQ2.Value<DQ2_LoLim.Value THEN (*A86d*)
+                DQ2_Int:=DQ2_LoLim.Value;
+            ELSE (*A86d*)
+                DQ2_Int:=avDQ2.Value;
+            END_IF; (*A86c*)
+            IF SP_TrkExt THEN (*A86e*)
+                SrPrevFineSetPt:=DQ2_Int;
+            END_IF; (*A86e*)
+            IF NOT(xFeatWeightMeasurement) THEN (*A866*)
+                IF (avSPDoseFlow.Value>SP_HiLim.Value) OR (SP_HiLim.Value<SP_LoLim.Value) THEN (*A870*)
+                    SP_Int:=SP_HiLim.Value;
+                //ELSE (*A870*)
+                ELSIF avSPDoseFlow.Value<SP_LoLim.Value THEN (*A872*)
+                    SP_Int:=SP_LoLim.Value;
+                ELSE (*A872*)
+                    SP_Int:=avSPDoseFlow.Value;
+                END_IF; (*A871*)
+                IF SP_TrkExt THEN (*A873*)
+                    SrPrevFlowSetPt:=SP_Int;
+                END_IF; (*A873*)
+                IF (avSP2DoseFlow.Value>SP2_HiLim.Value) OR (SP2_HiLim.Value<SP2_LoLim.Value) THEN (*A874*)
+                    SP2_Int:=SP2_HiLim.Value;
+                ELSIF avSP2DoseFlow.Value<SP2_LoLim.Value THEN (*A876*)
+                    SP2_Int:=SP2_LoLim.Value;
+                ELSE (*A876*)
+                    SP2_Int:=avSP2DoseFlow.Value;
+                END_IF; (*A875*)
+                IF SP_TrkExt THEN (*A866*)
+                    SrPrevFineFlowSetPt:=SP2_Int;
+                END_IF;
+            END_IF;    
+        END_IF; (*A866*)        
+        IF NOT(xFeatFineQtyAbsolute) THEN (*A878*)
+            DQ2_SP.Value:=(avDQ2.Value/100.0)*DQ_SP.Value;
+        ELSE (*A878*)
+            DQ2_SP.Value:=avDQ2.Value;
+        END_IF; (*A879*)
+        rDQ1SP:=DQ_SP.Value-DQ2_SP.Value;
+        IF rDQ1SP<0.0 THEN (*A87a*)
+            DQ1_SP.Value:=0.0;
+        ELSIF rDQ1SP>DQ_SP.Value THEN (*A87c*)
+            DQ1_SP.Value:=DQ_SP.Value;
+        ELSE (*A87c*)
+            DQ1_SP.Value:=rDQ1SP;
+        END_IF; (*A87b*)
+        stcInST.b0:=DQ_SP.ST;
+        stcInST.b1:=avDQ2.ST;
+
+        DQ2_SP.ST:=SelST16(InST := stcInST
+             ,Num :=  2
+             ,SelPrio := 0
+             ); 
+        DQ1_SP.ST:=DQ2_SP.ST;
+        IF (DQ_SP_Tol.Value<>DQ_SP.Value) AND (DQ_Out.Value>0.0) THEN (*A87d*)
+            IF DosEnd.Value THEN (*A87e*)
+                nCmd:=9;
+            ELSE (*A87e*)
+                IF DosOff.Value THEN (*A87d*)
+                    nCmd:=10;
+                END_IF;
+            END_IF;
+        END_IF; (*A87d*)
+        IF (((LocalAct.Value) OR xSimAct) AND BypProt) OR DosRelax.Value THEN (*A881*)
+            xInterlocked:=FALSE;
+            LockAct.Value:=FALSE;
+        ELSE (*A881*)
+            xInterlocked:=(((xIntlock_N) OR xProtect_N) OR SxResetNeededProtect) OR ((NOT(DosOn.Value)) AND xPermit_N);
+            LockAct.Value:=(NOT(SxForceInputActive)) AND xInterlocked;
+        END_IF; (*A882*)
+        IF ((ModLiOp.Value) OR AutAct.Value) OR ((LocalSetting=1) AND LocalLi.Value) THEN (*A883*)
+            xOSPerAuto:=FALSE;
+        END_IF; (*A883*)
+        IF ((ModLiOp.Value) OR ManAct.Value) OR ((LocalSetting=1) AND LocalLi.Value) THEN (*A884*)
+            xOSPerMan:=FALSE;
+        END_IF; (*A884*)
+        IF ((ModLiOp.Value) OR LocalAct.Value) OR (LocalSetting<>3) THEN (*A885*)
+            xOSPerLocal:=FALSE;
+        END_IF; (*A885*)
+        xStartCmd:=(((NOT(LockAct.Value)) AND DosEnd.Value) AND (NOT((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value))) AND (((DQ_Out.Value<(DQ_SP.Value-DQ_AL_Tol)) AND (NOT(nCmd=9))) OR ((DQ_SP.Value>0.0) AND xFeatResetQuantity));
+        IF (NOT(ManAct.Value)) OR (NOT(xStartCmd)) THEN (*A886*)
+            xOSPerStart:=FALSE;
+        END_IF; (*A886*)
+        IF (NOT(ManAct.Value)) OR (NOT(DosOn.Value)) THEN (*A887*)
+            xOSPerPause:=FALSE;
+        END_IF; (*A887*)
+        xContCmd:=(((NOT(LockAct.Value)) AND (((((DQ_Out.Value<DQ_SP.Value) AND DosEnd.Value) AND (nCmd=9)) OR (((DQ_Out.Value<DQ_SP.Value) AND DosOff.Value) AND (nCmd=10))) OR 
+        ((NOT((((((xFlowAlarms) OR SxResetNeededFlowErr) AND xFeatStopMetering) OR xFaultExtCSF) OR SxResetNeededFaultExtCSF) OR (((xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value) AND xFeatOvDoseAckn))) AND DosOff.Value))) OR DosPause.Value) AND 
+        ((NOT(xFeatBadPvStopsDosage)) OR ((PV.ST<>B#16#0) AND (PV.ST<>B#16#28)));
+        IF (NOT(ManAct.Value)) OR (NOT(xContCmd)) THEN (*A888*)
+            xOSPerContinue:=FALSE;
+        END_IF; (*A888*)
+        IF (NOT(ManAct.Value)) OR DosEnd.Value THEN (*A889*)
+            xOSPerCancel:=FALSE;
+        END_IF; (*A889*)
+        IF (((NOT(DosEnd.Value)) OR (DQ_Out.Value=0.0)) OR ((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value)) OR ((xFeat_ResetDpdsOnMode) AND AutAct.Value) THEN (*A88a*)
+            xOSPerResetQuantity:=FALSE;
+        END_IF; (*A88a*)
+        IF NOT((((((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value) OR ((xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value)) OR SxUnderdosage) OR SxOverdosage) AND ((DosOff.Value) OR DosEnd.Value)) THEN (*A88b*)
+            xOSPerAcknOverUnderdose:=FALSE;
+        END_IF; (*A88b*)    
+
+        IF (((LocalSetting=3) AND LocalOp) AND (NOT(ModLiOp.Value))) OR ((LocalSetting=1) AND LocalLi.Value) THEN (*A88c*)
+            LocalAct.Value:=TRUE;
+            xOSPerStart:=FALSE;
+            xOSPerPause:=FALSE;
+            xOSPerCancel:=FALSE;
+            xOSPerContinue:=FALSE;
+            xManAct:=FALSE;
+            xAutoAct:=FALSE;
+        ELSIF (((ModLiOp.Value) AND AutModLi.Value) AND ((NOT(xFeatSwitchMode)) AND ManModLi.Value)) AND (NOT(LocalAct.Value)) THEN (*A88e*)
+            xInvalidMode:=TRUE;
+            xErrorNum:=51;
+        ELSIF NOT(((LocalAct.Value) AND ModLiOp.Value) AND (LocalSetting=3)) THEN (*A88f*)
+            IF ((ModLiOp.Value) AND AutModLi.Value) OR ((NOT(ModLiOp.Value)) AND AutModOp) THEN (*A890*)
+                xAutoAct:=TRUE;
+                xManAct:=FALSE;
+                SxLastMode:=TRUE;
+            END_IF;(*A890*)
+            IF ((((NOT(xFeatSwitchMode)) AND ManModLi.Value) OR ((NOT(AutModLi.Value)) AND xFeatSwitchMode)) AND ModLiOp.Value) OR ((NOT(ModLiOp.Value)) AND ManModOp) THEN (*A88f*)
+                xManAct:=TRUE;
+                xAutoAct:=FALSE;
+                SxLastMode:=FALSE;
+            END_IF;
+        END_IF;(*A88f*)
+
+        IF (((NOT(ModLiOp.Value)) AND xFeatBmpModeOnlyOp) OR (NOT(xFeatBmpModeOnlyOp))) AND xFeatBumplessMode THEN (*A892*)
+            xBumpLessTransfer:=((((((((((((((DosOn.Value) AND CancelAut.Value) AND (NOT(xFeatSwitchMode))) OR (((NOT(StartAut.Value)) AND DosOn.Value) AND xFeatSwitchMode)) OR ((DosOn.Value) AND PauseAut.Value)) OR 
+            ((DosRelax.Value) AND CancelAut.Value)) OR 
+            (((DosOff.Value) AND CancelAut.Value) AND (NOT(xFeatSwitchMode)))) OR (((NOT(StartAut.Value)) AND DosOff.Value) AND xFeatSwitchMode)) OR 
+            (((((DosOff.Value) AND ContAut.Value) AND (NOT(SxContAut))) AND (NOT(xFeatSwitchMode))) AND xFeatAutoReset)) OR (((((NOT(PauseAut.Value)) AND DosOff.Value) AND SxPauseAut) AND xFeatSwitchMode) AND xFeatAutoReset)) OR 
+            (((DosPause.Value) AND ContAut.Value) AND (NOT(xFeatSwitchMode)))) OR (((NOT(PauseAut.Value)) AND DosPause.Value) AND xFeatSwitchMode)) OR (((DosPause.Value) AND CancelAut.Value) AND (NOT(xFeatSwitchMode)))) OR 
+            (((NOT(StartAut.Value)) AND DosPause.Value) AND xFeatSwitchMode)) OR (((((DosEnd.Value) AND StartAut.Value) AND (NOT(SxStartAut))) AND (NOT((xFeatSwitchMode) AND PauseAut.Value))) AND xStartCmd);
+        ELSE (*A892*)
+            xBumpLessTransfer:=FALSE;
+        END_IF;(*A893*)
+        IF (NOT(AutAct.Value)) AND xAutoAct THEN (*A894*)
+            xOutStatusWord1x15:=xBumpLessTransfer;
+            IF xBumpLessTransfer THEN (*A894*)
+                IF NOT(LocalAct.Value) THEN (*A896*)
+                    xAutoAct:=FALSE;
+                    xManAct:=TRUE;
+                    SxLastMode:=FALSE;
+                    IF NOT(ModLiOp.Value) THEN (*A894*)
+                        xOSPerAuto:=OS_Perm.Bit0;
+                        xOSPerMan:=FALSE;
+                    END_IF;    
+                ELSE (*A896*)
+                    xAutoAct:=FALSE;
+                    IF NOT(ModLiOp.Value) THEN (*A894*)
+                        xOSPerAuto:=OS_Perm.Bit0;
+                        xOSPerMan:=OS_Perm.Bit1;
+                        xOSPerLocal:=FALSE;
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF;(*A894*)
+        IF ((((NOT(LocalLi.Value)) AND (LocalSetting=1)) OR (((xAutoAct) OR xManAct) AND (LocalSetting=3))) OR (LocalSetting=0)) AND LocalAct.Value THEN (*A89a*)
+            LocalAct.Value:=FALSE;
+            IF (NOT(xAutoAct)) AND (NOT(xManAct)) THEN (*A89a*)
+                IF (NOT(xBumpLessTransfer)) AND xFeatLastActMod THEN (*A89c*)
+                    xAutoAct:=SxLastMode;
+                    xManAct:=NOT(SxLastMode);
+                ELSE (*A89c*)
+                    xManAct:=TRUE;
+                    xAutoAct:=FALSE;
+                    SxLastMode:=FALSE;
+                END_IF;
+            END_IF;
+        END_IF;(*A89a*)
+        AutAct.Value:=xAutoAct;
+        ManAct.Value:=xManAct;
+        SxForceInputActive:=FALSE;
+
+        IF LocalAct.Value THEN (*A89e*)
+            xInvalidCommand:=(((((((NOT(SxStartLocal)) AND StartLocal.Value) AND CancelLocal.Value) OR (((NOT(SxStartLocal)) AND StartLocal.Value) AND PauseLocal.Value)) OR 
+            (((NOT(SxStartLocal)) AND StartLocal.Value) AND ContLocal.Value)) OR 
+            ((CancelLocal.Value) AND PauseLocal.Value)) OR ((CancelLocal.Value) AND ContLocal.Value)) OR ((PauseLocal.Value) AND ContLocal.Value);
+            IF xInvalidCommand THEN (*A89f*)
+                xErrorNum:=51;
+                IF xFeatControlPriority THEN (*A8c6*)
+                    IF (StartLocal.Value) AND CancelLocal.Value THEN (*A8a1*)
+                        nCmd:=2;
+                    ELSIF ((PauseLocal.Value) AND ContLocal.Value) AND DosOn.Value THEN (*A8a3*)
+                        nCmd:=3;
+                    END_IF;(*A8a3*)
+                END_IF;    
+            ELSE
+                IF ((NOT(SxStartLocal)) AND StartLocal.Value) AND xStartCmd THEN (*A8a5*)
+                    nCmd:=1;
+                ELSIF (NOT(DosEnd.Value)) AND CancelLocal.Value THEN (*A8a7*)
+                    nCmd:=2;
+                ELSIF (PauseLocal.Value) AND DosOn.Value THEN (*A8a8*)
+                    nCmd:=3;
+                ELSIF (((NOT(SxContLocal)) OR ((nCmd<>10) AND (nCmd<>9))) AND ContLocal.Value) AND xContCmd THEN (*A8a9*)
+                    nCmd:=4;
+                END_IF;    
+            END_IF;(*A8a9*)
+        ELSIF (((StartForce.Value) OR CancelForce.Value) OR PauseForce.Value) OR ContForce.Value THEN (*A8ab*)
+            xOSPerStart:=FALSE;
+            xOSPerPause:=FALSE;
+            xOSPerCancel:=FALSE;
+            xOSPerContinue:=FALSE;
+            xInvalidCommand:=((((((StartForce.Value) AND CancelForce.Value) OR ((StartForce.Value) AND PauseForce.Value)) OR 
+            ((StartForce.Value) AND ContForce.Value)) OR ((CancelForce.Value) AND PauseForce.Value)) OR ((CancelForce.Value) AND ContForce.Value)) OR ((PauseForce.Value) AND ContForce.Value);
+            xFrcInvalidCommand:=xInvalidCommand;
+            IF xInvalidCommand THEN (*A8ac*)
+                xErrorNum:=51;
+                IF xFeatControlPriority THEN (*A8c6*)
+                    IF (StartForce.Value) AND CancelForce.Value THEN (*A8ae*)
+                        SxForceInputActive:=TRUE;
+                        nCmd:=2;
+                    ELSIF ((PauseForce.Value) AND ContForce.Value) AND DosOn.Value THEN (*A8b0*)
+                        SxForceInputActive:=TRUE;
+                        nCmd:=3;
+                    END_IF;
+                END_IF;(*A8b0*)
+            ELSE (*A8ac*)
+                SxForceInputActive:=TRUE;
+                (*L 168.5:=(StartForce.Value) AND DosEnd.Value;*)
+                IF ((StartForce.Value) AND DosEnd.Value) AND (DQ_Out.Value<(DQ_SP.Value-DribbOut.Value)) THEN (*A8b2*)
+                    nCmd:=1;
+                ELSIF (NOT(DosEnd.Value)) AND CancelForce.Value THEN (*A8b4*)
+                    nCmd:=2;
+                ELSIF (PauseForce.Value) AND DosOn.Value THEN (*A8b5*)
+                    nCmd:=3;
+                ELSIF ((DosPause.Value) OR DosOff.Value) AND ContForce.Value THEN (*A8b6*)
+                    nCmd:=4;
+                END_IF;
+            END_IF;(*A8b6*)
+        ELSIF AutAct.Value THEN (*A8b7*)
+            xInvalidCommand:=((((((((NOT(xFeatSwitchMode)) AND StartAut.Value) AND (NOT(SxStartAut))) AND CancelAut.Value) OR 
+            ((((NOT(xFeatSwitchMode)) AND StartAut.Value) AND (NOT(SxStartAut))) AND ContAut.Value)) OR 
+            ((((NOT(xFeatSwitchMode)) AND StartAut.Value) AND (NOT(SxStartAut))) AND PauseAut.Value)) OR 
+            (((NOT(xFeatSwitchMode)) AND CancelAut.Value) AND PauseAut.Value)) OR (((NOT(xFeatSwitchMode)) AND CancelAut.Value) AND ContAut.Value)) OR (((NOT(xFeatSwitchMode)) AND PauseAut.Value) AND ContAut.Value);
+            IF xInvalidCommand THEN (*A8b8*)
+                xErrorNum:=51;
+                IF xFeatControlPriority THEN (*A8c6*)
+                    IF xFeatSwitchMode THEN (*A8ba*)
+                        IF (StartAut.Value) AND PauseAut.Value THEN (*A8bc*)
+                            nCmd:=2;
+                        END_IF;    
+                    ELSE
+                        IF (StartAut.Value) AND CancelAut.Value THEN (*A8bd*)
+                            nCmd:=2;
+                        ELSIF ((PauseAut.Value) AND ContAut.Value) AND DosOn.Value THEN (*A8bc*)
+                            nCmd:=3;
+                        END_IF;
+                    END_IF;
+                END_IF;(*A8bc*)
+            ELSE (*A8b8*)
+                IF (((NOT(SxStartAut)) AND StartAut.Value) AND xStartCmd) AND (NOT((xFeatSwitchMode) AND PauseAut.Value)) THEN (*A8c1*)
+                    nCmd:=1;
+                ELSIF (((NOT(xFeatSwitchMode)) AND CancelAut.Value) OR ((NOT(StartAut.Value)) AND xFeatSwitchMode)) AND (NOT(DosEnd.Value)) THEN (*A8c3*)
+                    nCmd:=2;
+                ELSIF (PauseAut.Value) AND DosOn.Value THEN (*A8c4*)
+                    nCmd:=3;
+                ELSIF ((((NOT(xFeatSwitchMode)) AND ContAut.Value) AND ((NOT(SxContAut)) OR ((nCmd<>10) AND (nCmd<>9)))) OR 
+                (((NOT(PauseAut.Value)) AND xFeatSwitchMode) AND (((nCmd<>10) AND (nCmd<>9)) OR SxPauseAut))) AND xContCmd THEN (*A8c5*)
+                    nCmd:=4;
+                END_IF;
+            END_IF;(*A8c5*)
+        ELSIF ManAct.Value THEN (*A8c6*)
+            xInvalidCommand:=((((((StartMan) AND CancelMan) OR ((StartMan) AND PauseMan)) OR ((StartMan) AND ContMan)) OR ((CancelMan) AND PauseMan)) OR ((CancelMan) AND ContMan)) OR ((PauseMan) AND ContMan);
+            IF xInvalidCommand THEN (*A8c7*)
+                xErrorNum:=51;
+                IF xFeatControlPriority THEN (*A8c8*)
+                    IF (StartMan) AND CancelMan THEN (*A8c9*)
+                        nCmd:=2;
+                    ELSIF ((PauseMan) AND ContMan) AND DosOn.Value THEN (*A8c8*)
+                        nCmd:=3;
+                    END_IF;
+                END_IF;(*A8c8*)
+                xOSPerStart:=FALSE;
+                xOSPerPause:=FALSE;
+                xOSPerCancel:=FALSE;
+                xOSPerContinue:=FALSE;
+            ELSE (*A8c7*)
+                IF (StartMan) AND xStartCmd THEN (*A8cd*)
+                    nCmd:=1;
+                ELSIF (NOT(DosEnd.Value)) AND CancelMan THEN (*A8cf*)
+                    nCmd:=2;
+                ELSIF (PauseMan) AND DosOn.Value THEN (*A8d0*)
+                    nCmd:=3;
+                ELSIF (ContMan) AND xContCmd THEN (*A8c6*)
+                    nCmd:=4;
+                END_IF;
+            END_IF;
+        END_IF;(*A8c6*)        
+        IF NOT(SxForceInputActive) THEN (*A8d2*)
+            IF ((((xFeatStopMetering) AND xFlowAlarms) OR xInterlocked) OR xFaultExtCSF) OR (((PV.ST=B#16#0) OR (PV.ST=B#16#28)) AND xFeatBadPvStopsDosage) THEN (*A8d2*)
+                IF ((nCmd<>2) AND DosPause.Value) OR DosOn.Value THEN (*A8d2*)
+                    nCmd:=5;
+                END_IF;
+            END_IF;
+        END_IF;(*A8d2*)        
+
+        IF (((((ManAct.Value) AND xFeat_ResetinManual) OR AutAct.Value) OR LocalAct.Value) AND xProtect_N) AND (NOT(((LocalAct.Value) OR xSimAct) AND BypProt)) THEN (*A8d5*)
+            SxResetNeededProtect:=TRUE;
+        ELSIF (NOT(Prot_En)) OR (((LocalAct.Value) OR xSimAct) AND BypProt) THEN (*A8d7*)
+            SxResetNeededProtect:=FALSE;
+            P_Rst.Value:=TRUE;
+        END_IF;(*A8d7*)
+        IF ((((ManAct.Value) AND xFeat_ResetinManual) OR AutAct.Value) OR LocalAct.Value) AND xFaultExtCSF THEN (*A8d8*)
+            SxResetNeededFaultExtCSF:=TRUE;
+        END_IF;(*A8d8*)
+        IF (((AutAct.Value) OR LocalAct.Value) AND xFeatStopMetering) AND ((SxCoarseFlowAlarms) OR SxFineFlowAlarms) THEN (*A8d9*)
+            SxResetNeededFlowErr:=TRUE;
+        END_IF;(*A8d9*)
+        xOpResetRequest:=((NOT(xFeat_ResetDpdsOnMode)) OR ManAct.Value) AND (NOT(LocalAct.Value));
+        xLiResetRequest:=((NOT(xFeat_ResetDpdsOnMode)) OR AutAct.Value) AND (NOT(LocalAct.Value));
+        xResetEnabled:=((((((SxResetNeededProtect) OR SxResetNeededFlowErr) OR SxResetNeededFaultExtCSF) AND (((xOpResetRequest) OR xLiResetRequest) OR LocalAct.Value)) AND (NOT(xProtect_N))) AND 
+        (NOT(xFaultExtCSF))) AND (NOT((xFeatStopMetering) AND xFlowAlarms));
+        xAutoResetInDosOff:=((((((xFeatAutoReset) AND DosOff.Value) AND ContAut.Value) AND (NOT(SxContAut))) AND (NOT(xFeatSwitchMode))) OR 
+        (((((xFeatAutoReset) AND DosOff.Value) AND (NOT(PauseAut.Value))) AND SxPauseAut) AND xFeatSwitchMode)) AND AutAct.Value;
+        xAutoResetInDosEnd:=((((AutAct.Value) AND xFeatAutoReset) AND DosEnd.Value) AND StartAut.Value) AND (NOT(SxStartAut));
+
+        IF (((NOT(xFeat_ResetinManual)) AND ManAct.Value) OR SxForceInputActive) OR (((((((RstOp) AND xOpResetRequest) OR (((NOT(SxRstLi)) AND RstLi.Value) AND xLiResetRequest)) OR xAutoResetInDosOff) OR xAutoResetInDosEnd) OR 
+        ((((NOT(SxCancelLocal)) AND CancelLocal.Value) OR ((NOT(SxPauseLocal)) AND PauseLocal.Value)) AND LocalAct.Value)) AND xResetEnabled) THEN (*A8da*)
+            SxResetNeededFlowErr:=FALSE;
+            SxResetNeededFaultExtCSF:=FALSE;
+            SxResetNeededProtect:=FALSE;
+            SxFineFlowAlarms:=FALSE;
+            SxCoarseFlowAlarms:=FALSE;
+            P_Rst.Value:=xResetEnabled;
+            xResetEnabled:=FALSE;
+            IF ((DosOff.Value) AND xAutoResetInDosOff) AND (NOT(xInvalidCommand)) THEN (*A8db*)
+                nCmd:=4;
+            ELSIF (((DosOff.Value) AND LocalAct.Value) AND CancelLocal.Value) AND (NOT(xInvalidCommand)) THEN (*A8dd*)
+                nCmd:=2;
+            ELSIF ((DosEnd.Value) AND xAutoResetInDosEnd) AND (NOT(xInvalidCommand)) THEN (*A8da*)
+                    nCmd:=1;
+            END_IF;
+        END_IF;(*A8da*)
+
+        xOSPerResetProtect:=(((xOSPerResetProtect) AND xResetEnabled) AND xOpResetRequest) AND (NOT((((StartForce.Value) OR CancelForce.Value) OR PauseForce.Value) OR ContForce.Value));
+        IF (nCmd=1) AND (SnPrevCmd<>1) THEN (*A8df*)
+            DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+            DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+            SxDosEndWithAckn:=FALSE;
+            SxUnderdosage:=FALSE;
+            SxOverdosage:=FALSE;
+            IF xFeatResetQuantity THEN (*A8e0*)
+                DQ_Out.Value:=0.0;
+                DQ_Out.ST:=B#16#80;
+                SrDQ_Out:=0.0;
+                SrPrevDQ_Out:=0.0;
+                SrPVOut:=0.0;
+            END_IF;(*A8e0*)
+            SxResetQuantityDone:=FALSE;
+            SxTareDone:=FALSE;
+        END_IF;(*A8df*)
+        IF ((xFeatWeightMeasurement) AND StandStill.Value) AND (NOT(SxTareDone)) THEN (*A8e1*)
+            DQ_Tare:=avQuantPV;
+            SxTareDone:=TRUE;
+        END_IF;(*A8e1*)
+        IF (NOT((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value)) AND DosEnd.Value THEN (*A8e2*)
+            IF (((xOSPerResetQuantity) AND RstDQ_Op) AND (((NOT(xFeat_ResetDpdsOnMode)) OR ManAct.Value) OR LocalAct.Value)) OR 
+            (((NOT(SxResetDQLi)) AND RstDQ_Li.Value) AND (((NOT(xFeat_ResetDpdsOnMode)) OR AutAct.Value) OR LocalAct.Value)) THEN (*A8e2*)
+                DQ_Out.Value:=0.0;
+                DQ_Out.ST:=B#16#80;
+                SrDQ_Out:=0.0;
+                SrPrevDQ_Out:=0.0;
+                SrPVOut:=0.0;
+                DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                SxDosEndWithAckn:=FALSE;
+                SxUnderdosage:=FALSE;
+                SxOverdosage:=FALSE;
+                SxChkDose:=FALSE;
+                nCmd:=7;
+                SxResetQuantityDone:=TRUE;
+                IF xFeatWeightMeasurement THEN (*A8e2*)
+                    SimPV:=SrPVOut;
+                END_IF;
+            END_IF;
+        END_IF;(*A8e2*)
+
+        IF ((((((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value) OR SxUnderdosage) OR ((xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value)) OR SxOverdosage) AND 
+        ((DosOff.Value) OR DosEnd.Value)) AND (((xOSPerAcknOverUnderdose) AND U_AckOp) OR ((NOT(SxUAckLi)) AND U_AckLi.Value)) THEN (*A8e5*)
+            IF nCmd=10 THEN (*A8e6*)
+                nCmd:=9;
+            ELSIF nCmd<>9 THEN (*A8e8*)
+                nCmd:=8;
+            END_IF;(*A8e8*)
+            SxChkDose:=FALSE;
+            SxDosEndWithAckn:=TRUE;
+            SxUnderdosage:=FALSE;
+            SxOverdosage:=FALSE;
+        END_IF;(*A8e5*)
+        IF (nCmd<>9) AND ((nCmd<>10) OR (NOT((((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value) OR SxUnderdosage) OR SxOverdosage))) THEN (*A8e9*)
+            IF ((((DQ_Out.Value>=DQ_SP.Value) AND ((DribbOut.Value<=0.0) OR (NOT(DosOn.Value)))) AND (NOT(DosRelax.Value))) AND (NOT(SxUnderdosage))) AND (NOT(SxOverdosage)) THEN (*A8ea*)
+                IF nCmd=10 THEN (*A8eb*)
+                    nCmd:=9;
+                ELSE (*A8eb*)
+                    nCmd:=7;
+                END_IF;    
+            ELSE (*A8ea*)
+                IF ((DQ_Out.Value>=(DQ_SP.Value-DribbOut.Value)) AND DosOn.Value) AND (NOT((nCmd=2) OR SxPostDose)) THEN (*A8e9*)
+                    IF RelaxTime<0.0 THEN (*A8ef*)
+                        RelaxTime:=0.0;
+                    END_IF;(*A8ef*)
+                    SrRelaxTimeLeft:=RelaxTime;
+                    nCmd:=6;
+                END_IF;
+            END_IF;
+        END_IF;(*A8e9*)
+        
+        IF nCmd=6 THEN (*A8f0*)
+            IF SrRelaxTime<>RelaxTime THEN (*A8f1*)
+                SrRelaxTime:=RelaxTime;
+                SrRelaxTimeLeft:=RelaxTime;
+            END_IF;(*A8f1*)
+            
+            IF SrRelaxTimeLeft<SampleTime THEN (*A8f2*)
+                IF (DQ_Out.Value>(DQ_SP.Value+DQ_AH_Tol)) AND xFeatOvDoseAckn THEN (*A8f3*)
+                    nCmd:=5;
+                ELSIF ((DQ_Out.Value>=(DQ_SP.Value-DQ_AL_Tol)) AND (NOT(SxUnderdosage))) AND (NOT(SxOverdosage)) THEN (*A8f5*)
+                    nCmd:=7;
+                ELSE
+                    IF (AutAct.Value) AND xFeatPostdosage THEN (*A8f6*)
+                        nCmd:=4;
+                        xStartAutoPostDose:=TRUE;
+                    ELSE    
+                        nCmd:=5;
+                    END_IF;
+                END_IF;    
+            ELSE    
+                IF ((NOT(xFeatWeightMeasurement)) OR StandStill.Value) OR SxStandstillDribble THEN (*A8f9*)
+                    SrRelaxTimeLeft:=SrRelaxTimeLeft-SampleTime;
+                    SxStandstillDribble:=TRUE;
+                END_IF;    
+                DosStart.Value:=TRUE;
+                DosOn.Value:=FALSE;
+                DosRelax.Value:=TRUE;
+                DosOff.Value:=FALSE;
+                DosPause.Value:=FALSE;
+                DosEnd.Value:=FALSE;
+                Ctrl.Value:=FALSE;
+                Ctrl2.Value:=FALSE;
+                SxChkDose:=FALSE;
+            END_IF;    
+        ELSE    
+            SxStandstillDribble:=FALSE;
+        END_IF;(*A8fa*)    
+        CASE nCmd OF
+            1,4: 
+                IF DosEnd.Value THEN (*A8fe*)
+                    SxEnableDribCor:=TRUE;
+                END_IF;(*A8fe*)
+                IF (nCmd=4) AND ((((((SnPrevCmd=9) OR (SnPrevCmd=10)) OR ((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value)) OR xStartAutoPostDose) AND ((DQ_SP.Value-DQ_Out.Value)<DribbOut.Value)) OR SxPostDose) THEN (*A8ff*)
+                    IF P_DoseTime<0.0 THEN (*A900*)
+                        P_DoseTime:=0.0;
+                    END_IF;(*A900*)
+                    IF (P_DoseTime<>SrPrevPostDoseTime) OR (NOT(SxPostDose)) THEN (*A901*)
+                        SrPrevPostDoseTime:=P_DoseTime;
+                        SrPostDoseTimer:=P_DoseTime;
+                        SxPostDose:=TRUE;
+                    END_IF;(*A901*)
+                    IF SrPostDoseTimer<SampleTime THEN (*A902*)
+                        SxPostDose:=FALSE;
+                    ELSE (*A902*)
+                        SrPostDoseTimer:=SrPostDoseTimer-SampleTime;
+                    END_IF;
+                END_IF;(*A8ff*)
+                DosStart.Value:=TRUE;
+                DosOn.Value:=TRUE;
+                DosRelax.Value:=FALSE;
+                DosOff.Value:=FALSE;
+                DosPause.Value:=FALSE;
+                DosEnd.Value:=FALSE;
+                IF DQ_Out.Value<DQ1_SP.Value THEN (*A904*)
+                    Ctrl.Value:=TRUE;
+                    Ctrl2.Value:=FALSE;
+                ELSE (*A904*)
+                    Ctrl.Value:=FALSE;
+                    Ctrl2.Value:=TRUE;
+                END_IF;(*A905*)
+                SxChkDose:=FALSE;
+            3 :     
+                SxPostDose:=FALSE;
+                DosStart.Value:=TRUE;
+                DosOn.Value:=FALSE;
+                DosRelax.Value:=FALSE;
+                DosOff.Value:=FALSE;
+                DosPause.Value:=TRUE;
+                DosEnd.Value:=FALSE;
+                Ctrl.Value:=FALSE;
+                Ctrl2.Value:=FALSE;
+                SxChkDose:=FALSE;
+            5,10:    
+                IF DosRelax.Value THEN (*A90a*)
+                    SxChkDose:=TRUE;
+                END_IF;(*A90a*)
+                SxPostDose:=FALSE;
+                DosStart.Value:=TRUE;
+                DosOn.Value:=FALSE;
+                DosRelax.Value:=FALSE;
+                DosOff.Value:=TRUE;
+                DosPause.Value:=FALSE;
+                DosEnd.Value:=FALSE;
+                Ctrl.Value:=FALSE;
+                Ctrl2.Value:=FALSE;
+            2,7,8,9:    
+                IF ((NOT(DosEnd.Value)) AND (nCmd<>8)) AND (nCmd<>9) THEN (*A90d*)
+                    SxChkDose:=TRUE;
+                    SxChkDoseUntilRdy:=TRUE;
+                END_IF;(*A90d*)
+                SxPostDose:=FALSE;
+                DosStart.Value:=FALSE;
+                DosOn.Value:=FALSE;
+                DosRelax.Value:=FALSE;
+                DosOff.Value:=FALSE;
+                DosPause.Value:=FALSE;
+                DosEnd.Value:=TRUE;
+                Ctrl.Value:=FALSE;
+                Ctrl2.Value:=FALSE;
+                SxUnderdosage:=FALSE;
+                SxOverdosage:=FALSE;
+        ELSE        
+                IF nCmd<>6 THEN (*A8fb*)
+                    xErrorNum:=1;
+                END_IF;(*A8fb*)
+        END_CASE;
+        IF PulseWidth<SampleTime THEN (*A90f*)
+            PulseWidth:=SampleTime;
+        END_IF;(*A90f*)
+        IF (srPulseTime1>=0.0) AND Ctrl.Value THEN (*A910*)
+            srPulseTime1:=srPulseTime1-SampleTime;
+        END_IF;(*A910*)
+        IF NOT(Ctrl.Value) THEN (*A911*)
+            srPulseTime1:=PulseWidth;
+        END_IF;(*A911*)
+        P_Ctrl.Value:=(srPulseTime1>=0.0) AND Ctrl.Value;
+        IF (srPulseTime2>=0.0) AND Ctrl2.Value THEN (*A912*)
+            srPulseTime2:=srPulseTime2-SampleTime;
+        END_IF;(*A912*)
+        IF NOT(Ctrl2.Value) THEN (*A913*)
+            srPulseTime2:=PulseWidth;
+        END_IF;(*A913*)
+        P_Ctrl2.Value:=(srPulseTime2>=0.0) AND Ctrl2.Value;
+        IF xSimAct THEN (*A914*)
+            Ctrl.ST:=B#16#60;
+            Ctrl2.ST:=B#16#60;
+            P_Ctrl.ST:=B#16#60;
+            P_Ctrl2.ST:=B#16#60;
+        ELSE (*A914*)
+            Ctrl.ST:=B#16#80;
+            Ctrl2.ST:=B#16#80;
+            P_Ctrl.ST:=B#16#80;
+            P_Ctrl2.ST:=B#16#80;
+        END_IF;(*A915*)
+        IF NOT(xFeatWeightMeasurement) THEN (*A916*)
+            IF Ctrl.Value THEN (*A917*)
+                SP1:=avSPDoseFlow;
+                SP:=SP1;
+            ELSE (*A917*)
+                SP1:=avInit;
+            END_IF;(*A918*)
+            IF Ctrl2.Value THEN (*A919*)
+                SP2:=avSP2DoseFlow;
+                SP:=SP2;
+            ELSE (*A919*)
+                SP2:=avInit;
+            END_IF;(*A91a*)
+            IF (NOT(Ctrl.Value)) AND (NOT(Ctrl2.Value)) THEN (*A91b*)
+                SP:=avInit;
+            END_IF;(*A91b*)
+            IF xSimAct THEN (*A91d*)
+                SP.ST:=B#16#60;
+                SP1.ST:=B#16#60;
+                SP2.ST:=B#16#60;
+            END_IF;
+        ELSE (*A916*)
+            SP.ST:=B#16#80;
+            SP1.ST:=B#16#80;
+            SP2.ST:=B#16#80;
+        END_IF;(*A91d*)        
+        IF DQ_A_DC<0.0 THEN (*A91e*)
+            DQ_A_DC:=0.0;
+        END_IF;(*A91e*)
+        IF DQ_A_DG<0.0 THEN (*A91f*)
+            DQ_A_DG:=0.0;
+        END_IF;(*A91f*)
+        IF SxChkDose THEN (*A920*)
+            xChkDoseRdyDQ_AH:=FALSE;
+            xChkDoseRdyDQ_AL:=FALSE;
+            DQ_AH_Act.ST:=DQ_Out.ST;
+            DQ_AL_Act.ST:=DQ_Out.ST;
+            IF SrDQ_A_DC<>DQ_A_DC THEN (*A921*)
+                IF SrDQ_AH_OnTimer>0.0 THEN (*A922*)
+                    SrDQ_AH_OnTimer:=DQ_A_DC;
+                END_IF;(*A922*)
+                IF SrDQ_AL_OnTimer>0.0 THEN (*A921*)
+                    SrDQ_AL_OnTimer:=DQ_A_DC;
+                END_IF;
+            END_IF;(*A921*)
+            SrDQ_A_DC:=DQ_A_DC;
+            IF SrDQ_A_DG<>DQ_A_DG THEN (*A924*)
+                IF SrDQ_AH_OffTimer>0.0 THEN (*A925*)
+                    SrDQ_AH_OffTimer:=DQ_A_DG;
+                END_IF;(*A925*)
+                IF SrDQ_AL_OffTimer>0.0 THEN (*A924*)
+                    SrDQ_AL_OffTimer:=DQ_A_DG;
+                END_IF;
+            END_IF;(*A924*)
+            SrDQ_A_DG:=DQ_A_DG;
+            dwStatus4_b[16]:=FALSE;
+            IF (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) AND DQ_AH_En THEN (*A927*)
+                IF DQ_Out.Value>(DQ_SP_Tol.Value+DQ_AH_Tol) THEN (*A928*)
+                    SrDQ_AH_OffTimer:=DQ_A_DG;
+                    IF DQ_A_DC>0.0 THEN (*A929*)
+                        IF SrDQ_AH_OnTimer<=0.0 THEN (*A92a*)
+                            DQ_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                            xChkDoseRdyDQ_AH:=TRUE;
+                            SxOverdosage:=xFeatOvDoseAckn;
+                            SxUnderdosage:=FALSE;
+                        ELSE (*A92a*)
+                            SrDQ_AH_OnTimer:=SrDQ_AH_OnTimer-SampleTime;
+                            dwStatus4_b[16]:=NOT MsgLock.Value AND DQ_AH_MsgEn;
+                        END_IF;    
+                    ELSE (*A929*)
+                        DQ_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        xChkDoseRdyDQ_AH:=TRUE;
+                        SxOverdosage:=xFeatOvDoseAckn;
+                        SxUnderdosage:=FALSE;
+                    END_IF;    
+                ELSE (*A928*)
+                    SrDQ_AH_OnTimer:=DQ_A_DC;
+                    IF DQ_Out.Value<=(DQ_SP_Tol.Value+DQ_AH_Tol) THEN (*A92e*)
+                        IF DQ_A_DG>0.0 THEN (*A92f*)
+                            IF SrDQ_AH_OffTimer<=0.0 THEN (*A930*)
+                                DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                                xChkDoseRdyDQ_AH:=TRUE;
+                            ELSE (*A930*)
+                                SrDQ_AH_OffTimer:=SrDQ_AH_OffTimer-SampleTime;
+                            END_IF;
+                        ELSE (*A92f*)
+                            DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                            xChkDoseRdyDQ_AH:=TRUE;
+                        END_IF;
+                    ELSE (*A92e*)
+                        SrDQ_AH_OffTimer:=DQ_A_DG;
+                    END_IF;
+                END_IF;(*A933*)
+            ELSE (*A927*)
+                DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                xChkDoseRdyDQ_AH:=TRUE;
+                SrDQ_AH_OnTimer:=DQ_A_DC;
+                SrDQ_AH_OffTimer:=DQ_A_DG;
+            END_IF;(*A934*)
+            dwStatus4_b[17]:=FALSE;
+            IF (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) AND DQ_AL_En THEN (*A935*)
+                IF DQ_Out.Value<(DQ_SP_Tol.Value-DQ_AL_Tol) THEN (*A936*)
+                    SrDQ_AL_OffTimer:=DQ_A_DG;
+                    IF DQ_A_DC>0.0 THEN (*A937*)
+                        IF SrDQ_AL_OnTimer<=0.0 THEN (*A938*)
+                            DQ_AL_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                            xChkDoseRdyDQ_AL:=TRUE;
+                            SxUnderdosage:=xFeatOvDoseAckn;
+                            SxOverdosage:=FALSE;
+                        ELSE (*A938*)
+                            SrDQ_AL_OnTimer:=SrDQ_AL_OnTimer-SampleTime;
+                            dwStatus4_b[17]:=NOT MsgLock.Value AND DQ_AL_MsgEn;
+                        END_IF;    
+                    ELSE (*A937*)
+                        DQ_AL_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        xChkDoseRdyDQ_AL:=TRUE;
+                        SxUnderdosage:=xFeatOvDoseAckn;
+                        SxOverdosage:=FALSE;
+                    END_IF;    
+                ELSE (*A936*)
+                    SrDQ_AL_OnTimer:=DQ_A_DC;
+                    IF DQ_Out.Value>=(DQ_SP_Tol.Value-DQ_AL_Tol) THEN (*A93c*)
+                        IF DQ_A_DG>0.0 THEN (*A93d*)
+                            IF SrDQ_AL_OffTimer<=0.0 THEN (*A93e*)
+                                DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                                xChkDoseRdyDQ_AL:=TRUE;
+                            ELSE (*A93e*)
+                                SrDQ_AL_OffTimer:=SrDQ_AL_OffTimer-SampleTime;
+                            END_IF;
+                        ELSE (*A93d*)
+                            DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                            xChkDoseRdyDQ_AL:=TRUE;
+                        END_IF;    
+                    ELSE (*A93c*)
+                        SrDQ_AL_OffTimer:=DQ_A_DG;
+                    END_IF;
+                END_IF;(*A941*)
+            ELSE (*A935*)
+                DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                xChkDoseRdyDQ_AL:=TRUE;
+                SrDQ_AL_OnTimer:=DQ_A_DC;
+                SrDQ_AL_OffTimer:=DQ_A_DG;
+            END_IF;(*A942*)
+            IF ((SxChkDoseUntilRdy) AND xChkDoseRdyDQ_AH) AND xChkDoseRdyDQ_AL THEN (*A944*)
+                SxChkDoseUntilRdy:=FALSE;
+                SxChkDose:=FALSE;
+            END_IF;
+        ELSE (*A920*)
+            SxChkDoseUntilRdy:=FALSE;
+            DQ_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+            DQ_AH_Act.ST:=B#16#80;
+            SrDQ_AH_OnTimer:=DQ_A_DC;
+            SrDQ_AH_OffTimer:=DQ_A_DG;
+            DQ_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+            DQ_AL_Act.ST:=B#16#80;
+            SrDQ_AL_OnTimer:=DQ_A_DC;
+            SrDQ_AL_OffTimer:=DQ_A_DG;
+            DQ_SP_Tol:=DQ_SP;
+        END_IF;(*A944*)        
+        IF DribbCor THEN (*A945*)
+            IF ((((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value) AND DosOff.Value) OR DosEnd.Value) AND SxEnableDribCor THEN (*A94c*)
+                SxEnableDribCor:=FALSE;
+                IF DCF>100.0 THEN (*A947*)
+                    rDcf:=100.0;
+                ELSIF DCF<0.0 THEN (*A949*)
+                    rDcf:=0.0;
+                ELSE (*A949*)
+                    rDcf:=DCF;
+                END_IF;(*A948*)
+                DribbOut.Value:=DribbOut.Value-(((DQ_SP.Value-DQ_Out.Value)*rDcf)/100.0);
+                IF DribbOut.Value>DribbMax THEN (*A94a*)
+                    DribbOut.Value:=DribbMax;
+                END_IF;(*A94a*)
+                IF DribbOut.Value<0.0 THEN (*A94b*)
+                    DribbOut.Value:=0.0;
+                END_IF;(*A94b*)
+            END_IF;    
+        ELSE (*A945*)
+            IF ((NOT(DosRelax.Value)) AND xFeatChangeDribbVal) OR DosEnd.Value THEN (*A94c*)
+                DribbOut.Value:=DribbIn;
+            END_IF;
+        END_IF;(*A94c*)        
+        
+        IF xFlowProcessing THEN (*A94e*)
+            PV_AH_Act.ST:=PV_Out.ST;
+            PV_AL_Act.ST:=PV_Out.ST;
+            PV_AH2_Act.ST:=PV_Out.ST;
+            PV_AL2_Act.ST:=PV_Out.ST;
+            IF PV_A_DC<0.0 THEN (*A94f*)
+                PV_A_DC:=0.0;
+            END_IF;(*A94f*)
+            IF PV_A_DG<0.0 THEN (*A950*)
+                PV_A_DG:=0.0;
+            END_IF;(*A950*)
+            IF PV_A2_DC<0.0 THEN (*A951*)
+                PV_A2_DC:=0.0;
+            END_IF;(*A951*)
+            IF PV_A2_DG<0.0 THEN (*A952*)
+                PV_A2_DG:=0.0;
+            END_IF;(*A952*)
+            IF PV_Hyst<0.0 THEN (*A953*)
+                PV_Hyst:=0.0;
+            END_IF;(*A953*)
+            IF SrPV_A_DC<>PV_A_DC THEN (*A954*)
+                IF SrPV_AH_OnTimer>0.0 THEN (*A955*)
+                    SrPV_AH_OnTimer:=PV_A_DC;
+                END_IF;(*A955*)
+                IF SrPV_AL_OnTimer>0.0 THEN (*A954*)
+                    SrPV_AL_OnTimer:=PV_A_DC;
+                END_IF;
+            END_IF;(*A954*)
+            SrPV_A_DC:=PV_A_DC;
+            IF SrPV_A_DG<>PV_A_DG THEN (*A957*)
+                IF SrPV_AH_OffTimer>0.0 THEN (*A958*)
+                    SrPV_AH_OffTimer:=PV_A_DG;
+                END_IF;(*A958*)
+                IF SrPV_AL_OffTimer>0.0 THEN (*A957*)
+                    SrPV_AL_OffTimer:=PV_A_DG;
+                END_IF;
+            END_IF;(*A957*)
+            SrPV_A_DG:=PV_A_DG;
+            IF SrPV_A2_DC<>PV_A2_DC THEN (*A95a*)
+                IF SrPV_AH2_OnTimer>0.0 THEN (*A95b*)
+                    SrPV_AH2_OnTimer:=PV_A2_DC;
+                END_IF;(*A95b*)
+                IF SrPV_AL2_OnTimer>0.0 THEN (*A95a*)
+                    SrPV_AL2_OnTimer:=PV_A2_DC;
+                END_IF;
+            END_IF;(*A95a*)
+            SrPV_A2_DC:=PV_A2_DC;
+            IF SrPV_A2_DG<>PV_A2_DG THEN (*A95d*)
+                IF SrPV_AH2_OffTimer>0.0 THEN (*A95e*)
+                    SrPV_AH2_OffTimer:=PV_A2_DG;
+                END_IF;(*A95e*)
+                IF SrPV_AL2_OffTimer>0.0 THEN (*A95d*)
+                    SrPV_AL2_OffTimer:=PV_A2_DG;
+                END_IF;
+            END_IF;(*A95d*)
+            SrPV_A2_DG:=PV_A2_DG;
+            dwStatus4_b[18]:=FALSE;
+            IF ((PV_AH_En) AND Ctrl.Value) AND (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) THEN (*A960*)
+                IF PV_Out.Value>=PV_AH_Lim THEN (*A961*)
+                    SrPV_AH_OffTimer:=PV_A_DG;
+                    IF PV_A_DC>0.0 THEN (*A962*)
+                        IF SrPV_AH_OnTimer<=0.0 THEN (*A963*)
+                            PV_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        ELSE (*A963*)
+                            SrPV_AH_OnTimer:=SrPV_AH_OnTimer-SampleTime;
+                            dwStatus4_b[18]:=NOT MsgLock.Value AND PV_AH_MsgEn;
+                        END_IF;    
+                    ELSE (*A962*)
+                        PV_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                    END_IF;    
+                ELSE (*A961*)
+                    SrPV_AH_OnTimer:=PV_A_DC;
+                    IF PV_Out.Value<(PV_AH_Lim-PV_Hyst) THEN (*A967*)
+                        IF PV_A_DG>0.0 THEN (*A968*)
+                            IF SrPV_AH_OffTimer<=0.0 THEN (*A969*)
+                                PV_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                            ELSE (*A969*)
+                                SrPV_AH_OffTimer:=SrPV_AH_OffTimer-SampleTime;
+                            END_IF;    
+                        ELSE (*A968*)
+                            PV_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                        END_IF;    
+                    ELSE (*A967*)
+                        SrPV_AH_OffTimer:=PV_A_DG;
+                    END_IF;
+                END_IF;(*A96c*)
+            ELSE (*A960*)
+                PV_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                SrPV_AH_OnTimer:=PV_A_DC;
+                SrPV_AH_OffTimer:=PV_A_DG;
+            END_IF;(*A96d*)
+            dwStatus4_b[19]:=FALSE;
+            IF ((PV_AL_En) AND Ctrl.Value) AND (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) THEN (*A96e*)
+                IF PV_Out.Value<=PV_AL_Lim THEN (*A96f*)
+                    SrPV_AL_OffTimer:=PV_A_DG;
+                    IF PV_A_DC>0.0 THEN (*A970*)
+                        IF SrPV_AL_OnTimer<=0.0 THEN (*A971*)
+                            PV_AL_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        ELSE (*A971*)
+                            SrPV_AL_OnTimer:=SrPV_AL_OnTimer-SampleTime;
+                            dwStatus4_b[19]:=NOT MsgLock.Value AND PV_AL_MsgEn;
+                        END_IF;    
+                    ELSE (*A970*)
+                        PV_AL_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                    END_IF;    
+                ELSE (*A96f*)
+                    SrPV_AL_OnTimer:=PV_A_DC;
+                    IF PV_Out.Value>(PV_AL_Lim+PV_Hyst) THEN (*A975*)
+                        IF PV_A_DG>0.0 THEN (*A976*)
+                            IF SrPV_AL_OffTimer<=0.0 THEN (*A977*)
+                                PV_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                            ELSE (*A977*)
+                                SrPV_AL_OffTimer:=SrPV_AL_OffTimer-SampleTime;
+                            END_IF;    
+                        ELSE (*A976*)
+                            PV_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                        END_IF;    
+                    ELSE (*A975*)
+                        SrPV_AL_OffTimer:=PV_A_DG;
+                    END_IF;
+                END_IF;(*A97a*)
+            ELSE (*A96e*)
+                PV_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+                SrPV_AL_OnTimer:=PV_A_DC;
+                SrPV_AL_OffTimer:=PV_A_DG;
+            END_IF;(*A97b*)
+            IF Ctrl.Value THEN (*A97c*)
+                SxCoarseFlowAlarms:=((xFeat_SwiPoiFalseAct) XOR PV_AL_Act.Value) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH_Act.Value);
+            END_IF;(*A97c*)
+            dwStatus4_b[20]:=FALSE;
+            IF ((PV_AH2_En) AND Ctrl2.Value) AND (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) THEN (*A97d*)
+                IF PV_Out.Value>=PV_AH2_Lim THEN (*A97e*)
+                    SrPV_AH2_OffTimer:=PV_A2_DG;
+                    IF PV_A2_DC>0.0 THEN (*A97f*)
+                        IF SrPV_AH2_OnTimer<=0.0 THEN (*A980*)
+                            PV_AH2_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        ELSE (*A980*)
+                            SrPV_AH2_OnTimer:=SrPV_AH2_OnTimer-SampleTime;
+                            dwStatus4_b[20]:=NOT MsgLock.Value AND PV_AH2_MsgEn;
+                        END_IF;    
+                    ELSE (*A97f*)
+                        PV_AH2_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                    END_IF;    
+                ELSE (*A97e*)
+                    SrPV_AH2_OnTimer:=PV_A2_DC;
+                    IF PV_Out.Value<(PV_AH2_Lim-PV_Hyst2) THEN (*A984*)
+                        IF PV_A2_DG>0.0 THEN (*A985*)
+                            IF SrPV_AH2_OffTimer<=0.0 THEN (*A986*)
+                                PV_AH2_Act.Value:=xFeat_SwiPoiFalseAct;
+                            ELSE (*A986*)
+                                SrPV_AH2_OffTimer:=SrPV_AH2_OffTimer-SampleTime;
+                            END_IF;    
+                        ELSE (*A985*)
+                            PV_AH2_Act.Value:=xFeat_SwiPoiFalseAct;
+                        END_IF;    
+                    ELSE (*A984*)
+                        SrPV_AH2_OffTimer:=PV_A2_DG;
+                    END_IF;
+                END_IF;(*A989*)
+            ELSE (*A97d*)
+                PV_AH2_Act.Value:=xFeat_SwiPoiFalseAct;
+                SrPV_AH2_OnTimer:=PV_A2_DC;
+                SrPV_AH2_OffTimer:=PV_A2_DG;
+            END_IF;(*A98a*)
+            dwStatus4_b[21]:=FALSE;
+            IF ((PV_AL2_En) AND Ctrl2.Value) AND (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) THEN (*A98b*)
+                IF PV_Out.Value<=PV_AL2_Lim THEN (*A98c*)
+                    SrPV_AL2_OffTimer:=PV_A2_DG;
+                    IF PV_A2_DC>0.0 THEN (*A98d*)
+                        IF SrPV_AL2_OnTimer<=0.0 THEN (*A98e*)
+                            PV_AL2_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                        ELSE (*A98e*)
+                            SrPV_AL2_OnTimer:=SrPV_AL2_OnTimer-SampleTime;
+                            dwStatus4_b[21]:=NOT MsgLock.Value AND PV_AL2_MsgEn;
+                        END_IF;    
+                    ELSE (*A98d*)
+                        PV_AL2_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                    END_IF;    
+                ELSE (*A98c*)
+                    SrPV_AL2_OnTimer:=PV_A2_DC;
+                    IF PV_Out.Value>(PV_AL2_Lim+PV_Hyst2) THEN (*A992*)
+                        IF PV_A2_DG>0.0 THEN (*A993*)
+                            IF SrPV_AL2_OffTimer<=0.0 THEN (*A994*)
+                                PV_AL2_Act.Value:=xFeat_SwiPoiFalseAct;
+                            ELSE (*A994*)
+                                SrPV_AL2_OffTimer:=SrPV_AL2_OffTimer-SampleTime;
+                            END_IF;    
+                        ELSE (*A993*)
+                            PV_AL2_Act.Value:=xFeat_SwiPoiFalseAct;
+                        END_IF;    
+                    ELSE (*A992*)
+                        SrPV_AL2_OffTimer:=PV_A2_DG;
+                    END_IF;
+                END_IF;(*A997*)
+            ELSE (*A98b*)
+                PV_AL2_Act.Value:=xFeat_SwiPoiFalseAct;
+                SrPV_AL2_OnTimer:=PV_A2_DC;
+                SrPV_AL2_OffTimer:=PV_A2_DG;
+            END_IF;(*A998*)
+            IF Ctrl2.Value THEN (*A99a*)
+                SxFineFlowAlarms:=((xFeat_SwiPoiFalseAct) XOR PV_AL2_Act.Value) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH2_Act.Value);
+            END_IF;
+        ELSE (*A94e*)
+            PV_AL2_Act.Value:=xFeat_SwiPoiFalseAct;
+            PV_AH2_Act.Value:=xFeat_SwiPoiFalseAct;
+            PV_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+            PV_AL_Act.Value:=xFeat_SwiPoiFalseAct;
+            SxCoarseFlowAlarms:=FALSE;
+            SxFineFlowAlarms:=FALSE;
+        END_IF;(*A99a*)        
+
+    IF xFlowProcessing THEN (*A99b*)
+        CR_AH_Act.ST:=PV_Out.ST;
+        IF CR_A_DC<0.0 THEN (*A99c*)
+            CR_A_DC:=0.0;
+        END_IF;(*A99c*)
+        IF CR_A_DG<0.0 THEN (*A99d*)
+            CR_A_DG:=0.0;
+        END_IF;(*A99d*)
+        IF CR_Hyst<0.0 THEN (*A99e*)
+            CR_Hyst:=0.0;
+        END_IF;(*A99e*)
+        IF SrCR_A_DC<>CR_A_DC THEN (*A99f*)
+            IF SrCR_AH_OnTimer>0.0 THEN (*A99f*)
+                SrCR_AH_OnTimer:=CR_A_DC;
+            END_IF;
+        END_IF;(*A99f*)
+        SrCR_A_DC:=CR_A_DC;
+        IF SrCR_A_DG<>CR_A_DG THEN (*A9a1*)
+            IF SrCR_AH_OffTimer>0.0 THEN (*A9a1*)
+                SrCR_AH_OffTimer:=CR_A_DG;
+            END_IF;
+        END_IF;(*A9a1*)
+        SrCR_A_DG:=CR_A_DG;
+        dwStatus4_b[22]:=FALSE;
+        IF (((NOT(DosOn.Value)) AND CR_AH_En) AND (NOT(DosRelax.Value))) AND (NOT((MsgLock.Value) AND xFeat_SwiPoiDis)) THEN (*A9a3*)
+            IF PV_Out.Value>CR_AH_Lim THEN (*A9a4*)
+                SrCR_AH_OffTimer:=CR_A_DG;
+                IF CR_A_DC>0.0 THEN (*A9a5*)
+                    IF SrCR_AH_OnTimer<=0.0 THEN (*A9a6*)
+                        CR_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                    ELSE (*A9a6*)
+                        SrCR_AH_OnTimer:=SrCR_AH_OnTimer-SampleTime;
+                        dwStatus4_b[22]:=NOT MsgLock.Value AND CR_AH_MsgEn;
+                    END_IF;    
+                ELSE (*A9a5*)
+                    CR_AH_Act.Value:=NOT(xFeat_SwiPoiFalseAct);
+                END_IF;    
+            ELSE (*A9a4*)
+                SrCR_AH_OnTimer:=CR_A_DC;
+                IF PV_Out.Value<=(CR_AH_Lim-CR_Hyst) THEN (*A9aa*)
+                    IF CR_A_DG>0.0 THEN (*A9ab*)
+                        IF SrCR_AH_OffTimer<=0.0 THEN (*A9ac*)
+                            CR_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                        ELSE (*A9ac*)
+                            SrCR_AH_OffTimer:=SrCR_AH_OffTimer-SampleTime;
+                        END_IF;    
+                    ELSE (*A9ab*)
+                        CR_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+                    END_IF;    
+                ELSE (*A9aa*)
+                    SrCR_AH_OffTimer:=CR_A_DG;
+                END_IF;
+            END_IF;(*A9af*)
+        ELSE (*A9a3*)
+            CR_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+            SrCR_AH_OnTimer:=CR_A_DC;
+            SrCR_AH_OffTimer:=CR_A_DG;
+        END_IF;    
+    ELSE (*A99b*)
+        CR_AH_Act.Value:=xFeat_SwiPoiFalseAct;
+    END_IF;(*A9b1*)    
+    dwStatus4_b[23]:=dwStatus4_b[16] OR dwStatus4_b[17] OR dwStatus4_b[18] OR dwStatus4_b[19] OR dwStatus4_b[20] OR dwStatus4_b[21] OR dwStatus4_b[22];
+    SumMsgAct.Value:=(((((((((((xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value) OR ((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value)) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH_Act.Value)) OR 
+    ((xFeat_SwiPoiFalseAct) XOR PV_AL_Act.Value)) OR ((xFeat_SwiPoiFalseAct) XOR PV_AH2_Act.Value)) OR ((xFeat_SwiPoiFalseAct) XOR PV_AL2_Act.Value)) OR 
+    ((xFeat_SwiPoiFalseAct) XOR CR_AH_Act.Value)) OR CSF.Value) OR ExtMsg1.Value) OR ExtMsg2.Value) OR ExtMsg3.Value;
+    ErrorNum:=xErrorNum;
+    stcInST.b0:=DQ_Out.ST;
+    stcInST.b1:=DQ_SP.ST;
+    stcInST.b2:=SP.ST;
+    stcInST.b3:=StandStill.ST;
+    stcInST.b4:=PV_Out.ST;
+    stcInST.b5:=LocalLi.ST;
+    stcInST.b6:=StartLocal.ST;
+    stcInST.b7:=CancelLocal.ST;
+    stcInST.b8:=PauseLocal.ST;
+    stcInST.b9:=ContLocal.ST;
+    stcInST.b10:=CtrlChnST.ST;
+    stcInST.b11:=Ctrl2ChnST.ST;
+    ST_Worst:=SelST16(InST := stcInST
+         ,Num :=  12
+         ,SelPrio := 0
+         ); 
+    IF SnRunUpCyc>0 THEN (*A7e8*)
+        SnRunUpCyc:=SnRunUpCyc-1;
+    END_IF;(*A7e8*)    
+END_IF;
+
+IF ((SnRunUpCyc=0) AND xOB_Cycle) OR xOB_Start THEN (*A9b3*)
+    IF SnMsgToggle>=1 THEN (*A9b4*)
+        SnMsgToggle:=0;
+    ELSE (*A9b4*)
+        SnMsgToggle:=1;
+    END_IF;(*A9b5*)
+    SdwStepNoLoc:=StepNo;
+    SdwBatchId:=BatchID;
+    IF SdwPrevBatchId<>SdwBatchId THEN (*A9b6*)
+        FOR SnErr:=1 TO 32 BY 1 DO
+            SarBatchName[SnErr]:=B#16#0;
+        END_FOR; (*A9b8*)
+        SnErr:=BLKMOV(SRCBLK := BatchName
+               ,DSTBLK := SarBatchName
+               );
+        SdwPrevBatchId:=SdwBatchId;
+    END_IF;(*A9b6*)
+    IF OosAct.Value THEN (*A9b9*)
+        SbMsgEff1:=B#16#0;
+    ELSE (*A9b9*)
+        SbMsgEff1_b[0]:=(((xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value) AND DQ_AH_MsgEn) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[1]:=(((xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value) AND DQ_AL_MsgEn) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[2]:=((((xFeat_SwiPoiFalseAct) XOR PV_AH_Act.Value) AND PV_AH_MsgEn) AND xFlowProcessing) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[3]:=((((xFeat_SwiPoiFalseAct) XOR PV_AL_Act.Value) AND PV_AL_MsgEn) AND xFlowProcessing) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[4]:=((((xFeat_SwiPoiFalseAct) XOR PV_AH2_Act.Value) AND PV_AH2_MsgEn) AND xFlowProcessing) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[5]:=((((xFeat_SwiPoiFalseAct) XOR PV_AL2_Act.Value) AND PV_AL2_MsgEn) AND xFlowProcessing) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[6]:=((((xFeat_SwiPoiFalseAct) XOR CR_AH_Act.Value) AND CR_AH_MsgEn) AND xFlowProcessing) AND (NOT(MsgLock.Value));
+        SbMsgEff1_b[7]:=(((nCmd=2) AND (SnPrevCmd<>2)) AND DosCancelMsgEn) AND (NOT(MsgLock.Value));
+    END_IF;(*A9ba*)
+    IF ((SbMsgEff1Old<>SbMsgEff1) OR SxShowAlarm1) OR ((((NOT(OosAct.Value)) AND Feature.Bit22) AND (SnMsgToggle=0)) AND (((MsgAckn1 AND W#16#FF)<>W#16#FF) OR (ALARM_8P_1.STATUS<>W#16#0))) THEN (*A9bb*)
+        ALARM_8P_1(EN_R :=  TRUE
+                        ,ID := W#16#EEEE // IN: WORD
+                        ,EV_ID := MsgEvId1 // IN: DWORD
+                       ,SIG_1 :=  SbMsgEff1_b[0]
+                       ,SIG_2 :=  SbMsgEff1_b[1]
+                       ,SIG_3 :=  SbMsgEff1_b[2]
+                       ,SIG_4 :=  SbMsgEff1_b[3]
+                       ,SIG_5 :=  SbMsgEff1_b[4]
+                       ,SIG_6 :=  SbMsgEff1_b[5]
+                       ,SIG_7 :=  SbMsgEff1_b[6]
+                       ,SIG_8 :=  SbMsgEff1_b[7]
+                       ,SD_1 :=  SarBatchName
+                       ,SD_2 :=  SdwStepNoLoc
+                       ,SD_3 :=  SdwBatchId
+                       ,SD_4 :=  DQ_Out.Value
+                       ,SD_5 :=  PV_Out.Value
+                       ,SD_6 :=  ExtVa106
+                       ,SD_7 :=  ExtVa107
+                       ,SD_8 :=  ExtVa108
+                       ); 
+
+        IF Feature.Bit22 THEN (*A9bc*)
+            MsgErr1:=ALARM_8P_1.ERROR;
+            MsgStat1:=ALARM_8P_1.STATUS;
+            MsgAckn1:=ALARM_8P_1.ACK_STATE;
+        ELSE (*A9bc*)
+            MsgErr1:=FALSE;
+            MsgStat1:=W#16#0;
+            MsgAckn1:=W#16#0;
+        END_IF;(*A9bd*)
+        SbMsgEff1Old:=SbMsgEff1;
+        SxShowAlarm1:=ALARM_8P_1.STATUS=W#16#14;
+    END_IF;(*A9bb*)
+    IF OosAct.Value THEN (*A9be*)
+        SbMsgEff2:=B#16#0;
+    ELSE (*A9be*)
+        SbMsgEff2_b[0]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND CSF.Value;
+        SbMsgEff2_b[1]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND ExtMsg1.Value;
+        SbMsgEff2_b[2]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND ExtMsg2.Value;
+        SbMsgEff2_b[3]:=(NOT((MsgLock.Value) AND xFeatMsgLockAll)) AND ExtMsg3.Value;
+    END_IF;(*A9bf*)
+    IF ((SbMsgEff2Old<>SbMsgEff2) OR SxShowAlarm2) OR ((((NOT(OosAct.Value)) AND Feature.Bit22) AND (SnMsgToggle=1)) AND (((MsgAckn2 AND W#16#FF)<>W#16#FF) OR (ALARM_8P_2.STATUS<>W#16#0))) THEN (*A9b3*)
+        ALARM_8P_2(EN_R :=  TRUE
+                        ,ID := W#16#EEEE // IN: WORD
+                        ,EV_ID := MsgEvId2 // IN: DWORD
+                       ,SIG_1 :=  SbMsgEff2_b[0]
+                       ,SIG_2 :=  SbMsgEff2_b[1]
+                       ,SIG_3 :=  SbMsgEff2_b[2]
+                       ,SIG_4 :=  SbMsgEff2_b[3]
+                       ,SIG_5 :=  FALSE
+                       ,SIG_6 :=  FALSE
+                       ,SIG_7 :=  FALSE
+                       ,SIG_8 :=  FALSE
+                       ,SD_1 :=  SarBatchName
+                       ,SD_2 :=  SdwStepNoLoc
+                       ,SD_3 :=  SdwBatchId
+                       ,SD_4 :=  ExtVa204
+                       ,SD_5 :=  ExtVa205
+                       ,SD_6 :=  ExtVa206
+                       ,SD_7 :=  ExtVa207
+                       ,SD_8 :=  ExtVa208
+                       ); 
+
+        IF Feature.Bit22 THEN (*A9c1*)
+            MsgErr2:=ALARM_8P_2.ERROR;
+            MsgStat2:=ALARM_8P_2.STATUS;
+            MsgAckn2:=ALARM_8P_2.ACK_STATE;
+        ELSE (*A9c1*)
+            MsgErr2:=FALSE;
+            MsgStat2:=W#16#0;
+            MsgAckn2:=W#16#0;
+        END_IF;(*A9c2*)
+        SbMsgEff2Old:=SbMsgEff2;
+        SxShowAlarm2:=ALARM_8P_2.STATUS=W#16#14;
+    END_IF;
+END_IF;(*A9b3*)
+
+IF (xOB_Start) OR xOB_Cycle THEN (*A9c3*)
+    IF NOT(OosAct.Value) THEN (*A9c4*)
+        GrpErr.Value:=((CSF.Value) OR xFaultExtCSF) OR SxResetNeededFaultExtCSF;
+        RdyToStart.Value:=((((((NOT((xFaultExtCSF) OR SxResetNeededFaultExtCSF)) AND AutAct.Value) AND (NOT(SxForceInputActive))) AND (NOT(LockAct.Value))) AND 
+        (NOT(DosRelax.Value))) AND (NOT((DQ_AL_Act.Value) XOR xFeat_SwiPoiFalseAct))) AND ((DQ_Out.Value<DQ_SP.Value) OR xFeatResetQuantity);
+    END_IF;(*A9c4*)
+    IF (((LocalAct.Value) OR xSimAct) AND BypProt) OR DosRelax.Value THEN (*A9c5*)
+        xInterlocked:=FALSE;
+    ELSE (*A9c5*)
+        xInterlocked:=(((xIntlock_N) OR xProtect_N) OR SxResetNeededProtect) OR ((NOT(DosOn.Value)) AND xPermit_N);
+    END_IF;(*A9c6*)
+    
+    IF (EventTsIn_st.b1=B#16#2) AND (EventTsIn_st.w2=W#16#16) THEN (*A9c7*)
+        diOffset:=DWORD_TO_DINT(EventTsIn_st.dw4 AND DW#16#FFFFFF)/8;
+        wEventTsIn:=WORD_TO_BLOCK_DB(EventTsIn_st.w3).DW[diOffset];
+        
+        EvtTs_Mode.Connected:=TRUE;
+        EvtTs_Mode.MS_Release:=MS_Release.Value;
+        EvtTs_Mode.MsgLock:=MsgLock.Value;
+        EvtTs_Mode.OosAct:=OosAct.Value;
+        EvtTs_Mode.BatchEn:=BatchEn;
+        EvtTs_Mode.Occupied:=Occupied;
+        
+        diOffset:=diOffset+2;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DW[diOffset]:=EvtTs_Mode_w;
+        diOffset:=diOffset+2;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DD[diOffset]:=BatchID; 
+        diOffset:=diOffset+4;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DB[diOffset]:=tempANY_st.b0; 
+        diOffset:=diOffset+1;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DB[diOffset]:=tempANY_st.b1; 
+        diOffset:=diOffset+1;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DW[diOffset]:=tempANY_st.w2; 
+        diOffset:=diOffset+2;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DW[diOffset]:=tempANY_st.w3; 
+        diOffset:=diOffset+2;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DD[diOffset]:=tempANY_st.dw4; 
+        diOffset:=diOffset+4;
+        WORD_TO_BLOCK_DB(EventTsIn_st.w3).DD[diOffset]:=StepNo; 
+    ELSE (*A9c7*)
+        wEventTsIn:=W#16#0;
+    END_IF;(*A9c8*)
+    IF NOT(OosAct.Value) THEN (*A9c9*)
+        dwStatus1_b[24]:=Occupied;
+        dwStatus1_b[25]:=BatchEn;
+        dwStatus1_b[26]:=xSimAct;
+        dwStatus1_b[30]:=LocalAct.Value;
+        dwStatus1_b[31]:=xInterlocked;
+        dwStatus1_b[16]:=SP_ExtAct.Value;
+        dwStatus1_b[17]:=Ctrl.Value;
+        dwStatus1_b[18]:=Ctrl2.Value;
+        dwStatus1_b[19]:=xFeatWeightMeasurement;
+        dwStatus1_b[20]:=MeterType;
+        dwStatus1_b[21]:=((((BypProt) AND xSimAct) OR ((((LocalSetting=1) OR (LocalSetting=3)) AND LocalAct.Value) AND BypProt)) OR ((LocalSetting=2) AND LocalAct.Value)) OR SxForceInputActive;
+        dwStatus1_b[22]:=(xInvalidCommand) OR xInvalidMode;
+        dwStatus1_b[23]:=xOutStatusWord1x15;
+        dwStatus1_b[8]:=xIntlock_N;
+        dwStatus1_b[9]:=(NOT(DosOn.Value)) AND xPermit_N;
+        dwStatus1_b[10]:=(xProtect_N) OR SxResetNeededProtect;
+        dwStatus1_b[11]:=DosOn.Value;
+        dwStatus1_b[12]:=DosRelax.Value;
+        dwStatus1_b[13]:=DosEnd.Value;
+        dwStatus1_b[14]:=DosOff.Value;
+        dwStatus1_b[15]:=DosPause.Value;
+        dwStatus1_b[0]:=DosStart.Value;
+        dwStatus1_b[1]:=SxPostDose;
+        CASE nCmd OF
+            1 :
+                dwStatus1_b[2]:=TRUE;
+                dwStatus1_b[3]:=FALSE;
+                dwStatus1_b[4]:=FALSE;
+                dwStatus1_b[5]:=FALSE;
+            3 :
+                dwStatus1_b[2]:=FALSE;
+                dwStatus1_b[3]:=TRUE;
+                dwStatus1_b[4]:=FALSE;
+                dwStatus1_b[5]:=FALSE;
+            4 :
+                dwStatus1_b[2]:=FALSE;
+                dwStatus1_b[3]:=FALSE;
+                dwStatus1_b[4]:=TRUE;
+                dwStatus1_b[5]:=FALSE;
+            2,7,8,9 :
+                dwStatus1_b[2]:=FALSE;
+                dwStatus1_b[3]:=FALSE;
+                dwStatus1_b[4]:=FALSE;
+                dwStatus1_b[5]:=TRUE;
+        ELSE:
+            dwStatus1_b[2]:=FALSE;
+            dwStatus1_b[3]:=FALSE;
+            dwStatus1_b[4]:=FALSE;
+            dwStatus1_b[5]:=FALSE;
+        END_CASE;    
+         (*A9ca*)
+        dwStatus1_b[6]:=BYTE_TO_INT(UserAna1.ST)<255;
+        dwStatus1_b[7]:=BYTE_TO_INT(UserAna2.ST)<255;
+        
+        dwStatus2_b[24]:=MsgLock.Value;
+        dwStatus2_b[27]:=DQ_AH_En;
+        dwStatus2_b[28]:=DQ_AL_En;
+        dwStatus2_b[29]:=DQ_AH_MsgEn;
+        dwStatus2_b[30]:=DQ_AL_MsgEn;
+        dwStatus2_b[17]:=(PV_AH_En) AND xFlowProcessing;
+        dwStatus2_b[18]:=(PV_AL_En) AND xFlowProcessing;
+        dwStatus2_b[19]:=PV_AH_MsgEn;
+        dwStatus2_b[20]:=PV_AL_MsgEn;
+        dwStatus2_b[23]:=(PV_AH2_En) AND xFlowProcessing;
+        dwStatus2_b[8]:=(PV_AL2_En) AND xFlowProcessing;
+        dwStatus2_b[9]:=PV_AH2_MsgEn;
+        dwStatus2_b[10]:=PV_AL2_MsgEn;
+        dwStatus2_b[12]:=(CR_AH_En) AND xFlowProcessing;
+        dwStatus2_b[13]:=CR_AH_MsgEn;
+        dwStatus2_b[14]:=((xIntl_En) OR xPerm_En) OR xProt_En;
+        dwStatus2_b[15]:=((NOT(SxTareDone)) AND xFeatWeightMeasurement) AND DosOn.Value;
+        IF (((((((((NOT(xFeatSwitchMode)) AND StartAut.Value) AND CancelAut.Value) AND AutAct.Value) OR 
+            (((NOT(xFeatSwitchMode)) AND StartAut.Value) AND ContAut.Value)) OR 
+            (((NOT(xFeatSwitchMode)) AND StartAut.Value) AND PauseAut.Value)) OR 
+            (((NOT(xFeatSwitchMode)) AND CancelAut.Value) AND PauseAut.Value)) OR 
+            (((NOT(xFeatSwitchMode)) AND CancelAut.Value) AND ContAut.Value)) OR 
+            (((NOT(xFeatSwitchMode)) AND PauseAut.Value) AND ContAut.Value)) OR xOB_Start THEN (*A9d3*)
+            dwStatus2_b[0]:=DosOn.Value;
+            dwStatus2_b[1]:=DosRelax.Value;
+            dwStatus2_b[2]:=DosEnd.Value;
+            dwStatus2_b[3]:=DosOff.Value;
+            dwStatus2_b[4]:=DosPause.Value;
+        ELSE (*A9d3*)
+            IF ((((NOT(SxStartAut)) AND StartAut.Value) AND xStartCmd) AND (NOT((xFeatSwitchMode) AND PauseAut.Value))) OR 
+            ((((NOT(xFeatSwitchMode)) AND ContAut.Value) OR (((xFeatSwitchMode) AND StartAut.Value) AND (NOT(PauseAut.Value)))) AND xContCmd) THEN (*A9d5*)
+                dwStatus2_b[0]:=TRUE;
+                dwStatus2_b[1]:=FALSE;
+                dwStatus2_b[2]:=FALSE;
+                dwStatus2_b[3]:=FALSE;
+                dwStatus2_b[4]:=FALSE;
+            ELSIF (((NOT(xFeatSwitchMode)) AND CancelAut.Value) OR ((NOT(StartAut.Value)) AND xFeatSwitchMode)) AND (NOT(DosEnd.Value)) THEN (*A9d7*)
+                dwStatus2_b[0]:=FALSE;
+                dwStatus2_b[1]:=FALSE;
+                dwStatus2_b[2]:=TRUE;
+                dwStatus2_b[3]:=FALSE;
+                dwStatus2_b[4]:=FALSE;
+            ELSIF (PauseAut.Value) AND DosOn.Value THEN (*A9d8*)
+                dwStatus2_b[0]:=FALSE;
+                dwStatus2_b[1]:=FALSE;
+                dwStatus2_b[2]:=FALSE;
+                dwStatus2_b[3]:=FALSE;
+                dwStatus2_b[4]:=TRUE;
+            ELSE (*A9d8*)
+                dwStatus2_b[0]:=DosOn.Value;
+                dwStatus2_b[1]:=DosRelax.Value;
+                dwStatus2_b[2]:=DosEnd.Value;
+                dwStatus2_b[3]:=DosOff.Value;
+                dwStatus2_b[4]:=DosPause.Value;
+            END_IF;
+        END_IF;(*A9d4*)
+        dwStatus2_b[5]:=((((StartForce.Value) OR CancelForce.Value) OR PauseForce.Value) OR ContForce.Value) AND (NOT(LocalAct.Value));
+        IF xFeatBypass THEN (*A9d9*)
+            dwStatus2_b[6]:=(((Intl_En) AND Intlock_b[1]) OR ((Prot_En) AND Protect_b[1])) OR ((Perm_En) AND Permit_b[1]);
+        ELSE (*A9d9*)
+            dwStatus2_b[6]:=((((Intlock.Value) AND Intl_En) AND (Intlock.ST=B#16#60)) OR (((Protect.Value) AND Prot_En) AND (Protect.ST=B#16#60))) OR (((Permit.Value) AND Perm_En) AND (Permit.ST=B#16#60));
+        END_IF;(*A9da*)
+        dwStatus3_b[24]:=xIntl_En;
+        dwStatus3_b[25]:=xPerm_En;
+        dwStatus3_b[26]:=xProt_En;
+        dwStatus3_b[27]:=DosCancelMsgEn;
+        dwStatus3_b[28]:=xFeat_FlowInWeightMode;
+        dwStatus3_b[29]:=xFlowProcessing;
+        dwStatus3_b[30]:=xFeatFlowSPInPercent;
+        dwStatus3_b[31]:=NOT((xFeatFlowSPInPercent) OR xFeatWeightMeasurement);
+        dwStatus3_b[16]:=((NOT(xOSPerResetProtect)) AND xResetEnabled) AND AutAct.Value;
+        dwStatus3_b[17]:=xFeatFineQtyAbsolute;
+        dwStatus3_b[18]:=SimLiOp.Value;
+        dwStatus3_b[19]:=(xFaultExtCSF) OR SxResetNeededFaultExtCSF;
+        IF (SxOverdosage) AND xFeatOvDoseAckn THEN (*A9db*)
+            dwStatus3_b[20]:=TRUE;
+        END_IF;(*A9db*)
+        IF (NOT(xFeatOvDoseAckn)) OR SxUnderdosage THEN (*A9dc*)
+            dwStatus3_b[20]:=FALSE;
+        END_IF;(*A9dc*)
+        dwStatus3_b[21]:=(DosEnd.Value) AND SxDosEndWithAckn;
+        dwStatus3_b[11]:=(((NOT(xFrcInvalidCommand)) AND StartForce.Value) OR ((xFrcInvalidCommand) AND (dwStatus1_b[2]))) AND (NOT(LocalAct.Value));
+        dwStatus3_b[12]:=(((NOT(xFrcInvalidCommand)) AND CancelForce.Value) OR (((xFrcInvalidCommand)) AND (dwStatus1_b[5]))) AND (NOT(LocalAct.Value));
+        dwStatus3_b[13]:=(((NOT(xFrcInvalidCommand)) AND PauseForce.Value) OR ((xFrcInvalidCommand) AND (dwStatus1_b[3]))) AND (NOT(LocalAct.Value));
+        dwStatus3_b[14]:=(((NOT(xFrcInvalidCommand)) AND ContForce.Value) OR ((xFrcInvalidCommand) AND (dwStatus1_b[4]))) AND (NOT(LocalAct.Value));
+        dwStatus3_b[4]:=GrpErr.Value;
+        dwStatus3_b[5]:=RdyToStart.Value;
+        dwStatus3_b[6]:=NOT(CtrlChnST.ST=B#16#FF);
+        dwStatus3_b[7]:=NOT(Ctrl2ChnST.ST=B#16#FF);
+        dwStatus4_byte[3]:=wEventTsIn_b[1];
+        dwStatus5_byte[3]:=wEventTsIn_b[0];
+
+        dwStatus4_b[15]:=Permit_b[1];
+        dwStatus4_b[0]:=Intlock_b[1];
+        dwStatus4_b[1]:=Protect_b[1];
+        dwStatus4_b[2]:=xFeatBypass;
+    ELSE (*A9c9*)
+        dwStatus1:=DW#16#0;
+        dwStatus2:=dwStatus2 AND DW#16#1F000000;
+        dwStatus3:=DW#16#0;
+        dwStatus4:=DW#16#0;
+        dwStatus5:=DW#16#0;
+    END_IF;(*A9dd*)
+    dwStatus1_b[27]:=OosAct.Value;
+    dwStatus1_b[28]:=OosLi.Value;
+    dwStatus1_b[29]:=AutAct.Value;
+    dwStatus2_b[25]:=(xFeat_SwiPoiFalseAct) XOR DQ_AH_Act.Value;
+    dwStatus2_b[26]:=(xFeat_SwiPoiFalseAct) XOR DQ_AL_Act.Value;
+    dwStatus2_b[31]:=(xFeat_SwiPoiFalseAct) XOR PV_AH_Act.Value;
+    dwStatus2_b[16]:=(xFeat_SwiPoiFalseAct) XOR PV_AL_Act.Value;
+    dwStatus2_b[21]:=(xFeat_SwiPoiFalseAct) XOR PV_AH2_Act.Value;
+    dwStatus2_b[22]:=(xFeat_SwiPoiFalseAct) XOR PV_AL2_Act.Value;
+    dwStatus2_b[11]:=(xFeat_SwiPoiFalseAct) XOR CR_AH_Act.Value;
+    dwStatus2_b[7]:=MS_RelOp;
+    Status1:=dwStatus1;
+    Status2:=dwStatus2;
+    Status3:=dwStatus3;
+    Status4:=dwStatus4;
+    Status5:=dwStatus5;
+    dwOS_Perm_byte[3]:=OS_Perm_b[0];
+    dwOS_Perm_byte[2]:=OS_Perm_b[1];
+    dwOS_Perm_byte[1]:=OS_Perm_b[2];
+    dwOS_Perm_byte[0]:=OS_Perm_b[3];
+    OS_PermOut:=dwOS_Perm;
+    IF xOB_Start THEN (*A9de*)
+        OS_PermLog:=DW#16#0;
+    ELSIF OosAct.Value THEN (*A9e0*)
+        OS_PermLog:=DW#16#80002 AND OS_PermOut;
+    ELSE (*A9e0*)
+        dwOS_Perm:=OS_Perm_dw;
+        dwOS_Perm_b[0]:=(NOT(xBumpLessTransfer)) AND xOSPerAuto;
+        dwOS_Perm_b[1]:=xOSPerMan;
+        dwOS_Perm_b[2]:=xOSPerLocal;
+        dwOS_Perm_b[3]:=xOSPerOOS;
+        dwOS_Perm_b[4]:=xOSPerStart;
+        dwOS_Perm_b[5]:=xOSPerPause;
+        dwOS_Perm_b[6]:=xOSPerContinue;
+        dwOS_Perm_b[7]:=xOSPerCancel;
+        dwOS_Perm_b[8]:=xOSPerResetProtect;
+        dwOS_Perm_b[9]:=xOSPerResetQuantity;
+        dwOS_Perm_b[10]:=xOSPerAcknOverUnderdose;
+        dwOS_Perm_b[11]:=xOSPerSPExt;
+        dwOS_Perm_b[12]:=xOSPerSPInt;
+        dwOS_Perm_b[13]:=xOSPerSPQuantity;
+        dwOS_Perm_b[14]:=xOSPerSPQuantityFine;
+        dwOS_Perm_b[15]:=xOSPerSPFlowRate;
+        dwOS_Perm_b[16]:=xOSPerSPFlowRateFine;
+        dwOS_Perm_b[18]:=(NOT(SimLiOp.Value)) AND xOSPerSim;
+        dwOS_Perm_b[19]:=(xOSPerMSRel) AND ManAct.Value;
+        dwOS_Perm_b[21]:=(((NOT(DosRelax.Value)) AND xFeatChangeDribbVal) OR DosEnd.Value) AND xOSPerDribbIn;
+        dwOS_Perm_b[25]:=((((xOSPerSimPV) AND SimOn) AND (NOT(SimLiOp.Value))) AND (NOT(OosAct.Value))) AND (NOT(xFeatWeightMeasurement));
+        dwOS_Perm_b[26]:=(((xOSPerSimDQ) AND SimOn) AND (NOT(SimLiOp.Value))) AND (NOT(OosAct.Value));
+        
+        byTemp:=dwOS_Perm_byte[3];
+        dwOS_Perm_byte[3]:=dwOS_Perm_byte[0];
+        dwOS_Perm_byte[0]:=byTemp;
+        byTemp:=dwOS_Perm_byte[2];
+        dwOS_Perm_byte[2]:=dwOS_Perm_byte[1];
+        dwOS_Perm_byte[1]:=byTemp;
+        OS_PermLog:=dwOS_Perm;
+    END_IF;(*A9df*)
+    dwOS_Perm_byte[3]:=OS1Perm_byte[0];
+    dwOS_Perm_byte[2]:=OS1Perm_byte[1];
+    dwOS_Perm_byte[1]:=OS1Perm_byte[2];
+    dwOS_Perm_byte[0]:=OS1Perm_byte[3];
+    
+    OS1PermOut:=dwOS_Perm;
+    IF xOB_Start THEN (*A9e1*)
+        OS1PermLog:=DW#16#0;
+    ELSIF OosAct.Value THEN (*A9e3*)
+        OS1PermLog:=DW#16#0;
+    ELSE (*A9e3*)
+        OS1PermLog:=dwOS_Perm;
+    END_IF;(*A9e2*)
+    IF NOT(OosAct.Value) THEN (*A9e4*)
+        IF (xLiResetRequest) AND xResetEnabled THEN (*A9e5*)
+            RdyToReset.Value:=TRUE;
+        ELSE (*A9e5*)
+            RdyToReset.Value:=FALSE;
+        END_IF;(*A9e6*)
+        SxRstLi:=RstLi.Value;
+        SxResetDQLi:=RstDQ_Li.Value;
+        SxUAckLi:=U_AckLi.Value;
+        SnPrevCmd:=nCmd;
+        SxStartAut:=StartAut.Value;
+        SxContAut:=ContAut.Value;
+        SxPauseAut:=PauseAut.Value;
+        SxStartLocal:=StartLocal.Value;
+        SxPauseLocal:=PauseLocal.Value;
+        SxCancelLocal:=CancelLocal.Value;
+        SxContLocal:=ContLocal.Value;
+        SrPrevSimDQ:=SimDQ;
+        SxSPExtAct:=SP_ExtAct.Value;
+    END_IF;(*A9e4*)
+    OosOp:=FALSE;
+    IF NOT(OosAct.Value) THEN (*A9c3*)
+        StartMan:=FALSE;
+        CancelMan:=FALSE;
+        PauseMan:=FALSE;
+        ContMan:=FALSE;
+        RstOp:=FALSE;
+        AutModOp:=FALSE;
+        ManModOp:=FALSE;
+        LocalOp:=FALSE;
+        U_AckOp:=FALSE;
+        RstDQ_Op:=FALSE;
+        SP_IntOp:=FALSE;
+        SP_ExtOp:=FALSE;
+        IF xFeatResetAutModLi THEN (*A9e8*)
+            AutModLi.Value:=FALSE;
+            ManModLi.Value:=FALSE;
+        END_IF;(*A9e8*)
+        IF xFeatResetAutInLi THEN (*A9c3*)
+            RstLi.Value:=FALSE;
+            StartAut.Value:=FALSE;
+            CancelAut.Value:=FALSE;
+            PauseAut.Value:=FALSE;
+            ContAut.Value:=FALSE;
+        END_IF;
+    END_IF;
+END_IF;(*A9c3*)    
+END_FUNCTION_BLOCK
+
+
+

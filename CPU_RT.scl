@@ -1,0 +1,1774 @@
+// Name: FB128
+// Symbolic Name: CPU_RT
+// Symbol Comment: CPU Performance Block
+// Family: @SYSTEM
+// Version: 7.1
+// Author: DRIVER80
+// Last modified: 01/18/2012
+// Use: SFB54,UDT3,FC260,SFC43,SFC51,SFC78
+// Size: 29016 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'y' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB1128
+TITLE ='CPU Performance Block'
+{ S7_hardware := 'rack'; S7_m_c := 'true'; S7_tasklist := 'OB1,OB100' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : CPU_RT
+VERSION : '7.1'
+ 
+ 
+VAR_INPUT
+  MAX_RTRG { S7_m_c := 'true' }: INT  := 50;    //Maximum count of retrigger attempts
+  MAX_LIM { S7_m_c := 'true' }: REAL  := 7.500000e+001;    //Total Maximum Limit in percent
+  MAX_VAL { S7_m_c := 'true' }: REAL  := 9.500000e+001;    //Max Value -> for calculating the Reset of the idle cycles
+  HYS { S7_m_c := 'true' }: REAL  := 5.000000e+000;    //Hysteresis of Total Maximum Limit in percent
+  RESET { S7_m_c := 'true'; S7_string_1 := '1' }: BOOL  := TRUE;    //Reset Average, Min and Max Values
+  OB30_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB30 takes part in steps of avoiding cpu stop
+  OB31_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB31 takes part in steps of avoiding cpu stop
+  OB32_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB32 takes part in steps of avoiding cpu stop
+  OB33_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB33 takes part in steps of avoiding cpu stop
+  OB34_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB34 takes part in steps of avoiding cpu stop
+  OB35_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB35 takes part in steps of avoiding cpu stop
+  OB36_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB36 takes part in steps of avoiding cpu stop
+  OB37_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB37 takes part in steps of avoiding cpu stop
+  OB38_ATTN { S7_m_c := 'true'; S7_string_0 := '0'; S7_string_1 := '1' }: BOOL  := TRUE;    //OB38 takes part in steps of avoiding cpu stop
+  SAMPLE_AV { S7_visible := 'false'; S7_m_c := 'true' }: DINT  := 25;    //Sample Faktor for displayed values
+  SAMPLE_RE { S7_visible := 'false'; S7_m_c := 'true' }: DINT  := 5;    //Sample Faktor for calculate the undo of the idle cycle procedure
+  N_REQ_ERR { S7_m_c := 'true' }: INT  := 4;    //Number of OB3x Request Errors
+  UNDO_CYC { S7_m_c := 'true' }: INT  := 5;    //Counter in the slowest OB for undo emergency mode
+  DELTA_L { S7_visible := 'false'; S7_link := 'false' }: BOOL  := TRUE;    //Delta Load is concluded
+  RUNUPCYC { S7_visible := 'false'; S7_link := 'false' }: INT  := 5;    //Number of Run Up Cycles
+END_VAR
+VAR_OUTPUT
+  IDLE_CYC { S7_m_c := 'true' }: INT ;    //Current  idle cycles for OS
+  OB30_N_START : INT ;    //Startvalue for the idle cycles
+  OB31_N_START : INT ;    //Startvalue for the idle cycles
+  OB32_N_START : INT ;    //Startvalue for the idle cycles
+  OB33_N_START : INT ;    //Startvalue for the idle cycles
+  OB34_N_START : INT ;    //Startvalue for the idle cycles
+  OB35_N_START : INT ;    //Startvalue for the idle cycles
+  OB36_N_START : INT ;    //Startvalue for the idle cycles
+  OB37_N_START : INT ;    //Startvalue for the idle cycles
+  OB38_N_START : INT ;    //Startvalue for the idle cycles
+  OB30_N_CNT : INT ;    //Current value for the idle cycles
+  OB31_N_CNT : INT ;    //Current value for the idle cycles
+  OB32_N_CNT : INT ;    //Current value for the idle cycles
+  OB33_N_CNT : INT ;    //Current value for the idle cycles
+  OB34_N_CNT : INT ;    //Current value for the idle cycles
+  OB35_N_CNT : INT ;    //Current value for the idle cycles
+  OB36_N_CNT : INT ;    //Current value for the idle cycles
+  OB37_N_CNT : INT ;    //Current value for the idle cycles
+  OB38_N_CNT : INT ;    //Current value for the idle cycles
+  EXC_FR30 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB30
+  EXC_FR31 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB31
+  EXC_FR32 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB32
+  EXC_FR33 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB33
+  EXC_FR34 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB34
+  EXC_FR35 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB35
+  EXC_FR36 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB36
+  EXC_FR37 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB37
+  EXC_FR38 { S7_visible := 'false'; S7_m_c := 'true' }: INT ;    //Execution Frequency OB38
+  DAT_PLAU : BOOL ;    //slowest OB3x has slowest priority
+  SFC78_EX { S7_m_c := 'true' }: BOOL ;    //SFC78 available on the CPU
+  SL_OB : BYTE ;    //slowest OB3x
+  SL_OB_EXC_FR : INT ;    //Execution Frequency of slowest OB3x
+  N_OB1_CYC : INT ;    //Number of OB1 cycles while one slowest OB cycle
+  MAXCYCTI { S7_m_c := 'true' }: INT ;    //Maximum Cycle Time of CPU
+  TOTALCUR { S7_m_c := 'true' }: REAL ;    //Total Current Value (net average of all  OB3x/OB8x + OB1) in percent
+  TOTALAV { S7_m_c := 'true' }: REAL ;    //Total Average CPU (net of all  OB3x/OB8x + OB1 Net) in percent
+  TOTALMAX { S7_m_c := 'true' }: REAL ;    //Total Max Value in percent (derived from current net of all  OB3x/OB8x + OB1)
+  TOTALMIN { S7_m_c := 'true' }: REAL ;    //Total Min Value in percent (derived from current net of all  OB3x/OB8x + OB1)
+  NET01CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB01
+  NET01AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB01
+  NET01MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB01
+  NET01MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB01
+  NET01PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB01
+  NET30CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB30
+  GRO30CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB30
+  NET30AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB30
+  GRO30AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB30
+  NET30MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB30
+  GRO30MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB30
+  NET30MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB30
+  GRO30MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB30
+  NET30PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB30
+  GRO30PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB30
+  NET31CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB31
+  GRO31CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB31
+  NET31AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB31
+  GRO31AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB31
+  NET31MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB31
+  GRO31MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB31
+  NET31MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB31
+  GRO31MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB31
+  NET31PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB31
+  GRO31PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB31
+  NET32CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB32
+  GRO32CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB32
+  NET32AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB32
+  GRO32AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB32
+  NET32MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB32
+  GRO32MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB32
+  NET32MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB32
+  GRO32MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB32
+  NET32PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB32
+  GRO32PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB32
+  NET33CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB33
+  GRO33CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB33
+  NET33AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB33
+  GRO33AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB33
+  NET33MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB33
+  GRO33MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB33
+  NET33MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB33
+  GRO33MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB33
+  NET33PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB33
+  GRO33PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB33
+  NET34CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB34
+  GRO34CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB34
+  NET34AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB34
+  GRO34AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB34
+  NET34MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB34
+  GRO34MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB34
+  NET34MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB34
+  GRO34MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB34
+  NET34PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB34
+  GRO34PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB34
+  NET35CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB35
+  GRO35CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB35
+  NET35AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB35
+  GRO35AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB35
+  NET35MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB35
+  GRO35MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB35
+  NET35MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB35
+  GRO35MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB35
+  NET35PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB35
+  GRO35PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB35
+  NET36CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB36
+  GRO36CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB36
+  NET36AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB36
+  GRO36AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB36
+  NET36MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB36
+  GRO36MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB36
+  NET36MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB36
+  GRO36MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB36
+  NET36PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB36
+  GRO36PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB36
+  NET37CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB37
+  GRO37CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB37
+  NET37AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB37
+  GRO37AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB37
+  NET37MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB37
+  GRO37MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB37
+  NET37MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB37
+  GRO37MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB37
+  NET37PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB37
+  GRO37PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB37
+  NET38CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB38
+  GRO38CUR { S7_m_c := 'true' }: REAL ;    //current Gross cycle time of OB38
+  NET38AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB38
+  GRO38AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Gross cycle time of OB38
+  NET38MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB38
+  GRO38MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Gross cycle time of OB38
+  NET38MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Net cycle time of OB38
+  GRO38MIN { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //minimum Gross cycle time of OB38
+  NET38PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB38
+  GRO38PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Gross average percentage cycle time of OB38
+  NET81CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB81
+  NET81AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB81
+  NET81MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB81
+  NET81PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB81
+  NET82CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB82
+  NET82AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB82
+  NET82MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB82
+  NET82PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB82
+  NET83CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB82
+  NET83AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB83
+  NET83MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB83
+  NET83PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB83
+  NET84CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB84
+  NET84AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB84
+  NET84MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB84
+  NET84PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB84
+  NET85CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB85
+  NET85AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB85
+  NET85MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB85
+  NET85PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB85
+  NET86CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB86
+  NET86AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB86
+  NET86MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB86
+  NET86PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB86
+  NET87CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB87
+  NET87AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB87
+  NET87MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB87
+  NET87PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB87
+  NET88CUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of OB88
+  NET88AV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of OB88
+  NET88MAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of OB88
+  NET88PER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of OB88
+  NETXXCUR { S7_m_c := 'true' }: REAL ;    //current Net cycle time of Rest e.G. OB5x
+  NETXXAV { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Average Net cycle time of Rest e.G. OB5x
+  NETXXMAX { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //maximum Net cycle time of Rest e.G. OB5x
+  NETXXPER { S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //Net average percentage cycle time of Rest e.G. OB5x
+  REQ30ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ31ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ32ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ33ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ34ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ35ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ36ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ37ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ38ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  REQ01ERR { S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //OB Request Error occured since last Reset
+  ERR_NUM { S7_visible := 'false' }: INT ;    //Error Number
+  CPU_RT_DATA { S7_visible := 'false' }: STRUCT    
+   OB_NUM : BYTE ;    //OB Number which caused Request Error
+   MAX_LIM : BOOL ;    //Total Current Value > MAX_LIM
+   EMERGENCY_MODE : BOOL ;    //Emergency mode, cyclic OBґs get idle cycles
+   NOT_PCS7_COMPLIANT : BOOL ;    //priority of OB3x not PCS7 compliant
+   REQUEST_ERR : BOOL ;    //Reserved
+   RES_2 : BOOL ;    //Reserved
+   RES_3 : BOOL ;    //Reserved
+   RES_4 : BOOL ;    //Reserved
+   RES_5 : BOOL ;    //Reserved
+   RES : DINT ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+VAR
+  RALRM : SFB54;    //Multiinstanz RALRM
+  reserve1 : DWORD ;   
+  reserve2 : DWORD ;   
+  srTemp1 : REAL ;   
+  srTemp2 : REAL ;   
+  srTemp3 : REAL ;   
+  srTemp4 : REAL ;   
+  siRUNUPCNT : INT ;    //intertner Zдhler RUNUPCYC
+  sbERSTLAUF : BOOL  := TRUE;    //Erstlaufmerker
+  sbyASIG0a : BYTE ; 
+  sbyASIG0a_bool AT sbyASIG0a: ARRAY[0..7] OF BOOL;  
+  sbyASIG0b : BYTE ;   
+  Temp : ARRAY  [0 .. 126 ] OF WORD ;
+  Temp_byte AT Temp : ARRAY[0..251] OF BYTE;
+  Temp_int AT Temp : ARRAY[0..126] OF INT;
+  Temp_bool AT Temp : ARRAY[0..2016] OF BOOL;
+  Temp_st AT Temp : ARRAY[0..8] OF STRUCT
+    b1 : BYTE;
+    b2 : BYTE;
+    b3 : BYTE;
+    b4 : BYTE;
+    arr: ARRAY[2..13] OF INT ;
+    END_STRUCT;
+  sReqErrOBNr : BYTE ;    //OB which put out an Request Error
+  siTemp : ARRAY  [0 .. 62 ] OF //temp data Structure while cyclic OBs running
+  DINT ;    //temp data Structure while cyclic OBs running
+  siTemp_real AT siTemp : ARRAY[0..62] OF REAL  ;
+  sSZL822_BUSY : BOOL  := TRUE;   
+  sSZL222_BUSY : BOOL  := TRUE;   
+  sSZL112_BUSY : BOOL  := TRUE;   
+  sSlowestOB : BYTE ;   
+  sSlowestOBExcFreq : INT ;   
+  sSlowestOBPriority : BYTE ;   
+  sFastestOB : BYTE ;   
+  sFastestOBExcFreq : INT ;   
+  sFastestOBPriority : BYTE ;   
+  sDataPlausible : BOOL ;   
+  sSFC78available : BOOL ;    //SFC78 ist verfьgbar
+  sOBExcFreq : ARRAY  [30 .. 38 ] OF INT ;   
+  sNumOB1Cyc : INT ;    //count of ob1 cycles while one slowest OB cycle Time
+  s30AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet30 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO30 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET30CurrPer : REAL ;    //Current value in percent
+  srNET30AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s31AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet31 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO31 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET31CurrPer : REAL ;    //Current value in percent
+  srNET31AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s32AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet32 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO32 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET32CurrPer : REAL ;    //Current value in percent
+  srNET32AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s33AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet33 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO33 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET33CurrPer : REAL ;    //Current value in percent
+  srNET33AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s34AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet34 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO34 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET34CurrPer : REAL ;    //Current value in percent
+  srNET34AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s35AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet35 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO35 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET35CurrPer : REAL ;    //Current value in percent
+  srNET35AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s36AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet36 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO36 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET36CurrPer : REAL ;    //Current value in percent
+  srNET36AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s37AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet37 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO37 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET37CurrPer : REAL ;    //Current value in percent
+  srNET37AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  s38AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet38 : DINT ;    //Current net value in micro seconds in DINT
+  siGRO38 : DINT ;    //Current gross value in micro seconds in DINT
+  sNET38CurrPer : REAL ;    //Current value in percent
+  srNET38AVPerIntern : REAL ;    //intern average value in percent for undo the idle cycles
+  srNETAccuPerIntern : REAL ;    //accumulate all NET values for undo the idle cycles
+  sTotalAVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  sTotalCurrPer : REAL ;    //Current value in percent
+  s01AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet01 : DINT ;    //Current net value in micro seconds in DINT
+  sNET01CurrPer : REAL ;    //Current value in percent
+  srNET01Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET01Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s81AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet81 : DINT ;    //Current net value in micro seconds in DINT
+  sNET81CurrPer : REAL ;    //Current value in percent
+  srNET81Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET81Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s82AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet82 : DINT ;    //Current net value in micro seconds in DINT
+  sNET82CurrPer : REAL ;    //Current value in percent
+  srNET82Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET82Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s83AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet83 : DINT ;    //Current net value in micro seconds in DINT
+  sNET83CurrPer : REAL ;    //Current value in percent
+  srNET83Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET83Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s84AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet84 : DINT ;    //Current net value in micro seconds in DINT
+  sNET84CurrPer : REAL ;    //Current value in percent
+  srNET84Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET84Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s85AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet85 : DINT ;    //Current net value in micro seconds in DINT
+  sNET85CurrPer : REAL ;    //Current value in percent
+  srNET85Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET85Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s86AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet86 : DINT ;    //Current net value in micro seconds in DINT
+  sNET86CurrPer : REAL ;    //Current value in percent
+  srNET86Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET86Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s87AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet87 : DINT ;    //Current net value in micro seconds in DINT
+  sNET87CurrPer : REAL ;    //Current value in percent
+  srNET87Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET87Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  s88AVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNet88 : DINT ;    //Current net value in micro seconds in DINT
+  sNET88CurrPer : REAL ;    //Current value in percent
+  srNET88Sample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNET88Merker : BOOL ;    //merker for 1 slowest ob cycle expired
+  sXXAVCounter : DINT  := 1;    //counter for  1.. sample necessary to recognice the first cyc after reset
+  siNetXX : DINT ;    //Current net value in micro seconds in DINT
+  sNETXXCurrPer : REAL ;    //Current value in percent
+  srNETXXSample : REAL ;    //current value in terms of slowest OB Exc Freq
+  sbNETXXMerker : BOOL ;    //merker for 1 slowest ob cycle expired
+  srNETXXAVPerIntern : REAL ;   
+END_VAR
+VAR_TEMP
+  RETURN_CODE : INT ;    //Hilfsparameter (Wechselnde Bedeutung)!
+  x : INT ;    //Hilfsparameter (Wechselnde Bedeutung)!
+  y : INT ;    //Hilfsparameter (Wechselnde Bedeutung)!
+  Busy : BOOL ;   
+  ERR : INT ;    //Error beim Anlauf
+  TOP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;    
+   ZI1 : WORD ;   
+   ZI2 : BYTE ;   
+   ZI3 : BYTE ;   
+   ZI4 : BYTE ;   
+   ZI5 : BYTE ;   
+   T : DATE_AND_TIME ;   
+   SUBNET : BYTE ;    //Mastersystem
+   RACK : BYTE ;    //Racknr.
+   SL_TYP : BYTE ;    //Slave- und Profil-Typ
+   A_INF : BYTE ;    //A-Info- Typ/Struktur-Vers
+   ET_CR_FL : BYTE ;    //ET-CR-Flags
+   ET_ER_FL : BYTE ;    //ET-ER- Flags
+   PNO_ID : WORD ;    //PNO-Ident
+  END_STRUCT ;   
+  AINFO : BYTE ;   
+  STATUS : DWORD ;    //Funktionsergebnis/Fehlermeldung
+  SZL_HEADER : STRUCT    
+   LENTHDR : WORD ;   
+   N_DR : WORD ;   
+  END_STRUCT ;   
+  MS_AS : DWORD ;    //Maintenance State AS
+END_VAR
+BEGIN
+RALRM(MODE :=  1
+            ,MLEN :=  0
+            ,TINFO :=  TOP_SI
+            ,AINFO :=  AINFO
+            );
+STATUS:=RALRM.STATUS;           
+ 
+IF (TOP_SI.NUM=B#16#64) OR (((sbERSTLAUF) OR DELTA_L) AND (TOP_SI.NUM=B#16#1))  THEN
+    sDataPlausible:=false;
+    IF TOP_SI.NUM=B#16#64 THEN
+        siRUNUPCNT:=RUNUPCYC;
+        FOR x:=0 TO 126 BY 1 DO
+            Temp[x]:=W#16#0;
+        END_FOR;
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ := true
+                  ,SZL_ID :=  W#16#112
+                  ,INDEX :=  W#16#100
+                  ,BUSY :=  sSZL112_BUSY
+                  ,SZL_HEADER :=  SZL_HEADER
+                  ,DR :=  Temp
+                  );
+        UNTIL NOT(TOP_SI.NUM=B#16#64) OR NOT sSZL112_BUSY
+        END_REPEAT;
+        IF NOT sSZL112_BUSY THEN
+            SFC78_EX:=false;
+            FOR x:=0 TO WORD_TO_INT(SZL_HEADER.N_DR) BY 1 DO
+                IF Temp[x]=W#16#106 THEN
+                    SFC78_EX:=true;
+                END_IF;   
+            END_FOR;
+        END_IF;
+    ELSE
+        sSZL112_BUSY:=false;
+    END_IF;   
+    IF NOT sSZL112_BUSY    THEN
+        FOR x:=0 TO 13 BY 1 DO
+            Temp[x]:=W#16#0;
+        END_FOR;
+        REPEAT
+        RETURN_CODE:=RDSYSST(REQ := true
+              ,SZL_ID :=  W#16#222
+              ,INDEX :=  W#16#50
+              ,BUSY :=  sSZL222_BUSY
+              ,SZL_HEADER :=  SZL_HEADER
+              ,DR :=  Temp
+              );
+        UNTIL NOT(TOP_SI.NUM=B#16#64) OR NOT sSZL222_BUSY
+        END_REPEAT;
+    END_IF;        
+    IF NOT sSZL222_BUSY AND NOT sSZL112_BUSY THEN
+        MAXCYCTI:=WORD_TO_INT(Temp[5]);
+        FOR x:=0 TO 126 BY 1 DO
+            Temp[x]:=W#16#0;
+        END_FOR;
+        REPEAT
+        RETURN_CODE:=RDSYSST(REQ := true
+              ,SZL_ID :=  W#16#822
+              ,INDEX :=  W#16#1E
+              ,BUSY :=  sSZL822_BUSY
+              ,SZL_HEADER :=  SZL_HEADER
+              ,DR :=  Temp_byte
+              );
+        UNTIL NOT(TOP_SI.NUM=B#16#64) OR NOT sSZL822_BUSY
+        END_REPEAT;
+        IF RETURN_CODE<>0 THEN
+            ERR_NUM:=1;
+        END_IF;
+        IF NOT sSZL822_BUSY AND ERR_NUM<>1 THEN
+            FOR x:=30 TO 38 BY 1 DO
+                sOBExcFreq[x]:=0;
+            END_FOR;   
+            sOBExcFreq[BYTE_TO_INT(Temp_byte[3])]:=Temp_int[5];   
+            sSlowestOB:=Temp_byte[3];
+            sSlowestOBExcFreq:=Temp_int[5];
+            sSlowestOBPriority:=Temp_byte[2];
+            FOR x:=1 TO 8 BY 1 DO
+                IF Temp_st[x].arr[5]>0 THEN
+                    sOBExcFreq[BYTE_TO_INT(Temp_st[x].b4)]:=Temp_st[x].arr[5];
+                    IF Temp_st[x].arr[5]>sSlowestOBExcFreq THEN
+                        sSlowestOB:=Temp_st[x].b4;
+                        sSlowestOBExcFreq:=Temp_st[x].arr[5];
+                        sSlowestOBPriority:=Temp_st[x].b3;
+                    ELSE
+                        IF Temp_st[x].arr[5]=sSlowestOBExcFreq THEN
+                            IF BYTE_TO_INT(Temp_st[x].b3)<BYTE_TO_INT(sSlowestOBPriority) THEN
+                                sSlowestOB:=Temp_st[x].b4;
+                                sSlowestOBExcFreq:=Temp_st[x].arr[5];
+                                sSlowestOBPriority:=Temp_st[x].b3;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                ELSE
+                    EXIT;
+                END_IF;
+            END_FOR;
+            FOR x:=0 TO 8 BY 1 DO
+                IF Temp_st[x].arr[5]>0 THEN
+                    IF BYTE_TO_INT(sSlowestOBPriority)<BYTE_TO_INT(Temp_st[x].b3) OR
+                        Temp_st[x].b4=sSlowestOB
+                    THEN
+                        sDataPlausible:=true;
+                        CPU_RT_DATA.NOT_PCS7_COMPLIANT:=false;
+                    ELSE
+                        sDataPlausible:=false;
+                        CPU_RT_DATA.NOT_PCS7_COMPLIANT:=true;
+                        EXIT;
+                    END_IF;
+                ELSE
+                    EXIT;
+                END_IF;
+            END_FOR;
+            DAT_PLAU:=sDataPlausible;
+            SL_OB:=sSlowestOB;
+            SL_OB_EXC_FR:=sSlowestOBExcFreq;
+            sbERSTLAUF:=false;
+            DELTA_L:=false;
+            RESET:=true;
+            FOR x:=0 TO 62 BY 1 DO
+                siTemp[x]:=0;
+            END_FOR;
+        END_IF;
+    END_IF;
+ELSE;   
+END_IF;
+ 
+IF ERR_NUM<>1 AND sSlowestOBExcFreq>0 THEN
+    IF NOT SFC78_EX THEN
+        IF TOP_SI.NUM=sSlowestOB AND sDataPlausible THEN
+            siTemp[17]:=siTemp[17]+1;
+            IF siTemp[21]=0 THEN
+                siTemp[17]:=siTemp[17]+1;
+            ELSE
+                siTemp[17]:=0;
+            END_IF;   
+            IF siTemp[17]>=UNDO_CYC THEN
+                siTemp[17]:=0;
+                IF OB30_N_START>1 OR
+                   OB31_N_START>1 OR
+                   OB32_N_START>1 OR
+                   OB33_N_START>1 OR
+                   OB34_N_START>1 OR
+                   OB35_N_START>1 OR
+                   OB36_N_START>1 OR
+                   OB37_N_START>1 OR
+                   OB38_N_START>1
+                THEN
+                    IF IDLE_CYC>1 THEN
+                        IDLE_CYC:=IDLE_CYC-1;
+                    END_IF;
+                    IF OB30_N_START>1 THEN
+                        OB30_N_START:=OB30_N_START-1;
+                    END_IF;
+                    IF OB31_N_START>1 THEN
+                        OB31_N_START:=OB31_N_START-1;
+                    END_IF;
+                    IF OB32_N_START>1 THEN
+                        OB32_N_START:=OB32_N_START-1;
+                    END_IF;
+                    IF OB33_N_START>1 THEN
+                        OB33_N_START:=OB33_N_START-1;
+                    END_IF;
+                    IF OB34_N_START>1 THEN
+                        OB34_N_START:=OB34_N_START-1;
+                    END_IF;
+                    IF OB35_N_START>1 THEN
+                        OB35_N_START:=OB35_N_START-1;
+                    END_IF;
+                    IF OB36_N_START>1 THEN
+                        OB36_N_START:=OB36_N_START-1;
+                    END_IF;
+                    IF OB37_N_START>1 THEN
+                        OB37_N_START:=OB37_N_START-1;
+                    END_IF;
+                    IF OB38_N_START>1 THEN
+                        OB38_N_START:=OB38_N_START-1;
+                    END_IF;
+                ELSIF NOT OB30_ATTN AND OB30_N_START>0 OR
+                   NOT OB31_ATTN AND OB31_N_START>0 OR
+                   NOT OB32_ATTN AND OB32_N_START>0 OR
+                   NOT OB33_ATTN AND OB33_N_START>0 OR
+                   NOT OB34_ATTN AND OB34_N_START>0 OR
+                   NOT OB35_ATTN AND OB35_N_START>0 OR
+                   NOT OB36_ATTN AND OB36_N_START>0 OR
+                   NOT OB37_ATTN AND OB37_N_START>0 OR
+                   NOT OB38_ATTN AND OB38_N_START>0
+                THEN
+                    IF NOT OB30_ATTN AND OB30_N_START>0 THEN
+                        OB30_N_START:=OB30_N_START-1;
+                    END_IF;
+                    IF NOT OB31_ATTN AND OB31_N_START>0 THEN
+                        OB31_N_START:=OB31_N_START-1;
+                    END_IF;
+                    IF NOT OB32_ATTN AND OB32_N_START>0 THEN
+                        OB32_N_START:=OB32_N_START-1;
+                    END_IF;
+                    IF NOT OB33_ATTN AND OB33_N_START>0 THEN
+                        OB33_N_START:=OB33_N_START-1;
+                    END_IF;
+                    IF NOT OB34_ATTN AND OB34_N_START>0 THEN
+                        OB34_N_START:=OB34_N_START-1;
+                    END_IF;
+                    IF NOT OB35_ATTN AND OB35_N_START>0 THEN
+                        OB35_N_START:=OB35_N_START-1;
+                    END_IF;
+                    IF NOT OB36_ATTN AND OB36_N_START>0 THEN
+                        OB36_N_START:=OB36_N_START-1;
+                    END_IF;
+                    IF NOT OB37_ATTN AND OB37_N_START>0 THEN
+                        OB37_N_START:=OB37_N_START-1;
+                    END_IF;
+                    IF NOT OB38_ATTN AND OB38_N_START>0 THEN
+                        OB38_N_START:=OB38_N_START-1;
+                    END_IF;
+                ELSIF OB30_N_START>0 OR
+                       OB31_N_START>0 OR
+                       OB32_N_START>0 OR
+                       OB33_N_START>0 OR
+                       OB34_N_START>0 OR
+                       OB35_N_START>0 OR
+                       OB36_N_START>0 OR
+                       OB37_N_START>0 OR
+                       OB38_N_START>0
+                THEN
+                    IF IDLE_CYC>0 THEN IDLE_CYC:=IDLE_CYC-1; END_IF;
+                    IF OB30_N_START>0 THEN OB30_N_START:=OB30_N_START-1; END_IF;
+                    IF OB31_N_START>0 THEN OB31_N_START:=OB31_N_START-1; END_IF;
+                    IF OB32_N_START>0 THEN OB32_N_START:=OB32_N_START-1; END_IF;
+                    IF OB33_N_START>0 THEN OB33_N_START:=OB33_N_START-1; END_IF;
+                    IF OB34_N_START>0 THEN OB34_N_START:=OB34_N_START-1; END_IF;
+                    IF OB35_N_START>0 THEN OB35_N_START:=OB35_N_START-1; END_IF;
+                    IF OB36_N_START>0 THEN OB36_N_START:=OB36_N_START-1; END_IF;
+                    IF OB37_N_START>0 THEN OB37_N_START:=OB37_N_START-1; END_IF;
+                    IF OB38_N_START>0 THEN OB38_N_START:=OB38_N_START-1; END_IF;
+                ELSE
+                    CPU_RT_DATA.EMERGENCY_MODE:=false;
+                END_IF;
+            END_IF;
+            IF siRUNUPCNT>0 THEN
+                siRUNUPCNT:=siRUNUPCNT-1;
+            END_IF;   
+            N_OB1_CYC:=sNumOB1Cyc;
+            sNumOB1Cyc:=0;
+            siTemp[60]:=0;
+            FOR x:=30 TO 38 BY 1 DO
+                siTemp[60]:=siTemp[60]+siTemp[x];
+                siTemp[x]:=0;
+            END_FOR;
+            IF siTemp[60]=0 THEN
+                CPU_RT_DATA.REQUEST_ERR:=false;
+            END_IF;
+        END_IF;       
+    ELSE   
+           
+        IF siRUNUPCNT=0 THEN
+            CASE BYTE_TO_INT(TOP_SI.NUM) OF
+            30 :
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 30  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet30 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO30 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET30CUR:=DINT_TO_REAL(siNet30)/1000.0;
+                GRO30CUR:=DINT_TO_REAL(siGRO30)/1000.0;
+                EXC_FR30:=sOBExcFreq[30];
+                sNET30CurrPer:=NET30CUR/EXC_FR30*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET30CUR-NET30AV)/s30AVCounter+NET30AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET30AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO30CUR-GRO30AV)/s30AVCounter+GRO30AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO30AV:=srTemp1; END_IF;
+                    IF s30AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR30 THEN
+                        s30AVCounter:=s30AVCounter+1;
+                    END_IF;
+                    NET30PER:=NET30AV/EXC_FR30*100.0;
+                    GRO30PER:=GRO30AV/EXC_FR30*100.0;
+                END_IF;
+                srTemp1:=(NET30CUR/EXC_FR30*100.0-srNET30AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR30)+
+                        srNET30AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET30AVPerIntern:=srTemp1; END_IF;
+                IF NET30CUR>NET30MAX THEN NET30MAX:=NET30CUR; END_IF;
+                IF NET30CUR<NET30MIN THEN NET30MIN:=NET30CUR; END_IF;
+                IF GRO30CUR>GRO30MAX THEN GRO30MAX:=GRO30CUR; END_IF;
+                IF GRO30CUR<GRO30MIN THEN GRO30MIN:=GRO30CUR; END_IF;
+            31:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 31  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet31 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO31 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET31CUR:=DINT_TO_REAL(siNet31)/1000.0;
+                GRO31CUR:=DINT_TO_REAL(siGRO31)/1000.0;
+                EXC_FR31:=sOBExcFreq[31];
+                sNET31CurrPer:=NET31CUR/EXC_FR31*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET31CUR-NET31AV)/s31AVCounter+NET31AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET31AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO31CUR-GRO31AV)/s31AVCounter+GRO31AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO31AV:=srTemp1; END_IF;
+                    IF s31AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR31 THEN
+                        s31AVCounter:=s31AVCounter+1;
+                    END_IF;
+                    NET31PER:=NET31AV/EXC_FR31*100.0;
+                    GRO31PER:=GRO31AV/EXC_FR31*100.0;
+                END_IF;
+                srTemp1:=(NET31CUR/EXC_FR31*100.0-srNET31AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR31)+
+                        srNET31AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET31AVPerIntern:=srTemp1; END_IF;
+                IF NET31CUR>NET31MAX THEN NET31MAX:=NET31CUR; END_IF;
+                IF NET31CUR<NET31MIN THEN NET31MIN:=NET31CUR; END_IF;
+                IF GRO31CUR>GRO31MAX THEN GRO31MAX:=GRO31CUR; END_IF;
+                IF GRO31CUR<GRO31MIN THEN GRO31MIN:=GRO31CUR; END_IF;
+            32:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 32  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet32 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO32 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET32CUR:=DINT_TO_REAL(siNet32)/1000.0;
+                GRO32CUR:=DINT_TO_REAL(siGRO32)/1000.0;
+                EXC_FR32:=sOBExcFreq[32];
+                sNET32CurrPer:=NET32CUR/EXC_FR32*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET32CUR-NET32AV)/s32AVCounter+NET32AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET32AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO32CUR-GRO32AV)/s32AVCounter+GRO32AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO32AV:=srTemp1; END_IF;
+                    IF s32AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR32 THEN
+                        s32AVCounter:=s32AVCounter+1;
+                    END_IF;
+                    NET32PER:=NET32AV/EXC_FR32*100.0;
+                    GRO32PER:=GRO32AV/EXC_FR32*100.0;
+                END_IF;
+                srTemp1:=(NET32CUR/EXC_FR32*100.0-srNET32AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR32)+
+                        srNET32AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET32AVPerIntern:=srTemp1; END_IF;
+                IF NET32CUR>NET32MAX THEN NET32MAX:=NET32CUR; END_IF;
+                IF NET32CUR<NET32MIN THEN NET32MIN:=NET32CUR; END_IF;
+                IF GRO32CUR>GRO32MAX THEN GRO32MAX:=GRO32CUR; END_IF;
+                IF GRO32CUR<GRO32MIN THEN GRO32MIN:=GRO32CUR; END_IF;
+            33:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 33  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet33 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO33 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET33CUR:=DINT_TO_REAL(siNet33)/1000.0;
+                GRO33CUR:=DINT_TO_REAL(siGRO33)/1000.0;
+                EXC_FR33:=sOBExcFreq[33];
+                sNET33CurrPer:=NET33CUR/EXC_FR33*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET33CUR-NET33AV)/s33AVCounter+NET33AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET33AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO33CUR-GRO33AV)/s33AVCounter+GRO33AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO33AV:=srTemp1; END_IF;
+                    IF s33AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR33 THEN
+                        s33AVCounter:=s33AVCounter+1;
+                    END_IF;
+                    NET33PER:=NET33AV/EXC_FR33*100.0;
+                    GRO33PER:=GRO33AV/EXC_FR33*100.0;
+                END_IF;
+                srTemp1:=(NET33CUR/EXC_FR33*100.0-srNET33AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR33)+
+                        srNET33AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET33AVPerIntern:=srTemp1; END_IF;
+                IF NET33CUR>NET33MAX THEN NET33MAX:=NET33CUR; END_IF;
+                IF NET33CUR<NET33MIN THEN NET33MIN:=NET33CUR; END_IF;
+                IF GRO33CUR>GRO33MAX THEN GRO33MAX:=GRO33CUR; END_IF;
+                IF GRO33CUR<GRO33MIN THEN GRO33MIN:=GRO33CUR; END_IF;
+            34:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 34  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet34 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO34 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET34CUR:=DINT_TO_REAL(siNet34)/1000.0;
+                GRO34CUR:=DINT_TO_REAL(siGRO34)/1000.0;
+                EXC_FR34:=sOBExcFreq[34];
+                sNET34CurrPer:=NET34CUR/EXC_FR34*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET34CUR-NET34AV)/s34AVCounter+NET34AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET34AV:=srTemp1; END_IF;
+                    
+                    srTemp1:=(GRO34CUR-GRO34AV)/s34AVCounter+GRO34AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO34AV:=srTemp1; END_IF;
+                    IF s34AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR34 THEN
+                        s34AVCounter:=s34AVCounter+1;
+                    END_IF;
+                    NET34PER:=NET34AV/EXC_FR34*100.0;
+                    GRO34PER:=GRO34AV/EXC_FR34*100.0;
+                END_IF;
+                srTemp1:=(NET34CUR/EXC_FR34*100.0-srNET34AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR34)+
+                        srNET34AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET34AVPerIntern:=srTemp1; END_IF;
+                IF NET34CUR>NET34MAX THEN NET34MAX:=NET34CUR; END_IF;
+                IF NET34CUR<NET34MIN THEN NET34MIN:=NET34CUR; END_IF;
+                IF GRO34CUR>GRO34MAX THEN GRO34MAX:=GRO34CUR; END_IF;
+                IF GRO34CUR<GRO34MIN THEN GRO34MIN:=GRO34CUR; END_IF;
+            35:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 35  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet35 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO35 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET35CUR:=DINT_TO_REAL(siNet35)/1000.0;
+                GRO35CUR:=DINT_TO_REAL(siGRO35)/1000.0;
+                EXC_FR35:=sOBExcFreq[35];
+                sNET35CurrPer:=NET35CUR/EXC_FR35*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET35CUR-NET35AV)/s35AVCounter+NET35AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET35AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO35CUR-GRO35AV)/s35AVCounter+GRO35AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO35AV:=srTemp1; END_IF;
+                    IF s35AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR35 THEN
+                        s35AVCounter:=s35AVCounter+1;
+                    END_IF;
+                    NET35PER:=NET35AV/EXC_FR35*100.0;
+                    GRO35PER:=GRO35AV/EXC_FR35*100.0;
+                END_IF;
+                srTemp1:=(NET35CUR/EXC_FR35*100.0-srNET35AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR35)+
+                        srNET35AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET35AVPerIntern:=srTemp1; END_IF;
+                IF NET35CUR>NET35MAX THEN NET35MAX:=NET35CUR; END_IF;
+                IF NET35CUR<NET35MIN THEN NET35MIN:=NET35CUR; END_IF;
+                IF GRO35CUR>GRO35MAX THEN GRO35MAX:=GRO35CUR; END_IF;
+                IF GRO35CUR<GRO35MIN THEN GRO35MIN:=GRO35CUR; END_IF;
+            36:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 36  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet36 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO36 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET36CUR:=DINT_TO_REAL(siNet36)/1000.0;
+                GRO36CUR:=DINT_TO_REAL(siGRO36)/1000.0;
+                EXC_FR36:=sOBExcFreq[36];
+                sNET36CurrPer:=NET36CUR/EXC_FR36*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET36CUR-NET36AV)/s36AVCounter+NET36AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET36AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO36CUR-GRO36AV)/s36AVCounter+GRO36AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO36AV:=srTemp1; END_IF;
+                    IF s36AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR36 THEN
+                        s36AVCounter:=s36AVCounter+1;
+                    END_IF;
+                    NET36PER:=NET36AV/EXC_FR36*100.0;
+                    GRO36PER:=GRO36AV/EXC_FR36*100.0;
+                END_IF;
+                srTemp1:=(NET36CUR/EXC_FR36*100.0-srNET36AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR36)+
+                        srNET36AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET36AVPerIntern:=srTemp1; END_IF;
+                IF NET36CUR>NET36MAX THEN NET36MAX:=NET36CUR; END_IF;
+                IF NET36CUR<NET36MIN THEN NET36MIN:=NET36CUR; END_IF;
+                IF GRO36CUR>GRO36MAX THEN GRO36MAX:=GRO36CUR; END_IF;
+                IF GRO36CUR<GRO36MIN THEN GRO36MIN:=GRO36CUR; END_IF;
+            37:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 37  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet37 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO37 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET37CUR:=DINT_TO_REAL(siNet37)/1000.0;
+                GRO37CUR:=DINT_TO_REAL(siGRO37)/1000.0;
+                EXC_FR37:=sOBExcFreq[37];
+                sNET37CurrPer:=NET37CUR/EXC_FR37*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET37CUR-NET37AV)/s37AVCounter+NET37AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET37AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO37CUR-GRO37AV)/s37AVCounter+GRO37AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO37AV:=srTemp1; END_IF;
+                    IF s37AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR37 THEN
+                        s37AVCounter:=s37AVCounter+1;
+                    END_IF;
+                    NET37PER:=NET37AV/EXC_FR37*100.0;
+                    GRO37PER:=GRO37AV/EXC_FR37*100.0;
+                END_IF;
+                srTemp1:=(NET37CUR/EXC_FR37*100.0-srNET37AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR37)+
+                        srNET37AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET37AVPerIntern:=srTemp1; END_IF;
+                IF NET37CUR>NET37MAX THEN NET37MAX:=NET37CUR; END_IF;
+                IF NET37CUR<NET37MIN THEN NET37MIN:=NET37CUR; END_IF;
+                IF GRO37CUR>GRO37MAX THEN GRO37MAX:=GRO37CUR; END_IF;
+                IF GRO37CUR<GRO37MIN THEN GRO37MIN:=GRO37CUR; END_IF;
+            38:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 38  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet38 // Runtime of the most recent execution
+                      ,LAST_ET :=  siGRO38 // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                NET38CUR:=DINT_TO_REAL(siNet38)/1000.0;
+                GRO38CUR:=DINT_TO_REAL(siGRO38)/1000.0;
+                EXC_FR38:=sOBExcFreq[38];
+                sNET38CurrPer:=NET38CUR/EXC_FR38*100.0;
+                IF NOT RESET THEN
+               
+                    srTemp1:=(NET38CUR-NET38AV)/s38AVCounter+NET38AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN NET38AV:=srTemp1; END_IF;
+                   
+                    srTemp1:=(GRO38CUR-GRO38AV)/s38AVCounter+GRO38AV;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN GRO38AV:=srTemp1; END_IF;
+                    IF s38AVCounter<sSlowestOBExcFreq*SAMPLE_AV/EXC_FR38 THEN
+                        s38AVCounter:=s38AVCounter+1;
+                    END_IF;
+                    NET38PER:=NET38AV/EXC_FR38*100.0;
+                    GRO38PER:=GRO38AV/EXC_FR38*100.0;
+                END_IF;
+                srTemp1:=(NET38CUR/EXC_FR38*100.0-srNET38AVPerIntern)/
+                        (sSlowestOBExcFreq*SAMPLE_RE/EXC_FR38)+
+                        srNET38AVPerIntern;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN srNET38AVPerIntern:=srTemp1; END_IF;
+                IF NET38CUR>NET38MAX THEN NET38MAX:=NET38CUR; END_IF;
+                IF NET38CUR<NET38MIN THEN NET38MIN:=NET38CUR; END_IF;
+                IF GRO38CUR>GRO38MAX THEN GRO38MAX:=GRO38CUR; END_IF;
+                IF GRO38CUR<GRO38MIN THEN GRO38MIN:=GRO38CUR; END_IF;
+ 
+            1:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 01  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet01 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24] // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                IF N_OB1_CYC>0 AND sbNET01Merker THEN
+                    NET01CUR:=srNET01Sample/N_OB1_CYC;
+                    sNET01CurrPer:=NET01CUR/sSlowestOBExcFreq*100.0;
+                    srNET01Sample:=0.0;
+                    sbNET01Merker:=false;
+                    IF NOT RESET THEN
+                        srTemp1:=(NET01CUR-NET01AV)/s01AVCounter+NET01AV;
+                        srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                        IF ERR<>3 THEN NET01AV:=srTemp1; END_IF;
+                        IF s01AVCounter<SAMPLE_AV THEN
+                            s01AVCounter:=s01AVCounter+1;
+                        END_IF;
+                        NET01PER:=NET01AV/sSlowestOBExcFreq*100.0;
+                    END_IF;   
+                    IF NET01CUR>NET01MAX THEN NET01MAX:=NET01CUR; END_IF;
+                    IF NET01CUR<NET01MIN THEN NET01MIN:=NET01CUR; END_IF;
+                ELSE   
+                    srTemp1:=DINT_TO_REAL(siNet01)/1000.0+srNET01Sample;
+                    srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                    IF ERR<>3 THEN srNET01Sample:=srTemp1; END_IF;
+                END_IF;
+            81:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 81  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet81 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[1]:=DINT_TO_REAL(siNet81)/1000.0+siTemp_real[1];
+                sNET81CurrPer:=siTemp_real[1]/sSlowestOBExcFreq*100.0+sNET81CurrPer;
+                IF siTemp_real[1]>NET81MAX THEN NET81MAX:=siTemp_real[1]; END_IF;
+            82:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 82  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet82 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[2]:=DINT_TO_REAL(siNet82)/1000.0+siTemp_real[2];
+                sNET82CurrPer:=siTemp_real[2]/sSlowestOBExcFreq*100.0+sNET82CurrPer;
+                IF siTemp_real[2]>NET82MAX THEN NET82MAX:=siTemp_real[2]; END_IF;
+            83:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 83  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet83 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[3]:=DINT_TO_REAL(siNet83)/1000.0+siTemp_real[3];
+                sNET83CurrPer:=siTemp_real[3]/sSlowestOBExcFreq*100.0+sNET83CurrPer;
+                IF siTemp_real[3]>NET83MAX THEN NET83MAX:=siTemp_real[3]; END_IF;
+            84:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 84  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet84 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[4]:=DINT_TO_REAL(siNet84)/1000.0+siTemp_real[4];
+                sNET84CurrPer:=siTemp_real[4]/sSlowestOBExcFreq*100.0+sNET84CurrPer;
+                IF siTemp_real[4]>NET84MAX THEN NET84MAX:=siTemp_real[4]; END_IF;
+            85:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 85  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet85 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[5]:=DINT_TO_REAL(siNet85)/1000.0+siTemp_real[5];
+                sNET85CurrPer:=siTemp_real[5]/sSlowestOBExcFreq*100.0+sNET85CurrPer;
+                IF siTemp_real[5]>NET85MAX THEN NET85MAX:=siTemp_real[5]; END_IF;
+            86:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 86  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet86 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[6]:=DINT_TO_REAL(siNet86)/1000.0+siTemp_real[6];
+                sNET86CurrPer:=siTemp_real[6]/sSlowestOBExcFreq*100.0+sNET86CurrPer;
+                IF siTemp_real[6]>NET86MAX THEN NET86MAX:=siTemp_real[6]; END_IF;
+            87:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 87  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet87 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[7]:=DINT_TO_REAL(siNet87)/1000.0+siTemp_real[7];
+                sNET87CurrPer:=siTemp_real[7]/sSlowestOBExcFreq*100.0+sNET87CurrPer;
+                IF siTemp_real[7]>NET87MAX THEN NET87MAX:=siTemp_real[7]; END_IF;
+            88:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := 88  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNet88 // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[8]:=DINT_TO_REAL(siNet88)/1000.0+siTemp_real[8];
+                sNET88CurrPer:=siTemp_real[8]/sSlowestOBExcFreq*100.0+sNET88CurrPer;
+                IF siTemp_real[8]>NET88MAX THEN NET88MAX:=siTemp_real[8]; END_IF;
+             40..47:   
+                RETURN_CODE:=OB_RT(  // Determining the OB Program Runtime
+                       OB_NR := BYTE_TO_INT(TOP_SI.NUM)  // OB whose last evaluated times are to be queried.
+                      ,PRIO :=  y // The priority class of the queried OB is output in PRIO
+                      ,LAST_RT := siNetXX // Runtime of the most recent execution
+                      ,LAST_ET :=  siTemp[24]  // Time between the call and the end of execution
+                      ,CUR_T :=  siTemp[25] // Time of the OB request
+                      ,CUR_RT :=  siTemp[26] // Expired execution runtime
+                      ,CUR_ET :=  siTemp[27] // Time expired
+                      ,NEXT_ET :=  siTemp[28] // time-to-go between the actual time and the time of execution
+                      );
+                siTemp_real[0]:=DINT_TO_REAL(siNetXX)/1000.0+siTemp_real[0];
+                sNETXXCurrPer:=siTemp_real[0]/sSlowestOBExcFreq*100.0+sNETXXCurrPer;
+                IF siTemp_real[0]>NETXXMAX THEN NETXXMAX:=siTemp_real[0]; END_IF;
+            END_CASE;
+        END_IF;
+        IF TOP_SI.NUM=sSlowestOB THEN
+            NET81CUR:=siTemp_real[1];
+            siTemp_real[1]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET81CUR-NET81AV)/s81AVCounter+NET81AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET81AV:=srTemp1; END_IF;
+                IF s81AVCounter<SAMPLE_AV THEN
+                    s81AVCounter:=s81AVCounter+1;
+                END_IF;
+                NET81PER:=NET81AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET82CUR:=siTemp_real[2];
+            siTemp_real[2]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET82CUR-NET82AV)/s82AVCounter+NET82AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET82AV:=srTemp1; END_IF;
+                IF s82AVCounter<SAMPLE_AV THEN
+                    s82AVCounter:=s82AVCounter+1;
+                END_IF;
+                NET82PER:=NET82AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+           
+            NET83CUR:=siTemp_real[3];
+            siTemp_real[3]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=NET83AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET83AV:=srTemp1; END_IF;
+                IF s83AVCounter<SAMPLE_AV THEN
+                    s83AVCounter:=s83AVCounter+1;
+                END_IF;
+                NET83PER:=NET83AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET84CUR:=siTemp_real[4];
+            siTemp_real[4]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET84CUR-NET84AV)/s84AVCounter+NET84AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET84AV:=srTemp1; END_IF;
+                IF s84AVCounter<SAMPLE_AV THEN
+                    s84AVCounter:=s84AVCounter+1;
+                END_IF;
+                NET84PER:=NET84AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET85CUR:=siTemp_real[5];
+            siTemp_real[5]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET85CUR-NET85AV)/s85AVCounter+NET85AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET85AV:=srTemp1; END_IF;
+                IF s85AVCounter<SAMPLE_AV THEN
+                    s85AVCounter:=s85AVCounter+1;
+                END_IF;
+                NET85PER:=NET85AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET86CUR:=siTemp_real[6];
+            siTemp_real[6]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET86CUR-NET86AV)/s86AVCounter+NET86AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET86AV:=srTemp1; END_IF;
+                IF s86AVCounter<SAMPLE_AV THEN
+                    s86AVCounter:=s86AVCounter+1;
+                END_IF;
+                NET86PER:=NET86AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET87CUR:=siTemp_real[7];
+            siTemp_real[7]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET87CUR-NET87AV)/s87AVCounter+NET87AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET87AV:=srTemp1; END_IF;
+                IF s87AVCounter<SAMPLE_AV THEN
+                    s87AVCounter:=s87AVCounter+1;
+                END_IF;
+                NET87PER:=NET87AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NET88CUR:=siTemp_real[8];
+            siTemp_real[8]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NET88CUR-NET88AV)/s88AVCounter+NET88AV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NET88AV:=srTemp1; END_IF;
+                IF s88AVCounter<SAMPLE_AV THEN
+                    s88AVCounter:=s88AVCounter+1;
+                END_IF;
+                NET88PER:=NET88AV/sSlowestOBExcFreq*100.0;
+            END_IF;
+ 
+            NETXXCUR:=siTemp_real[0];
+            siTemp_real[0]:=0.0;
+            IF NOT RESET THEN
+                srTemp1:=(NETXXCUR-NETXXAV)/sXXAVCounter+NETXXAV;
+                srTemp1:=ChkREAL(In :=  srTemp1,ErrNum := ERR );
+                IF ERR<>3 THEN NETXXAV:=srTemp1; END_IF;
+                IF sXXAVCounter<SAMPLE_AV THEN
+                    sXXAVCounter:=sXXAVCounter+1;
+                END_IF;
+                NETXXPER:=NETXXAV/sSlowestOBExcFreq*100.0;
+            END_IF;
+           
+            IF OB30_N_START>0 THEN
+                srNETAccuPerIntern:=(OB30_N_START+1.0)*srNET30AVPerIntern/OB30_N_START;
+            ELSE
+                srNETAccuPerIntern:=srNET30AVPerIntern;
+            END_IF;
+            IF OB31_N_START>0 THEN
+                srNETAccuPerIntern:=(OB31_N_START+1.0)*srNET31AVPerIntern/OB31_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET31AVPerIntern;
+            END_IF;
+            IF OB32_N_START>0 THEN
+                srNETAccuPerIntern:=(OB32_N_START+1.0)*srNET32AVPerIntern/OB32_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET32AVPerIntern;
+            END_IF;
+            IF OB33_N_START>0 THEN
+                srNETAccuPerIntern:=(OB33_N_START+1.0)*srNET33AVPerIntern/OB33_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET33AVPerIntern;
+            END_IF;
+            IF OB34_N_START>0 THEN
+                srNETAccuPerIntern:=(OB34_N_START+1.0)*srNET34AVPerIntern/OB34_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET34AVPerIntern;
+            END_IF;
+            IF OB35_N_START>0 THEN
+                srNETAccuPerIntern:=(OB35_N_START+1.0)*srNET35AVPerIntern/OB35_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET35AVPerIntern;
+            END_IF;
+            IF OB36_N_START>0 THEN
+                srNETAccuPerIntern:=(OB36_N_START+1.0)*srNET36AVPerIntern/OB36_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET36AVPerIntern;
+            END_IF;
+            IF OB37_N_START>0 THEN
+                srNETAccuPerIntern:=(OB37_N_START+1.0)*srNET37AVPerIntern/OB37_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET37AVPerIntern;
+            END_IF;
+            IF OB38_N_START>0 THEN
+                srNETAccuPerIntern:=(OB38_N_START+1.0)*srNET38AVPerIntern/OB38_N_START+srNETAccuPerIntern;
+            ELSE
+                srNETAccuPerIntern:=srNETAccuPerIntern+srNET38AVPerIntern;
+            END_IF;
+           
+            IF srNETAccuPerIntern+NET01PER<MAX_VAL THEN
+                siTemp[17]:=siTemp[17]+1;
+                IF siTemp[17]>=UNDO_CYC THEN
+                    siTemp[17]:=0;
+                    IF OB30_N_START>1 OR
+                       OB31_N_START>1 OR
+                       OB32_N_START>1 OR
+                       OB33_N_START>1 OR
+                       OB34_N_START>1 OR
+                       OB35_N_START>1 OR
+                       OB36_N_START>1 OR
+                       OB37_N_START>1 OR
+                       OB38_N_START>1
+                    THEN
+                        IF siTemp[20]>3 THEN
+                            siTemp[20]:=siTemp[20]-1;
+                        END_IF;
+                        IF IDLE_CYC>1 THEN
+                            IDLE_CYC:=IDLE_CYC-1;
+                        END_IF;
+                        IF OB30_N_START>1 THEN OB30_N_START:=OB30_N_START-1; END_IF;
+                        IF OB31_N_START>1 THEN OB31_N_START:=OB31_N_START-1; END_IF;
+                        IF OB32_N_START>1 THEN OB32_N_START:=OB32_N_START-1; END_IF;
+                        IF OB33_N_START>1 THEN OB33_N_START:=OB33_N_START-1; END_IF;
+                        IF OB34_N_START>1 THEN OB34_N_START:=OB34_N_START-1; END_IF;
+                        IF OB35_N_START>1 THEN OB35_N_START:=OB35_N_START-1; END_IF;
+                        IF OB36_N_START>1 THEN OB36_N_START:=OB36_N_START-1; END_IF;
+                        IF OB37_N_START>1 THEN OB37_N_START:=OB37_N_START-1; END_IF;
+                        IF OB38_N_START>1 THEN OB38_N_START:=OB38_N_START-1; END_IF;
+                    ELSIF (NOT OB30_ATTN AND OB30_N_START>0) OR
+                       (NOT OB31_ATTN AND OB31_N_START>0) OR
+                       (NOT OB32_ATTN AND OB32_N_START>0) OR
+                       (NOT OB33_ATTN AND OB33_N_START>0) OR
+                       (NOT OB34_ATTN AND OB34_N_START>0) OR
+                       (NOT OB35_ATTN AND OB35_N_START>0) OR
+                       (NOT OB36_ATTN AND OB36_N_START>0) OR
+                       (NOT OB37_ATTN AND OB37_N_START>0) OR
+                       (NOT OB38_ATTN AND OB38_N_START>0)
+                    THEN
+                        IF siTemp[20]>2 THEN siTemp[20]:=siTemp[20]-1; END_IF;
+                        IF NOT OB30_ATTN AND OB30_N_START>0 THEN OB30_N_START:=OB30_N_START-1; END_IF;
+                        IF NOT OB31_ATTN AND OB31_N_START>0 THEN OB31_N_START:=OB31_N_START-1; END_IF;                               
+                        IF NOT OB32_ATTN AND OB32_N_START>0 THEN OB32_N_START:=OB32_N_START-1; END_IF;                               
+                        IF NOT OB33_ATTN AND OB33_N_START>0 THEN OB33_N_START:=OB33_N_START-1; END_IF;                               
+                        IF NOT OB34_ATTN AND OB34_N_START>0 THEN OB34_N_START:=OB34_N_START-1; END_IF;                               
+                        IF NOT OB35_ATTN AND OB35_N_START>0 THEN OB35_N_START:=OB35_N_START-1; END_IF;                               
+                        IF NOT OB36_ATTN AND OB36_N_START>0 THEN OB36_N_START:=OB36_N_START-1; END_IF;                               
+                        IF NOT OB37_ATTN AND OB37_N_START>0 THEN OB37_N_START:=OB37_N_START-1; END_IF;                               
+                        IF NOT OB38_ATTN AND OB38_N_START>0 THEN OB38_N_START:=OB38_N_START-1; END_IF;                               
+                    ELSIF OB30_N_START>0 OR
+                       OB31_N_START>0 OR
+                       OB32_N_START>0 OR
+                       OB33_N_START>0 OR
+                       OB34_N_START>0 OR
+                       OB35_N_START>0 OR
+                       OB36_N_START>0 OR
+                       OB37_N_START>0 OR
+                       OB38_N_START>0
+                    THEN
+                        IF siTemp[20]>1 THEN siTemp[20]:=siTemp[20]-1; END_IF;
+                        IF IDLE_CYC>0 THEN IDLE_CYC:=IDLE_CYC-1; END_IF;
+                        IF OB30_N_START>0 THEN OB30_N_START:=OB30_N_START-1; END_IF;
+                        IF OB31_N_START>0 THEN OB31_N_START:=OB31_N_START-1; END_IF;
+                        IF OB32_N_START>0 THEN OB32_N_START:=OB32_N_START-1; END_IF;
+                        IF OB33_N_START>0 THEN OB33_N_START:=OB33_N_START-1; END_IF;
+                        IF OB34_N_START>0 THEN OB34_N_START:=OB34_N_START-1; END_IF;
+                        IF OB35_N_START>0 THEN OB35_N_START:=OB35_N_START-1; END_IF;
+                        IF OB36_N_START>0 THEN OB36_N_START:=OB36_N_START-1; END_IF;
+                        IF OB37_N_START>0 THEN OB37_N_START:=OB37_N_START-1; END_IF;
+                        IF OB38_N_START>0 THEN OB38_N_START:=OB38_N_START-1; END_IF;
+                    ELSE
+                        CPU_RT_DATA.EMERGENCY_MODE:=false;
+                        siTemp[20]:=0;
+                    END_IF;
+                END_IF;
+            ELSE
+                siTemp[17]:=0;
+            END_IF;
+            IF siRUNUPCNT>0 THEN siRUNUPCNT:=siRUNUPCNT-1; END_IF;
+            N_OB1_CYC:=sNumOB1Cyc;
+            sNumOB1Cyc:=0;
+            sbNET01Merker:=true;
+            siTemp[60]:=0;
+            FOR x:=30 TO 38 BY 1 DO
+                siTemp[60]:=siTemp[60]+siTemp[x];
+                siTemp[x]:=0;
+            END_FOR;
+            IF siTemp[60]=0 THEN CPU_RT_DATA.REQUEST_ERR:=false; END_IF;
+            IF CPU_RT_DATA.EMERGENCY_MODE THEN
+                TOTALCUR:=NET30PER+
+                          NET31PER+
+                          NET32PER+
+                          NET33PER+
+                          NET34PER+
+                          NET35PER+
+                          NET36PER+
+                          NET37PER+
+                          NET38PER+
+                          NET81PER+
+                          NET82PER+
+                          NET83PER+
+                          NET84PER+
+                          NET85PER+
+                          NET86PER+
+                          NET87PER+
+                          NET88PER+
+                          NET01PER+
+                          NETXXPER;
+            ELSE
+                TOTALCUR:=sNET30CurrPer+
+                          sNET31CurrPer+
+                          sNET32CurrPer+
+                          sNET33CurrPer+
+                          sNET34CurrPer+
+                          sNET35CurrPer+
+                          sNET36CurrPer+
+                          sNET37CurrPer+
+                          sNET38CurrPer+
+                          sNET81CurrPer+
+                          sNET82CurrPer+
+                          sNET83CurrPer+
+                          sNET84CurrPer+
+                          sNET85CurrPer+
+                          sNET86CurrPer+
+                          sNET87CurrPer+
+                          sNET88CurrPer+
+                          sNET01CurrPer+
+                          sNETXXCurrPer;
+            END_IF;
+            IF TOTALCUR>100.0 THEN TOTALCUR:=100.0; END_IF;
+            sTotalCurrPer:=sNET30CurrPer+
+                          sNET31CurrPer+
+                          sNET32CurrPer+
+                          sNET33CurrPer+
+                          sNET34CurrPer+
+                          sNET35CurrPer+
+                          sNET36CurrPer+
+                          sNET37CurrPer+
+                          sNET38CurrPer+
+                          sNET81CurrPer+
+                          sNET82CurrPer+
+                          sNET83CurrPer+
+                          sNET84CurrPer+
+                          sNET85CurrPer+
+                          sNET86CurrPer+
+                          sNET87CurrPer+
+                          sNET88CurrPer+
+                          sNET01CurrPer+
+                          sNETXXCurrPer;
+            IF sTotalCurrPer>100.0 THEN sTotalCurrPer:=100.0; END_IF;
+            sNET81CurrPer:=0.0;
+            sNET82CurrPer:=0.0;
+            sNET83CurrPer:=0.0;
+            sNET84CurrPer:=0.0;
+            sNET85CurrPer:=0.0;
+            sNET86CurrPer:=0.0;
+            sNET87CurrPer:=0.0;
+            sNET88CurrPer:=0.0;
+            sNETXXCurrPer:=0.0;
+            IF CPU_RT_DATA.EMERGENCY_MODE THEN
+                TOTALMAX:=100.0;
+            ELSE
+                IF sTotalCurrPer>TOTALMAX THEN
+                    TOTALMAX:=sTotalCurrPer;
+                END_IF;
+            END_IF;
+            IF sTotalCurrPer<TOTALMIN THEN TOTALMIN:=sTotalCurrPer; END_IF;
+            IF NOT RESET THEN
+                TOTALAV:=(TOTALCUR-TOTALAV)/sTotalAVCounter+TOTALAV;
+                IF sTotalAVCounter<SAMPLE_AV THEN sTotalAVCounter:=sTotalAVCounter+1; END_IF;
+            END_IF;
+            IF TOTALCUR>MAX_LIM THEN CPU_RT_DATA.MAX_LIM:=true; END_IF;
+            IF TOTALCUR<(MAX_LIM-HYS) THEN CPU_RT_DATA.MAX_LIM:=false; END_IF;
+        END_IF;
+    END_IF;
+    IF TOP_SI.NUM=B#16#50 THEN
+        IF TOP_SI.EV_NUM=B#16#2 THEN
+            siTemp[BYTE_TO_INT(TOP_SI.ZI5)]:=siTemp[BYTE_TO_INT(TOP_SI.ZI5)]+1;
+            IF siTemp[BYTE_TO_INT(TOP_SI.ZI5)]>N_REQ_ERR THEN
+                CPU_RT_DATA.REQUEST_ERR:=true;
+                CPU_RT_DATA.OB_NUM:=TOP_SI.ZI5;
+            END_IF;
+           
+            CASE BYTE_TO_INT(TOP_SI.ZI5) OF
+                30:
+                    REQ30ERR:=true;
+                31:
+                    REQ31ERR:=true;
+                32:
+                    REQ32ERR:=true;
+                33:
+                    REQ33ERR:=true;
+                34:
+                    REQ34ERR:=true;
+                35:
+                    REQ35ERR:=true;
+                36:
+                    REQ36ERR:=true;
+                37:
+                    REQ37ERR:=true;
+                38:
+                    REQ38ERR:=true;
+            END_CASE;
+        END_IF;
+        IF MAX_RTRG>0 AND (SFC78_EX OR sDataPlausible) THEN
+            IF TOP_SI.EV_NUM=B#16#1 THEN
+                siTemp[21]:=siTemp[21]+1;
+                REQ01ERR:=true;
+                IF siTemp[21]<MAX_RTRG THEN
+                    RE_TRIGR(); // Re-triggering Cycle Time Monitoring
+                END_IF;
+                IF siTemp[21]>1 THEN
+                    CPU_RT_DATA.EMERGENCY_MODE:=true;
+                    IF siTemp[21]>siTemp[20] THEN siTemp[20]:=siTemp[21]; END_IF;
+                    IF siTemp[20]=2 THEN
+                        IDLE_CYC:=1;
+                        IF sOBExcFreq[30]>0 AND OB30_ATTN THEN OB30_N_START:=1; END_IF;
+                        IF sOBExcFreq[31]>0 AND OB31_ATTN THEN OB31_N_START:=1; END_IF;
+                        IF sOBExcFreq[32]>0 AND OB32_ATTN THEN OB32_N_START:=1; END_IF;
+                        IF sOBExcFreq[33]>0 AND OB33_ATTN THEN OB33_N_START:=1; END_IF;
+                        IF sOBExcFreq[34]>0 AND OB34_ATTN THEN OB34_N_START:=1; END_IF;
+                        IF sOBExcFreq[35]>0 AND OB35_ATTN THEN OB35_N_START:=1; END_IF;
+                        IF sOBExcFreq[36]>0 AND OB36_ATTN THEN OB36_N_START:=1; END_IF;
+                        IF sOBExcFreq[37]>0 AND OB37_ATTN THEN OB37_N_START:=1; END_IF;
+                        IF sOBExcFreq[38]>0 AND OB38_ATTN THEN OB38_N_START:=1; END_IF;
+                    ELSIF siTemp[20]=3 THEN
+                        IF sOBExcFreq[30]>0 THEN OB30_N_START:=1; END_IF;
+                        IF sOBExcFreq[31]>0 THEN OB31_N_START:=1; END_IF;
+                        IF sOBExcFreq[32]>0 THEN OB32_N_START:=1; END_IF;
+                        IF sOBExcFreq[33]>0 THEN OB33_N_START:=1; END_IF;
+                        IF sOBExcFreq[34]>0 THEN OB34_N_START:=1; END_IF;
+                        IF sOBExcFreq[35]>0 THEN OB35_N_START:=1; END_IF;
+                        IF sOBExcFreq[36]>0 THEN OB36_N_START:=1; END_IF;
+                        IF sOBExcFreq[37]>0 THEN OB37_N_START:=1; END_IF;
+                        IF sOBExcFreq[38]>0 THEN OB38_N_START:=1; END_IF;
+                    ELSIF siTemp[20]>3 THEN
+                        IDLE_CYC:=DINT_TO_INT(siTemp[20])+(-2);
+                        IF sOBExcFreq[30]>0 THEN OB30_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[31]>0 THEN OB31_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[32]>0 THEN OB32_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[33]>0 THEN OB33_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[34]>0 THEN OB34_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[35]>0 THEN OB35_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[36]>0 THEN OB36_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[37]>0 THEN OB37_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                        IF sOBExcFreq[38]>0 THEN OB38_N_START:=DINT_TO_INT(siTemp[20])+(-2); END_IF;
+                    ELSE;
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF;
+    END_IF;
+    IF TOP_SI.NUM=B#16#1 THEN
+        IF RESET THEN
+            NET30AV:=0.0;
+            GRO30AV:=0.0;
+            NET30CUR:=0.0;
+            GRO30CUR:=0.0;
+            s30AVCounter:=1;
+            NET30MIN:=(EXC_FR30);
+            NET30MAX:=0.0;
+            GRO30MIN:=(EXC_FR30);
+            GRO30MAX:=0.0;
+            srNET30AVPerIntern:=0.0;
+           
+            NET31AV:=0.0;
+            GRO31AV:=0.0;
+            NET31CUR:=0.0;
+            GRO31CUR:=0.0;
+            s31AVCounter:=1;
+            NET31MIN:=(EXC_FR31);
+            NET31MAX:=0.0;
+            GRO31MIN:=(EXC_FR31);
+            GRO31MAX:=0.0;
+            srNET31AVPerIntern:=0.0;
+           
+            NET32AV:=0.0;
+            GRO32AV:=0.0;
+            NET32CUR:=0.0;
+            GRO32CUR:=0.0;
+            s32AVCounter:=1;
+            NET32MIN:=(EXC_FR32);
+            NET32MAX:=0.0;
+            GRO32MIN:=(EXC_FR32);
+            GRO32MAX:=0.0;
+            srNET32AVPerIntern:=0.0;
+           
+            NET33AV:=0.0;
+            GRO33AV:=0.0;
+            NET33CUR:=0.0;
+            GRO33CUR:=0.0;
+            s33AVCounter:=1;
+            NET33MIN:=(EXC_FR33);
+            NET33MAX:=0.0;
+            GRO33MIN:=(EXC_FR33);
+            GRO33MAX:=0.0;
+            srNET33AVPerIntern:=0.0;
+           
+            NET34AV:=0.0;
+            GRO34AV:=0.0;
+            NET34CUR:=0.0;
+            GRO34CUR:=0.0;
+            s34AVCounter:=1;
+            NET34MIN:=(EXC_FR34);
+            NET34MAX:=0.0;
+            GRO34MIN:=(EXC_FR34);
+            GRO34MAX:=0.0;
+            srNET34AVPerIntern:=0.0;
+           
+            NET35AV:=0.0;
+            GRO35AV:=0.0;
+            NET35CUR:=0.0;
+            GRO35CUR:=0.0;
+            s35AVCounter:=1;
+            NET35MIN:=(EXC_FR35);
+            NET35MAX:=0.0;
+            GRO35MIN:=(EXC_FR35);
+            GRO35MAX:=0.0;
+            srNET35AVPerIntern:=0.0;
+           
+            NET36AV:=0.0;
+            GRO36AV:=0.0;
+            NET36CUR:=0.0;
+            GRO36CUR:=0.0;
+            s36AVCounter:=1;
+            NET36MIN:=(EXC_FR36);
+            NET36MAX:=0.0;
+            GRO36MIN:=(EXC_FR36);
+            GRO36MAX:=0.0;
+            srNET36AVPerIntern:=0.0;
+           
+            NET37AV:=0.0;
+            GRO37AV:=0.0;
+            NET37CUR:=0.0;
+            GRO37CUR:=0.0;
+            s37AVCounter:=1;
+            NET37MIN:=(EXC_FR37);
+            NET37MAX:=0.0;
+            GRO37MIN:=(EXC_FR37);
+            GRO37MAX:=0.0;
+            srNET37AVPerIntern:=0.0;
+ 
+            NET38AV:=0.0;
+            GRO38AV:=0.0;
+            NET38CUR:=0.0;
+            GRO38CUR:=0.0;
+            s38AVCounter:=1;
+            NET38MIN:=(EXC_FR38);
+            NET38MAX:=0.0;
+            GRO38MIN:=(EXC_FR38);
+            GRO38MAX:=0.0;
+            srNET38AVPerIntern:=0.0;
+           
+            NET01AV:=0.0;
+            s01AVCounter:=1;
+            NET01MIN:=(MAXCYCTI);
+            NET01MAX:=0.0;
+ 
+            NET81AV:=0.0;
+            NET81CUR:=0.0;
+            s81AVCounter:=1;
+            NET81MAX:=0.0;
+           
+            NET82AV:=0.0;
+            NET82CUR:=0.0;
+            s82AVCounter:=1;
+            NET82MAX:=0.0;
+ 
+            NET83AV:=0.0;
+            NET83CUR:=0.0;
+            s83AVCounter:=1;
+            NET83MAX:=0.0;
+ 
+            NET84AV:=0.0;
+            NET84CUR:=0.0;
+            s84AVCounter:=1;
+            NET84MAX:=0.0;
+ 
+            NET85AV:=0.0;
+            NET85CUR:=0.0;
+            s85AVCounter:=1;
+            NET85MAX:=0.0;
+           
+            NET86AV:=0.0;
+            NET86CUR:=0.0;
+            s86AVCounter:=1;
+            NET86MAX:=0.0;
+ 
+            NET87AV:=0.0;
+            NET87CUR:=0.0;
+            s87AVCounter:=1;
+            NET87MAX:=0.0;
+ 
+            NET88AV:=0.0;
+            NET88CUR:=0.0;
+            s88AVCounter:=1;
+            NET88MAX:=0.0;
+           
+            NETXXAV:=0.0;
+            NETXXCUR:=0.0;
+            sXXAVCounter:=1;
+            NETXXMAX:=0.0;
+            TOTALAV:=0.0;
+            sTotalAVCounter:=1;
+            TOTALMIN:=100.0;
+            TOTALMAX:=0.0;
+           
+            REQ30ERR:=false;
+            REQ31ERR:=false;
+            REQ32ERR:=false;
+            REQ33ERR:=false;
+            REQ34ERR:=false;
+            REQ35ERR:=false;
+            REQ36ERR:=false;
+            REQ37ERR:=false;
+            REQ38ERR:=false;
+            REQ01ERR:=false;
+            RESET:=false;
+        END_IF;
+            siTemp[21]:=0;
+            sbyASIG0a_bool[3]:=false;
+            sNumOB1Cyc:=sNumOB1Cyc+1;
+    END_IF;
+END_IF;
+END_FUNCTION_BLOCK

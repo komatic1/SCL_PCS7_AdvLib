@@ -1,0 +1,752 @@
+// Name: FB680
+// Symbolic Name: BST_SINAG120_400
+// Symbol Comment: Monitoring and operating of SINAMICS G120
+// Family: BST
+// Version: 0.0
+// Author: BADBIT
+// Last modified: 04/26/2010
+// Use: SFC6, SFB31, SFB35, SFB52, SFB53
+// Size: 3270 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.05.00_01.03.00.01 release
+
+FUNCTION_BLOCK BST_SINAG120_400
+NAME:BSTG120
+FAMILY:BST
+AUTHOR:BADBIT
+//VERSION:'1.0'
+//FB680
+ 
+// Typical-Attribute
+{
+  S7_tasklist:='OB100,OB101';
+  S7_m_c:='true';
+  S7_blockview:='big'
+}
+ 
+// Parameterattribute
+// S7_visible       sichtbar/unsichtbar (default='true')
+// S7_m_c           WinCC - Tag         (default='false')
+// S7_dynamic       Testmodus           (default='false')
+VAR_INPUT
+    dwInp {S7_dynamic:='true'} : DWORD := FALSE;  //Input from process peripherie,
+    abInp AT dwInp : ARRAY [0..31]OF BOOL;  // look at Input bit-wise
+    abyInp AT dwInp : ARRAY [0..3] OF BYTE; // look at Input byte-wise
+    awInp AT dwInp : ARRAY [0..1] OF WORD;  // look at Input word-wise
+   
+    LOCK        {S7_dynamic:='true'} : BOOL := FALSE; // Interlock
+    ERR_EXTERN  {S7_dynamic:='true'} : BOOL := FALSE; // External Error
+    LIOP_SEL    {S7_dynamic:='true'} : BOOL := FALSE; // 0=Operator 1=Linking
+    L_AUT       {S7_dynamic:='true'} : BOOL := FALSE; // 0=Manual 1=Automatic
+    L_REMOTE    {S7_dynamic:='true'} : BOOL := FALSE; // 0=Lokal 1=Remote
+    L_SIM       {S7_dynamic:='true'} : BOOL := FALSE; // 0=Normal 1=Simulation
+    L_RESET     {S7_dynamic:='true'} : BOOL := FALSE; // 1=Reset Error Peripherie
+    L_ON        {S7_dynamic:='true'} : BOOL := FALSE; // 0=OFF 1=ON
+    L_REVERSE   {S7_dynamic:='true'} : BOOL := FALSE; // 0=right at positive SP 1=left at positive SP
+    L_ENABLE    {S7_dynamic:='true'} : BOOL := TRUE;  // 0=Operating disabled 1=Operating enabled
+    L_RFG_EN    {S7_dynamic:='true'} : BOOL := TRUE;  // 0=RFG 'zero' 1=RFG enabled
+    L_RFG_FREE  {S7_dynamic:='true'} : BOOL := TRUE;  // 0=RFG 'frozen' 1=RFG enabled
+    L_SP_EN     {S7_dynamic:='true'} : BOOL := TRUE;  // 0=Setpoint 'zero' 1=Setpoint enabled
+    // L_JOGGR     {S7_dynamic:='true'} : BOOL := FALSE; // 1=Jogging right
+    // L_JOGGL     {S7_dynamic:='true'} : BOOL := FALSE; // 1=Jogging left
+    L_SP_VALID  {S7_dynamic:='true'} : BOOL := TRUE;  // 1=Setpoint valid
+    // L_MPOTI_UP  {S7_dynamic:='true'} : BOOL := FALSE; // 1=Motorpontiometer up
+    // L_MPOTI_DOWN{S7_dynamic:='true'} : BOOL := FALSE; // 1=Motorpontiometer Down
+   
+   
+    OFF2        {S7_dynamic:='true'} : BOOL := TRUE;  // 0=Instantaneous pulse disable 1=OK
+    OFF3        {S7_dynamic:='true'} : BOOL := TRUE;  // 0=Rapid stop 1=OK
+    Auto_ON     {S7_dynamic:='true'} : BOOL := FALSE;  // 0=Stop 1=Run in automatic mode
+    Auto_REV    {S7_dynamic:='true'} : BOOL := FALSE;  // 0=right 1=left in automatic mode
+    SP_Auto     {S7_dynamic:='true'} : WORD := 16#0;  // Setpoint in peripherie format
+    SP_Man      {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0; // Setpoint 0-100%
+    SP_Sim      {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0; // Setpoint 0-100% for Simulation
+   
+    SIM_nomFreq {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0; // Nominal Frequency for Simulation
+    SIM_nomSpeed{S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0; // Nominal Motorspeed for Simulation
+    // Common inputs
+    SAMPLE_T : REAL := 0.0;
+   
+    // DPV1-Diagnose data record 92 "DIAG"
+    DPV1_ID     {S7_dynamic:='true'; S7_m_c:='true'} : DWORD := 0; //DPV1 DIAG
+    DPV1_READ   {S7_dynamic:='true'} : BOOL := FALSE;   // DPV1 send request
+   
+    // Message blocks
+    MSG1_EVID { S7_visible  :='false';
+                S7_link     :='false';
+                S7_param    :='false';
+                S7_server   :='alarm_archiv';
+                S7_a_type   :='alarm_8p'}: DWORD :=0;
+    MSG2_EVID { S7_visible  :='false';
+                S7_link     :='false';
+                S7_param    :='false';
+                S7_server   :='alarm_archiv';
+                S7_a_type   :='notify_8p'}: DWORD :=0;
+END_VAR
+ 
+VAR_IN_OUT
+    OP_dwCmd    {S7_dynamic := 'true'; S7_m_c := 'true'} : DWORD :=0;   // control word wincc
+END_VAR
+ 
+VAR_OUTPUT
+    QdwState    {S7_dynamic:='true'; S7_m_c:='true'}: DWORD:=0;     // status wincc
+    QabyState AT QdwState : ARRAY [0..3] OF BYTE;                   // look at state byte-wise
+ 
+    QdwCmd      {S7_dynamic:='true'} : DWORD := 16#0;               // control word SINAMICS
+    QabyCmd AT QdwCmd : ARRAY [0..3] OF BYTE;                       // look at command byte-wise
+   
+    QFreqPeri {S7_dynamic:='true'} : WORD := 16#0; // Current Converter frequency in pripherie format
+    QSPCapacity{S7_dynamic:='true'; S7_m_c:='true'; S7_archive:='shortterm'} : REAL := 0.0;  // Setpoint Capacity in percent
+    QrCapacity {S7_dynamic:='true'; S7_m_c:='true'; S7_archive:='shortterm'} : REAL := 0.0;  // Capacity in percent
+    QSPFrequ  {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0;   // Frequency setpoint
+    QrCuFreq  {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0;   // Current converter frequency
+    QSPSpeed  {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0;   // Motor speed setpoint
+    QrCuSpeed {S7_dynamic:='true'; S7_m_c:='true'} : REAL := 0.0;   // Current motor speed
+   
+    // Direct output from process peripherie   
+    QPOWER_ON  {S7_dynamic:='true'} : BOOL := FALSE;     // Ready to switch on
+    QREADY_RUN {S7_dynamic:='true'} : BOOL := FALSE;     // Ready to run
+    QOP_ENABLE {S7_dynamic:='true'} : BOOL := FALSE;     // Operation enabled
+    QFAULT     {S7_dynamic:='true'} : BOOL := FALSE;     // Fault is Active
+    QNOFF2     {S7_dynamic:='true'} : BOOL := FALSE;     // 0=OFF Command 1=ON Command
+    QNOFF3     {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Not Ready 1=Ready
+    QSLOCK     {S7_dynamic:='true'} : BOOL := FALSE;     // Starting Lockout
+    QWARN      {S7_dynamic:='true'} : BOOL := FALSE;     // Alarm is active
+    QSPREACH   {S7_dynamic:='true'} : BOOL := FALSE;     // Setpoint reached
+    QFRREACH   {S7_dynamic:='true'} : BOOL := FALSE;     // Set frequency reached
+    QNMOTWARN  {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Motor at current limit
+    QBRAKE     {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Motor Holding Brake
+    QNMOTOV    {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Motor Overload
+    QDIRECTION {S7_dynamic:='true'} : BOOL := FALSE;     // 0=CCW Rotation 1=CW Rotation by positive SP
+    QNCONOV    {S7_dynamic:='true'} : BOOL := FALSE;     // Converter Overload
+   
+    QMAN_AUT   {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Hand 1=Automatic
+    QREMOTE    {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Local 1=Remote
+    QSIM       {S7_dynamic:='true'} : BOOL := FALSE;     // 0=Process 1=Simulation
+    QLOCK      {S7_dynamic:='true'} : BOOL := FALSE;     // Interlock ERROR
+    QERR       {S7_dynamic:='true'} : BOOL := FALSE;     // General ERROR
+    QERR_EXT   {S7_dynamic:='true'} : BOOL := FALSE;     // External ERROR
+   
+    DPV1Voltage {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT  := 0;        // Nominal Voltage   Param: P0304[0]
+    DPV1Power   {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : REAL := 0.0;      // Nominal Power     Param: P0307[0]
+    DPV1Freq    {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : REAL := 0.0;      // Nominal Frequency Param: P0310[0]
+    DPV1Speed   {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT  := 0;        // Nominal Speed     Param: P0311[0]
+    DPV1_ERR1   {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT := 0; // Aktive Failure Nr Param: r0947[0]
+    DPV1_ERR2   {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT := 0; // Aktive Failure Nr Param: r0947[1]
+    DPV1_E_VAL1 {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT := 0; // Aktive Failure Value  Param: r0949[0]
+    DPV1_E_VAL2 {S7_dynamic:='true'; S7_m_c:='true'; S7_visible:='false'} : INT := 0; // Aktive Failure Value  Param: r0949[1]
+   
+    DPV1_RW_ERR {S7_dynamic:='true'} : BOOL := FALSE;
+    DPV1_FNumR  {S7_visible:='false'} : DWORD := 16#0; // DPV1 read status or error
+    DPV1_FNumW  {S7_visible:='false'} : DWORD := 16#0; // DPV1 write status or error
+   
+    DPV1_CURRENT_LIM {S7_visible:='false'; S7_m_c:='true'} : REAL := 0.0;  // current limit
+    DPV1_CURRENT_SET {S7_visible:='false'; S7_m_c:='true'} : REAL := 0.0;  // actual current
+   
+    //Alarm
+    MSG1_bDone  {S7_visible:='false'} : BOOL; // A8P
+    MSG1_bError {S7_visible:='false'} : BOOL; // A8P
+    MSG1_wState {S7_visible:='false'} : WORD; // A8P
+    MSG1_wAck   {S7_visible:='false'} : WORD; // A8P
+    MSG2_bDone  {S7_visible:='false'} : BOOL; // N8P
+    MSG2_bError {S7_visible:='false'} : BOOL; // N8P
+    MSG2_wState {S7_visible:='false'} : WORD; // N8P
+END_VAR
+ 
+VAR
+    OPdwCmdHMI : DWORD := 16#0;                       // Operator Commands in HMI format
+    OPabyCmdHMI AT OPdwCmdHMI : ARRAY [0..3] OF BYTE; // look at HMI command byte-wise
+    OPdwCmdPLC : DWORD := 16#0;                       // Operator Commands in PLC format
+    OPabyCmdPLC AT OPdwCmdPLC : ARRAY [0..3] OF BYTE; // look at plc command byte-wise
+    OPabCmdPLC AT OPdwCmdPLC : ARRAY [0..31] OF BOOL; // look at plc command bit-wise
+   
+    QdwStatePLC : DWORD := 16#0;                        // State word in PLC format
+    QabyStatePLC AT QdwStatePLC : ARRAY [0..3] OF BYTE; // look at state byte-wise
+    QabStatePLC AT QdwStatePLC : ARRAY [0..31] OF BOOL; // look at state bit-wise
+       
+    dwInpInt : DWORD := 16#0; // state word for SINAMICS intern
+    abyInpInt AT dwInpInt : ARRAY [0..3] OF BYTE; // look at state byte wise
+    abInpInt AT dwInpInt : ARRAY [0..15] OF BOOL; // look at state bit wise
+    CurrentSpeedInt : INT := 0;
+       
+    QdwCmdInt : DWORD := 16#0; // command word for SINAMICS intern
+    QawCmdInt AT QdwCmdInt : ARRAY [0..1] OF WORD;  // look AT command word wise
+    QabyCmdInt AT QdwCmdInt : ARRAY [0..3] OF BYTE; // look AT command byte wise
+    QabCmdInt AT QdwCmdInt : ARRAY [0..15] OF BOOL; // look AT command bit wise
+   
+    INTMAXVAL : REAL := 16384.0;    // MAX Output in REAL
+    FREQ_MAX  : REAL := 0.0;        // Frequency -> Read from DPV1
+    SPEED_MAX : REAL := 0.0;        // Motorspeed @ 50Hz -> Read from DPV1
+    SPEED_INT : INT  := 0;          // Internal Speed Peripherie
+   
+    // Operation Tags for SINAMICS
+    OP_ON          : BOOL := FALSE;    // 0=OFF 1=ON  (CMD Bit[0])
+    OP_OFF2        : BOOL := TRUE;     // 0=Rapid stop 1=OK  (CMD Bit[2])
+    OP_OFF3        : BOOL := TRUE;     // 0=Instantaneous pulse disable 1=OK (CMD Bit[1])
+    OP_EN          : BOOL := TRUE;     // 0=Operating disabled 1=Operating enabled  (CMD Bit[3])
+    OP_RFG_EN      : BOOL := TRUE;     // 0=RFG 'zero' 1=RFG enabled  (CMD Bit[4])
+    OP_RFG_FREE    : BOOL := TRUE;     // 0=RFG 'frozen' 1=RFG enabled  (CMD Bit[5])
+    OP_SP_EN       : BOOL := TRUE;     // 0=Setpoint 'zero' 1=Setpoint enabled  (CMD Bit[6])
+    OP_RESET       : BOOL := FALSE;    // Reset failure (CMD Bit[7])
+    // OP_JOGGR       : BOOL := FALSE;    // 1=Jogging right (CMD Bit[8])
+    // OP_JOGGL       : BOOL := FALSE;    // 1=Jogging left  (CMD Bit[9])
+    OP_SP_VALID    : BOOL := TRUE;     // 1=Setpoint valid (CMD Bit[10])
+    OP_REVERSE     : BOOL := FALSE;    // 0=right at positive SP 1=left at positive SP (CMD Bit[11])
+    OP_REMOTE      : BOOL := TRUE;    // 0=LOCAL 1=REMOTE (CMD Bit[15])
+  
+    // SFB's to read/write DPV1 - Data
+    DPV1_RE_SFB : SFB52;
+    DPV1_WR_SFB : SFB53;
+ 
+    // Request Structure for DPV1 --- READ VALUES --- 52 BYTES
+    DPV1_REQ_VAL : STRUCT
+         ref    : BYTE := 16#1;     // referenz
+         id     : BYTE := 16#1;     // 1=READ 2=WRITE
+         axis   : BYTE := 16#0;     // single / multi axis
+         numPar : BYTE := 16#8;     // Number of parameter
+         typ1   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd1: BYTE := 16#0;     // Number of Indexes 1
+         par1   : WORD := 16#130;   // Parameter P0304 (U16)
+         sub1   : WORD := 16#0;     // Subindex
+         typ2   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd2: BYTE := 16#0;     // Number of Indexes 1
+         par2   : WORD := 16#133;   // Parameter P0307 (FLOAT)
+         sub2   : WORD := 16#0;     // Subindex
+         typ3   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd3: BYTE := 16#0;     // Number of Indexes 1
+         par3   : WORD := 16#136;   // Parameter P0310 (FLOAT)
+         sub3   : WORD := 16#0;     // Subindex
+         typ4   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd4: BYTE := 16#0;     // Number of Indexes 1
+         par4   : WORD := 16#137;   // Parameter P0311 (U16)
+         sub4   : WORD := 16#0;     // Subindex
+         typ5   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd5: BYTE := 16#0;     // Number of Indexes 1
+         par5   : WORD := 16#43;    // Parameter r0067 (FLOAT)  "Output current limit"
+         sub5   : WORD := 16#0;     // Subindex
+         typ6   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd6: BYTE := 16#0;     // Number of Indexes
+         par6   : WORD := 16#44;    // Parameter r0068 (FLOAT)  "Output current"
+         sub6   : WORD := 16#0;     // Subindex   
+         typ7   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd7: BYTE := 16#2;     // Number of Indexes
+         par7   : WORD := 16#3B3;   // Parameter r0947 two Indexes
+         sub7   : WORD := 16#0;     // Subindex
+         typ8   : BYTE := 16#10;    // Type: 10=Value, 20=Description, 30=Text
+         numInd8: BYTE := 16#2;     // Number of Indexes
+         par8   : WORD := 16#3B5;   // Parameter r0949 two Indexes
+         sub8   : WORD := 16#0;     // Subindex
+    END_STRUCT;
+   
+    // Answer Structure for DPV1 --- READ Values --- 48 BYTES
+    DPV1_ANS_VAL : STRUCT
+        ref     : BYTE := 16#0;     // referenz               
+        id      : BYTE := 16#0;     // read parameter              
+        axis    : BYTE := 16#0;     // adress of axis              
+        numPar  : BYTE := 16#0;     // Request count of param      
+        typ1    : BYTE := 16#0;     // Request type                
+        numInd1 : BYTE := 16#0;     // Request index               
+        Param1  : WORD := 16#0;     // "Nominal Voltage"           
+        typ2    : BYTE := 16#0;     // Request type                
+        numInd2 : BYTE := 16#0;     // Request index               
+        Param2  : REAL := 0.0;      // "Nominal Power"             
+        typ3    : BYTE := 16#0;     // Request type                
+        numInd3 : BYTE := 16#0;     // Request index               
+        Param3  : REAL := 0.0;      // "Nominal Frequency"         
+        typ4    : BYTE := 16#0;     // Request type                
+        numInd4 : BYTE := 16#0;     // Request index               
+        Param4  : WORD := 16#0;     // "Nominal Speed"             
+        typ5    : BYTE := 16#0;     // Request type                
+        numInd5 : BYTE := 16#0;     // Request index               
+        Param5  : REAL := 0.0;      // "Output current limit"      
+        typ6    : BYTE := 16#0;     // Request type                
+        numInd6 : BYTE := 16#0;     // Request index               
+        Param6  : REAL := 0.0;      // "Output current"            
+        typ7    : BYTE := 16#0;     // Request type                 
+        numInd7 : BYTE := 16#0;     // Request index               
+        code_01 : WORD := 16#0;     // Error Code 1                
+        code_02 : WORD := 16#0;     // Error Code 2                
+        typ8    : BYTE := 16#0;     // Request type                
+        numInd8 : BYTE := 16#0;     // Request index               
+        Eval_01 : WORD := 16#0;     // Error value 1               
+        Eval_02 : WORD := 16#0;     // Error value 2
+    END_STRUCT;
+   
+    A8P   : ALARM_8P;
+    N8P   : NOTIFY_8P;
+    //---time stamp structure for alarm_t call
+    STRUCT_TS : STRUCT    
+        wFormat : WORD ; //time format
+        aDT : ARRAY [1..8] OF DATE_AND_TIME;         //array date and time
+    END_STRUCT ; 
+   
+    // TAGS for Edge detect
+    L_RESET_OLD : BOOL := FALSE;
+    DPV1_READ_OLD : BOOL := FALSE;
+   
+END_VAR
+ 
+VAR_TEMP
+TOP_SI: STRUCT
+      EV_CLASS  : BYTE;
+      EV_NUM    : BYTE;
+      PRIORITY  : BYTE;
+      NUM       : BYTE;
+      TYP2_3    : BYTE;
+      TYP1      : BYTE;
+      ZI1       : WORD;
+      ZI2_3     : DWORD;
+END_STRUCT;
+ 
+START_UP_SI: STRUCT
+      EV_CLASS  : BYTE;
+      EV_NUM    : BYTE;
+      PRIORITY  : BYTE;
+      NUM       : BYTE;
+      TYP2_3    : BYTE;
+      TYP1      : BYTE;
+      ZI1       : WORD;
+      ZI2_3     : DWORD;
+END_STRUCT;
+ 
+iRet          : INT;
+DPV1_READ_TEMP : BOOL;
+DPV1_RECEIVE_TEMP : BOOL;
+END_VAR
+ 
+ 
+BEGIN
+ 
+    // START UP =====================================================================
+    iRet := SFC6 (TOP_SI:= TOP_SI, START_UP_SI:= START_UP_SI);
+    IF (TOP_SI.NUM = 100 OR TOP_SI.NUM = 101) THEN
+        iRet := 0;
+        OPabCmdPLC[8] := TRUE; // Read DPV1 Values at startup
+    END_IF;
+    // END STARTUP ==================================================================
+ 
+    // Change lowbyte to highbyte for HMI command word ==================
+    OPdwCmdHMI := OP_dwCmd;
+    OPabyCmdPLC[0] := OPabyCmdHMI[3];
+    OPabyCmdPLC[1] := OPabyCmdHMI[2];
+    OPabyCmdPLC[2] := OPabyCmdHMI[1];
+    OPabyCmdPLC[3] := OPabyCmdHMI[0];
+   
+    // Change lowbyte to highbyte for state word SINAMICS ============
+    abyInpInt[0] := abyInp[1];
+    abyInpInt[1] := abyInp[0];
+    abyInpInt[2] := abyInp[2]; // Don't change bytes of current value
+    abyInpInt[3] := abyInp[3]; // Don't change bytes of current value
+ 
+// Begin: Operation functions ***************************************************
+// ****************************************************************************** 
+// MANUAL / AUTOMATIC Operation =======================================
+    IF (LIOP_SEL AND NOT L_AUT) OR (OPabCmdPLC[16] AND NOT LIOP_SEL) THEN
+        QMAN_AUT := FALSE;
+    ELSIF (LIOP_SEL AND L_AUT) OR (OPabCmdPLC[17] AND NOT LIOP_SEL) THEN
+        QMAN_AUT := TRUE;
+    END_IF;
+ 
+// LOCAL / REMOTE Operation =========================================
+    IF (LIOP_SEL AND NOT L_REMOTE) OR (OPabCmdPLC[18] AND NOT LIOP_SEL) THEN
+        OP_REMOTE := FALSE;
+    ELSIF (LIOP_SEL AND L_REMOTE) OR (OPabCmdPLC[19] AND NOT LIOP_SEL) THEN
+        OP_REMOTE := TRUE;
+    END_IF;
+   
+// SIMULATION ON / OFF ==============================================
+    IF (LIOP_SEL AND NOT L_SIM) OR (OPabCmdPLC[20] AND NOT LIOP_SEL) THEN
+        QSIM := FALSE;
+    ELSIF (LIOP_SEL AND L_SIM) OR (OPabCmdPLC[21] AND NOT LIOP_SEL) THEN
+        QSIM := TRUE;
+    END_IF;
+       
+// RESET Operation ==================================================
+    IF (LIOP_SEL AND L_RESET AND NOT L_RESET_OLD) OR (OPabCmdPLC[24] AND NOT LIOP_SEL) THEN
+        OP_RESET := TRUE;
+    ELSE
+        OP_RESET := FALSE;
+    END_IF;
+ 
+// READ DPV1 Values =================================================
+    IF (DPV1_READ AND NOT DPV1_READ_OLD) OR (OPabCmdPLC[8]) THEN
+        DPV1_READ_TEMP := TRUE;
+    ELSE
+        DPV1_READ_TEMP := FALSE;
+    END_IF;
+// END: Operation functions *****************************************************
+// ******************************************************************************
+   
+// Check Errors ========================================================
+    QERR_EXT := ERR_EXTERN;
+    QLOCK    := LOCK;
+   
+    IF (QERR_EXT OR QLOCK) THEN
+        QERR := TRUE;
+    END_IF;
+   
+// START / STOP / REVERSE ===========================================
+    IF (QMAN_AUT) THEN
+        // START / STOP Operation (Automatic)=============================
+        IF (LIOP_SEL AND L_ON) OR (Auto_ON AND NOT LIOP_SEL) THEN
+            OP_ON := TRUE;
+        END_IF;
+        IF (LIOP_SEL AND NOT L_ON) OR (NOT Auto_ON AND NOT LIOP_SEL) THEN
+            OP_ON := FALSE;
+        END_IF;
+        // REVERSE / NORMAL Operation (Automatic)================================
+        IF (LIOP_SEL AND L_REVERSE) OR (Auto_REV AND NOT LIOP_SEL) THEN
+            OP_REVERSE := TRUE;
+        END_IF;
+        IF (LIOP_SEL AND NOT L_REVERSE) OR (NOT Auto_REV AND NOT LIOP_SEL) THEN
+            OP_REVERSE := FALSE;
+        END_IF;
+    ELSE
+        // START / STOP Operation (Manual)=================================
+        IF (LIOP_SEL AND L_ON) OR (OPabCmdPLC[1] AND NOT LIOP_SEL) THEN
+            OP_ON := TRUE;
+        END_IF;
+        IF (LIOP_SEL AND NOT L_ON) OR (OPabCmdPLC[0] AND NOT LIOP_SEL) THEN
+            OP_ON := FALSE;
+        END_IF;
+        // REVERSE / NORMAL Operation (Manual)================================
+        IF (LIOP_SEL AND L_REVERSE) OR (OPabCmdPLC[3] AND NOT LIOP_SEL) THEN
+            OP_REVERSE := TRUE;
+        END_IF;
+        IF (LIOP_SEL AND NOT L_REVERSE) OR (OPabCmdPLC[2] AND NOT LIOP_SEL) THEN
+            OP_REVERSE := FALSE;
+        END_IF;
+    END_IF;
+   
+    // OFF2 Command: drive coasts to a standstill
+    IF (NOT OFF2 OR QLOCK) THEN
+        OP_OFF2 := FALSE;   // Command for instantenous pulse disable
+    ELSE
+        OP_OFF2 := TRUE;
+    END_IF;
+   
+    // OFF3 Command: Shut down fastest possible acceleration rate
+    IF (NOT OFF3 OR QERR) THEN
+        OP_OFF3 := FALSE;   // Command for rapid stop
+    ELSE
+        OP_OFF3 := TRUE;
+    END_IF;
+       
+    OP_EN       := L_ENABLE;    // 0=Disable Operation  1=enable operation (default)
+    OP_RFG_EN   := L_RFG_EN;    // 0=stop converter     1=enable converter (default)
+    OP_RFG_FREE := L_RFG_FREE;  // 0=freeze converter   1=enable converter (default)
+    OP_SP_EN    := L_SP_EN;     // 0=Disable setpoint   1=Enable setpoint  (default)
+    OP_SP_VALID := L_SP_VALID;  // 0=Setpoints invalid  1=Setpoints valid  (default)
+   
+   
+    // READ DPV1 Values =============================================================
+ 
+    IF NOT QSIM THEN
+        // SEND REQUEST for motor values **********
+        DPV1_READ_TEMP := (DPV1_READ AND NOT DPV1_READ_OLD) OR (OPabCmdPLC[8]);
+        DPV1_WR_SFB(
+            REQ   := DPV1_READ_TEMP,
+            ID    := DPV1_ID,
+            INDEX := 47,
+            LEN   := 52,
+            RECORD:= DPV1_REQ_VAL
+        );
+        IF DPV1_WR_SFB.BUSY THEN
+            DPV1_READ_TEMP := FALSE;
+        END_IF;
+   
+        IF DPV1_WR_SFB.DONE THEN
+            DPV1_RECEIVE_TEMP := TRUE;
+        END_IF;
+   
+        DPV1_RE_SFB(
+            REQ   := DPV1_RECEIVE_TEMP,
+            ID    := DPV1_ID,
+            INDEX := 47,
+            MLEN  := 48,
+            RECORD:= DPV1_ANS_VAL
+        );
+        IF DPV1_RE_SFB.BUSY THEN
+            DPV1_RECEIVE_TEMP := FALSE;
+        ELSIF NOT DPV1_RE_SFB.ERROR THEN
+            DPV1Voltage  :=  WORD_TO_INT(DPV1_ANS_VAL.Param1);
+            DPV1Power    :=  DPV1_ANS_VAL.Param2;
+            DPV1Freq     :=  DPV1_ANS_VAL.Param3;
+            DPV1Speed    :=  WORD_TO_INT(DPV1_ANS_VAL.Param4);
+            DPV1_CURRENT_LIM := DPV1_ANS_VAL.Param5; // Limit of current
+            DPV1_CURRENT_SET := DPV1_ANS_VAL.Param6; // Actual current
+           
+            DPV1_ERR1 := WORD_TO_INT(DPV1_ANS_VAL.code_01);
+            DPV1_ERR2 := WORD_TO_INT(DPV1_ANS_VAL.code_02);
+            DPV1_E_VAL1 := WORD_TO_INT(DPV1_ANS_VAL.Eval_01);
+            DPV1_E_VAL2 := WORD_TO_INT(DPV1_ANS_VAL.Eval_02);
+ 
+            FREQ_MAX := DPV1Freq;
+            SPEED_MAX := DPV1Speed;
+        END_IF;
+   
+        IF DPV1_RE_SFB.ERROR THEN
+            DPV1_RW_ERR := TRUE;
+            DPV1_FNumR  := DPV1_RE_SFB.Status;
+            DPV1Voltage  :=  0;
+            DPV1Power    :=  0.0;
+            DPV1Freq     :=  0.0;
+            DPV1Speed    :=  0;
+            DPV1_CURRENT_LIM := 0.0;
+            DPV1_CURRENT_SET := 0.0;
+            DPV1_ERR1   := 0;
+            DPV1_ERR2   := 0;
+            DPV1_E_VAL1 := 0;
+            DPV1_E_VAL2 := 0;
+        ELSE
+            DPV1_RW_ERR := FALSE;
+            DPV1_FNumR  := 16#0;
+        END_IF;
+        IF DPV1_WR_SFB.ERROR THEN
+            DPV1_RW_ERR := TRUE;
+            DPV1_FNumW  := DPV1_WR_SFB.Status;
+            DPV1Voltage  :=  0;
+            DPV1Power    :=  0.0;
+            DPV1Freq     :=  0.0;
+            DPV1Speed    :=  0;
+            DPV1_CURRENT_LIM := 0.0;
+            DPV1_CURRENT_SET := 0.0;
+            DPV1_ERR1   := 0;
+            DPV1_ERR2   := 0;
+            DPV1_E_VAL1 := 0;
+            DPV1_E_VAL2 := 0;
+        ELSE
+            DPV1_RW_ERR := FALSE;
+            DPV1_FNumW  := 16#0;
+        END_IF;
+    ELSE  // SET value for simulation
+        FREQ_MAX := SIM_nomFreq;
+        SPEED_MAX := SIM_nomSpeed;
+        
+        DPV1Voltage  :=  0;
+        DPV1Power    :=  0.0;
+        DPV1Freq     :=  0.0;
+        DPV1Speed    :=  0;
+       
+        DPV1_ERR1   := 0;
+        DPV1_ERR2   := 0;
+        DPV1_E_VAL1 := 0;
+        DPV1_E_VAL2 := 0;       
+    END_IF;
+    // END: READ DPV1 ======================================================================
+   
+    IF NOT QSIM THEN  // STATE: Process Control
+        // SINAMICS Control Word Bit [0..15]
+        QabCmdInt[0] := OP_ON;
+        QabCmdInt[1] := OP_OFF2;
+        QabCmdInt[2] := OP_OFF3;
+        QabCmdInt[3] := OP_EN;
+        QabCmdInt[4] := OP_RFG_EN;
+        QabCmdInt[5] := OP_RFG_FREE;
+        QabCmdInt[6] := OP_SP_EN;
+        QabCmdInt[7] := OP_RESET;
+        QabCmdInt[10] := OP_SP_VALID;
+        QabCmdInt[11] := OP_REVERSE;
+        QabCmdInt[15] := OP_REMOTE;
+        // SINAMICS Control Word Bit [16..31] -> Setpoint
+        IF SP_Man > 100.0 THEN
+            SP_Man := 100.0;
+        ELSIF SP_Man < 0.0 THEN
+            SP_Man := 0.0;
+        END_IF;
+       
+        IF QMAN_AUT THEN
+            SPEED_INT := WORD_TO_INT(SP_Auto);
+            // IF (SPEED_INT > 16384) THEN
+                // SP_Auto := 16#4000;
+            // END_IF;
+            // Show setpoint on output (Automatic Value)
+            QSPCapacity := (100 / INTMAXVAL) * SPEED_INT;
+            QSPFrequ    := (SPEED_INT * FREQ_MAX) / INTMAXVAL;
+            QSPSpeed    := (SPEED_INT * SPEED_MAX) / INTMAXVAL;
+            QawCmdInt[1] := SP_Auto;
+ 
+        ELSE
+            // Show setpoint on output (Manual Value)
+            SPEED_INT := REAL_TO_INT((INTMAXVAL * SP_Man) / 100.0);
+            QSPCapacity := SP_Man;
+            QSPFrequ  := (SPEED_INT * FREQ_MAX) / INTMAXVAL;
+            QSPSpeed  := (SPEED_INT * SPEED_MAX) / INTMAXVAL;
+            QawCmdInt[1] := INT_TO_WORD(SPEED_INT);
+        END_IF;
+ 
+        // SINAMICS State Word Bit [0..15]
+        QPOWER_ON  := abInpInt[0];
+        QREADY_RUN := abInpInt[1];
+        QOP_ENABLE := abInpInt[2];
+        QFAULT     := abInpInt[3];
+        QNOFF2     := abInpInt[4];
+        QNOFF3     := abInpInt[5];
+        QSLOCK     := abInpInt[6];
+        QWARN      := abInpInt[7];
+        QSPREACH   := abInpInt[8];
+        QREMOTE    := abInpInt[9];
+        QFRREACH   := abInpInt[10];
+        QNMOTWARN  := abInpInt[11];
+        QBRAKE     := abInpInt[12];
+        QNMOTOV    := abInpInt[13];
+        QDIRECTION := abInpInt[14];
+        QNCONOV    := abInpInt[15];
+        // SINAMICS State Word Bit [16..31]
+        QFreqPeri  := awInp[1];
+        CurrentSpeedInt := WORD_TO_INT(QFreqPeri);
+        QrCapacity:= 100 / INTMAXVAL * CurrentSpeedInt;
+        QrCuFreq  := CurrentSpeedInt * FREQ_MAX / INTMAXVAL;
+        QrCuSpeed := CurrentSpeedInt * SPEED_MAX / INTMAXVAL;
+    ELSE  // STATE: Simulation
+        IF SP_SIM > 100.0 THEN
+            SP_SIM := 100.0;
+        ELSIF SP_SIM < 0.0 THEN
+            SP_SIM := 0.0;
+        END_IF;
+ 
+        SPEED_INT := REAL_TO_INT((INTMAXVAL * SP_SIM) / 100.0);
+        // IF reverse active THEN negative internal speed
+        IF OP_REVERSE THEN
+            SPEED_INT := SPEED_INT * -1;
+        END_IF;
+        QSPCapacity := SP_SIM;
+        QSPFrequ    := (SPEED_INT * FREQ_MAX) / INTMAXVAL;
+        QSPSpeed    := (SPEED_INT * SPEED_MAX) / INTMAXVAL;
+       
+        QPOWER_ON  := 1;    // Power is On
+        QREADY_RUN := OP_ON;
+        QOP_ENABLE := OP_ON;    // Operation enabled
+        QFAULT     := 0;    // No fault
+        QNOFF2     := 1;    // No stop command
+        QNOFF3     := 1;    // No stop command
+        QSLOCK     := 0;    // No lock
+        QWARN      := 0;    // No warning
+        QSPREACH   := OP_ON;
+        QREMOTE    := 1;    // Remote operating
+        QFRREACH   := OP_ON;
+        QNMOTWARN  := 1;    // No current warning
+        QBRAKE     := 0;    // No motor brake
+        QNMOTOV    := 1;    // No motor overload
+        QDIRECTION := NOT OP_REVERSE;
+        QNCONOV    := 1;    // No converter overload
+       
+        IF OP_ON THEN
+            QFreqPeri  := INT_TO_WORD(SPEED_INT);
+            CurrentSpeedInt := REAL_TO_INT(SPEED_INT);
+            QrCapacity:= 100 / INTMAXVAL * CurrentSpeedInt;
+            QrCuFreq  := CurrentSpeedInt * FREQ_MAX / INTMAXVAL;
+            QrCuSpeed := CurrentSpeedInt * SPEED_MAX / INTMAXVAL;
+        ELSE
+            QrCapacity:= 0.0;
+            QrCuFreq  := 0.0;
+            QrCuSpeed := 0.0;
+        END_IF;
+         
+        // Set SINAMICS Command in stop mode because simulation
+        QabCmdInt[0] := 0; // OP_ON;
+        QabCmdInt[1] := 0; // OP_OFF2;
+        QabCmdInt[2] := 0; // OP_OFF3;
+        QabCmdInt[3] := 0; // OP_EN;
+        QabCmdInt[4] := 0; // OP_RFG_EN;
+        QabCmdInt[5] := 0; // OP_RFG_FREE;
+        QabCmdInt[6] := 0; // OP_SP_EN;
+        QabCmdInt[7] := 0; // OP_RESET;
+        QabCmdInt[10] := 1; // OP_SP_VALID;
+        QabCmdInt[11] := 0; // OP_REVERSE;
+        QabCmdInt[15] := 1; // OP_REMOTE;
+    END_IF;
+       
+// RESET Errors ========================================================
+    IF OP_RESET AND NOT QERR_EXT AND NOT QLOCK THEN
+        QERR := FALSE;
+    END_IF;
+   
+    // Change lowbyte to highbyte for command word SINAMICS==============
+    QabyCmd[0] := QabyCmdInt[1];
+    QabyCmd[1] := QabyCmdInt[0];
+    QabyCmd[2] := QabyCmdInt[2]; // Dont change Bytes in SP word
+    QabyCmd[3] := QabyCmdInt[3]; // Dont change Bytes in SP word
+   
+    // Set State for HMI ===================================================
+    QabStatePLC[0]  := QPOWER_ON;   // Feedback ready for on (Stop)
+    QabStatePLC[1]  := QOP_ENABLE;  // Feedback enabled (Run)
+    QabStatePLC[2]  := QDIRECTION;  // 0=Left 1=Right (by positiv Setpoint)
+    QabStatePLC[3]  := QSLOCK;      // Starting lockout
+    QabStatePLC[4]  := QREADY_RUN;  // Ready to Run
+    QabStatePLC[5]  := OP_ON;       // Operation On / Off
+    QabStatePLC[6]  := OP_REVERSE;  // Command inverse Setpoint
+    QabStatePLC[7]  := OP_REMOTE;   // Operation command for remote
+    QabStatePLC[8]  := QSPREACH;    // Setpoint is reached
+    QabStatePLC[9]  := QFRREACH;    // Frequency is reached
+    QabStatePLC[10] := QNOFF2;      // OFF2 command applied (negativ)
+    QabStatePLC[11] := QNOFF3;      // OFF3 command applied (negativ)
+    QabStatePLC[12] := QNMOTWARN;   // Motor at current limit (negativ)
+    QabStatePLC[13] := QBRAKE;      // Motor holding Brake
+    QabStatePLC[14] := QNMOTOV;     // Motor overload (negativ)
+    QabStatePLC[15] := QNCONOV;     // Converter overload (negativ)
+    QabStatePLC[16] := QMAN_AUT;    // 0=Manual 1=Automatic
+    QabStatePLC[17] := QREMOTE;     // 0=Local 1=Remote
+    QabStatePLC[18] := QSIM;        // 0=Process 1=Simulation
+    QabStatePLC[19] := 0;
+    QabStatePLC[20] := QWARN;       // Alarm is active
+    QabStatePLC[21] := QFAULT;      // Fault is active
+    QabStatePLC[22] := 0;
+    QabStatePLC[23] := 0;
+    QabStatePLC[24] := QERR;        // General Error
+    QabStatePLC[25] := QERR_EXT;    // External Error
+    QabStatePLC[26] := QLOCK;       // Interlock Error
+    QabStatePLC[27] := LOCK;        // Interlock
+    QabStatePLC[28] := 0; 
+    QabStatePLC[29] := 0; 
+    QabStatePLC[30] := DPV1_RW_ERR; // DPV1 Read Error
+    QabStatePLC[31] := 0;
+   
+    QabyState[0] :=QabyStatePLC[3];
+    QabyState[1] :=QabyStatePLC[2];
+    QabyState[2] :=QabyStatePLC[1];
+    QabyState[3] :=QabyStatePLC[0];
+   
+    // Alarm_8P ==============================================
+    A8P(           
+        EN_R := 1,
+        SIG_1 :=NOT QNOFF2,  // stop immediallety
+        SIG_2 :=NOT QNOFF3,  // stop fastest stand still
+        SIG_3 :=NOT QNMOTOV, // Motor overload
+        SIG_4 :=NOT QNCONOV, // Converter overload
+        SIG_5 :=QLOCK,
+        SIG_6 :=0,
+        SIG_7 :=QERR_EXT,
+        SIG_8 :=QERR,
+        ID := w#16#eeee,
+        EV_ID := MSG1_EVID,
+        SEVERITY := w#16#40
+    );
+    MSG1_bDone := A8P.DONE;
+    MSG1_bError := A8P.ERROR;
+    MSG1_wState := A8P.STATUS;
+    MSG1_wAck := A8P.ACK_STATE;
+ 
+    // Notify_8P ==============================================
+    N8P(
+        SIG_1 :=NOT OP_ON,      // STOP
+        SIG_2 :=OP_ON,          // START
+        SIG_3 :=NOT QDirection, // LEFT
+        SIG_4 :=QDirection,     // RIGHT
+        SIG_5 :=LOCK,
+        SIG_6 :=QREMOTE,
+        SIG_7 :=QMAN_AUT,
+        SIG_8 :=QSIM,
+        ID := w#16#eeee,
+        EV_ID := MSG2_EVID,
+        SEVERITY := w#16#40
+    );
+    MSG2_bDone := N8P.DONE;
+    MSG2_bError := N8P.ERROR;
+    MSG2_wState := N8P.STATUS;
+   
+    // Set Tags for edge detect =====================================
+    L_RESET_OLD := L_RESET;
+    DPV1_READ_OLD := DPV1_READ;
+    //reset commands ================================================
+    OP_dwCmd := 16#0;
+END_FUNCTION_BLOCK

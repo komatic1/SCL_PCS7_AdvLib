@@ -1,0 +1,59 @@
+// Name: FC279
+// Symbolic Name: PO_UPDAT
+// Symbol Comment: Update Process Output
+// Family: @SYSTEM
+// Version: 7.0
+// Author: DRIVER80
+// Last modified: 02/02/2011
+// Use: SFC27
+// Size: 256 byte
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.06.00_01.03.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION FC1279 : VOID
+TITLE ='Update Process Output'
+{ S7_hardware :='rack'; S7_tasklist := 'OB100' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : PO_UPDAT
+VERSION : '7.0'
+ 
+ 
+VAR_OUTPUT
+  PO_MAP { S7_visible := 'false' }: WORD ;    //Map of Updated Process Outputs
+END_VAR
+VAR_TEMP
+  PCOUNT : INT ;    //Zдhlvariable
+  RCODE : INT ;    //Returnwert von SFC UPDAT_PO
+  HELP : WORD ;    //Hilfsvariable
+  PAA : WORD ;    //Bitfeld der aktualisierten ProzeЯabbilder
+END_VAR
+BEGIN
+ 
+FOR PCOUNT:=0 TO 15 BY 1 DO
+    RCODE:=UPDAT_PO(PART := INT_TO_BYTE(PCOUNT)
+             ,FLADDR := HELP
+             );
+    HELP:=1;
+    HELP:=SHL(IN:=HELP,N:=PCOUNT);
+   
+    IF INT_TO_WORD(RCODE)=W#16#0 OR INT_TO_WORD(RCODE)=W#16#80A0 THEN
+        PAA:=PAA OR HELP;
+    ELSE
+        PAA:=NOT HELP AND PAA;
+    END_IF;
+END_FOR;
+PO_MAP:=PAA;
+END_FUNCTION

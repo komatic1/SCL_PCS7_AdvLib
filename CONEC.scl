@@ -1,0 +1,1150 @@
+// Name: FB88
+// Symbolic Name: CONEC
+// Symbol Comment: Connection Function Block
+// Family: @SYSTEM
+// Version: 7.2
+// Author: DRIVER80
+// Last modified: 04/11/2012
+// Use: SFB35,SFC51,SFC6,SFC87
+// Size: 13020 byte
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB1188
+TITLE ='Connection Function Block'
+{ S7_hardware := 'rack'; S7_alarm_ui := '1'; S7_tasklist := 'OB100'; S7_tag := 'false' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : CONEC
+VERSION : '7.1'
+ 
+ 
+VAR_INPUT
+  SAMPLE_T { S7_visible := 'false'; S7_link := 'false' }: REAL  := 1.000000e+000;    //Sample Time [s]
+  EN_MSG { S7_visible := 'false'; S7_link := 'false' }: BOOL  := TRUE;    //1=Enable Alarm
+  EV_ID1 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID2 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID3 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID4 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID5 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID6 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID7 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID8 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID9 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID10 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID11 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID12 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID13 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID14 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID15 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID16 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID17 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID18 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID19 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID20 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID21 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID22 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID23 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID24 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  MS { S7_link := 'false'; S7_m_c := 'true' }: DWORD ;    //Maintenance State
+END_VAR
+VAR_OUTPUT
+  O_MS { S7_visible := 'false' }: DWORD ;    //Maintenance State
+  QMSGER1 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER2 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER3 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER4 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER5 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER6 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER7 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER8 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER9 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER10 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER11 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER12 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER13 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER14 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER15 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER16 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER17 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER18 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER19 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER20 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER21 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER22 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER23 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER24 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  MSGSTA1 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA2 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA3 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA4 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA5 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA6 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA7 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA8 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA9 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA10 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA11 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA12 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA13 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA14 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA15 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA16 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA17 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA18 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA19 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA20 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA21 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA22 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA23 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+  MSGSTA24 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message Failure
+END_VAR
+VAR
+  sdwRESERVE : DWORD ;    //Reserve fьr zukьnftige Дnderungen
+  VERBZ : REAL ;    //Verbindungsdiagnosezeitzдhler
+  N_CON : INT ;    //Anzahl zu bearbeitende Verbindungen
+  CON_ARR : ARRAY  [0 .. 127 ] OF STRUCT    
+   CON_ID : WORD  := W#16#FFFF;    //Verbindungs_ID
+   STAT_CON : BYTE ;    //aktueller Zustand der Verbindung bzw redundanter Verbindung
+   PROD_CON : BYTE ;    //TeilverbindungsNr der Produktivverbindung       
+   STBY_CON : BYTE ;    //TeilverbindungsNr der Standbyverbindung
+   DIS_PCON : BOOL ;    //1=Mindestens eine Teilverbindung war mindestens einmal abgebrochen
+   DIS_CON : BOOL ;    //1=Mindestens ein Gesamtausfall einer Verbindung
+   RES0 : BYTE ;    //Reserve
+   RES1 : BYTE ;    //Reserve
+  END_STRUCT ;   
+  sbRESTART : BOOL  := TRUE;   
+  C_DIAG_VORH : BOOL ;    //Merker SFC 87 vorhanden
+  VERB_DIAG : BOOL ;    //Merker Verbindungsdiagnose melden
+  BUSY_T : BOOL  := TRUE;    //0: Lesevorgang abgeschlossen
+  EVENT : ARRAY  [1 .. 24 ] OF BOOL  := 24 (FALSE) ;   
+  VERB_OK : ARRAY  [0 .. 127 ] OF BOOL  := 128 (FALSE) ;   
+  VERB_RED : ARRAY  [0 .. 128 ] OF BOOL  := 128 (FALSE) ;   
+  VERB_ID : ARRAY  [0 .. 128 ] OF WORD  := 128 (W#16#FFFF) ;   
+  VERB_STAT : ARRAY  [0 .. 128 ] OF BYTE  := 128 (B#16#0) ;   
+  sbMSAlarm : BOOL ;    //Merker fьr MS Alarm
+  sbMSDemanded : BOOL ;    //Merker fьr MS Demanded
+  swReserve1 : DWORD ;    //reserve
+  swReserve2 : DWORD ;    //reserve
+  ASIG_1 : BOOL ;    //Alarmsignal 1
+  ASIG_2 : BOOL ;    //Alarmsignal 2
+  ASIG_3 : BOOL ;    //Alarmsignal 3
+  ASIG_4 : BOOL ;    //Alarmsignal 4
+  ASIG_5 : BOOL ;    //Alarmsignal 5
+  ASIG_6 : BOOL ;    //Alarmsignal 6
+  ASIG_7 : BOOL ;    //Alarmsignal 7
+  ASIG_8 : BOOL ;    //Alarmsignal 8
+  sbASIG_1 : BOOL ;    //Letztes Alarmsignal 1
+  sbASIG_2 : BOOL ;    //Letztes Alarmsignal 2
+  sbASIG_3 : BOOL ;    //Letztes Alarmsignal 3
+  sbASIG_4 : BOOL ;    //Letztes Alarmsignal 4
+  sbASIG_5 : BOOL ;    //Letztes Alarmsignal 5
+  sbASIG_6 : BOOL ;    //Letztes Alarmsignal 6
+  sbASIG_7 : BOOL ;    //Letztes Alarmsignal 7
+  sbASIG_8 : BOOL ;    //Letztes Alarmsignal 8
+  ALARM_8P_01 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_02 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_03 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_04 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_05 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_06 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_07 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_08 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_09 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_10 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_11 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_12 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_13 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_14 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_15 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_16 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_17 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_18 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_19 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_20 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_21 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_22 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_23 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_24 : SFB35;    //Multiinstanz ALARM_8P
+END_VAR
+VAR_TEMP
+  SZL_HEADER : STRUCT    
+   LENTHDR : WORD ;    //Lдnge eines Datensatzes
+   N_DR : WORD ;    //Anzahl Datensдtze
+  END_STRUCT ;   
+  PER_ADR : WORD ;    //aktuelle Peripherieadresse
+  ERROR : INT ;   
+  MS_AS : DWORD ;    //Maintenance State AS
+  pbVERB_OK : BOOL ;   
+  pbVERB_RED : BOOL ;   
+  N_CON_CNT : INT ;   
+  N_S7Ver : INT ;    //Anzahl der Verbindungen
+  N_CNT : INT ;    //Temp Variable
+  START_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  TINFO : STRUCT    
+   TOP_SI : STRUCT    
+    EV_CLASS : BYTE ;   
+    EV_NUM : BYTE ;   
+    PRIORITY : BYTE ;   
+    NUM : BYTE ;   
+    TYP2_3 : BYTE ;   
+    TYP1 : BYTE ;    
+    ZI1 : WORD ;   
+    ZI2_3 : DWORD ;   
+   END_STRUCT ;   
+   T : DATE_AND_TIME ;   
+   SUBNET : BYTE ;    //Mastersystem
+   RACK : BYTE ;    //Racknr.
+   SL_TYP : BYTE ;    //Slave- und Profil-Typ
+   A_INF : BYTE ;    //A-Info- Typ/Struktur-Vers
+   ET_CR_FL : BYTE ;    //ET-CR-Flags
+   ET_ER_FL : BYTE ;    //ET-ER- Flags
+   PNO_ID : WORD ;    //PNO-Ident
+  END_STRUCT ;   
+END_VAR
+BEGIN
+ 
+ERROR:=RD_SINFO(TOP_SI :=  TINFO.TOP_SI
+         ,START_UP_SI :=START_UP_SI
+         );
+ 
+IF  sbRESTART THEN
+    sbRESTART:=false;
+    TINFO.TOP_SI.NUM:=B#16#64;
+END_IF;
+IF TINFO.TOP_SI.NUM=B#16#64 THEN
+ 
+    ERROR:=RDSYSST(REQ :=  true
+            ,SZL_ID := W#16#112
+            ,INDEX :=  W#16#400
+            ,BUSY :=  BUSY_T
+            ,SZL_HEADER :=  SZL_HEADER
+            ,DR :=  PER_ADR
+            );
+                   
+    C_DIAG_VORH:=PER_ADR=W#16#403;
+    IF C_DIAG_VORH THEN
+        VERBZ:=SAMPLE_T*120.0;
+        ERROR:=C_DIAG(REQ :=  true
+             ,MODE := B#16#1
+             ,BUSY := BUSY_T
+             ,N_CON :=  N_CON
+             ,CON_ARR :=  CON_ARR
+             );
+    END_IF;  
+   
+    FOR ERROR:=1 TO 24 BY 1 DO
+        EVENT[ERROR]:=true;
+    END_FOR;
+ELSE
+    IF C_DIAG_VORH THEN
+        IF VERBZ=0.0 THEN
+            VERBZ:=10.0;  
+            ERROR:=C_DIAG(REQ :=  true
+                 ,MODE := B#16#1
+                 ,BUSY := pbVERB_OK
+                 ,N_CON :=  N_CON
+                 ,CON_ARR :=  CON_ARR
+                 );
+            VERB_DIAG:=ERROR=1;
+            N_S7Ver:=0;
+           
+            FOR N_CNT:=0 TO 127 BY 1 DO
+                IF CON_ARR[N_CNT].CON_ID=W#16#FFFF THEN
+                    EXIT;
+                ELSE
+                    N_S7Ver:=N_S7Ver+1;   
+                END_IF;    
+            END_FOR;
+            N_CON:=N_S7Ver;
+            FOR N_CON_CNT:=0 TO N_CON-1 BY 1 DO
+                IF CON_ARR[N_CON_CNT].STAT_CON=B#16#1 THEN
+                    IF NOT VERB_DIAG THEN
+                        VERB_DIAG:=CON_ARR[N_CON_CNT].STAT_CON=B#16#1;
+                    END_IF;
+                END_IF;    
+            END_FOR;
+        ELSE  
+            VERBZ:=VERBZ-1.0;
+        END_IF;  
+       
+        IF VERBZ>=SAMPLE_T THEN
+            VERBZ:=VERBZ-SAMPLE_T;
+        ELSE
+             ERROR:=C_DIAG(REQ :=  true
+             ,MODE := B#16#1
+             ,BUSY := pbVERB_OK
+             ,N_CON :=  N_CON
+             ,CON_ARR :=  CON_ARR
+             );
+             VERB_DIAG:=ERROR=1;
+             N_S7Ver:=0;
+            
+            FOR N_CNT:=0 TO 127 BY 1 DO
+                IF CON_ARR[N_CNT].CON_ID=W#16#FFFF THEN
+                    EXIT;
+                ELSE
+                    N_S7Ver:=N_S7Ver+1;   
+                END_IF;    
+            END_FOR;
+            N_CON:=N_S7Ver;
+            FOR N_CON_CNT:=0 TO N_CON-1 BY 1 DO
+                IF CON_ARR[N_CON_CNT].STAT_CON=B#16#1 THEN
+                    IF NOT VERB_DIAG THEN
+                        VERB_DIAG:=CON_ARR[N_CON_CNT].STAT_CON=B#16#1;
+                    END_IF;
+                END_IF;    
+            END_FOR;
+            VERBZ:=10.0;
+        END_IF; 
+       
+        IF VERB_DIAG THEN
+            VERB_DIAG:=false;
+            FOR N_CON_CNT:=1 TO N_CON BY 1 DO
+                ERROR:=N_CON_CNT-1;
+                pbVERB_OK:=false;
+                pbVERB_RED:=false;
+               
+                CASE BYTE_TO_INT(CON_ARR[ERROR].STAT_CON) OF
+                    0,1,17 :
+                        IF  VERB_STAT[ERROR]<>B#16#0 THEN
+                            pbVERB_OK:=true;
+                            VERB_DIAG:=true;
+                        END_IF;
+                    2 :
+                        IF  VERB_STAT[ERROR]<>B#16#1 THEN
+                            pbVERB_OK:=CON_ARR[ERROR].DIS_CON;
+                            CON_ARR[ERROR].DIS_CON:=false;
+                            VERB_DIAG:=VERB_DIAG OR pbVERB_OK;
+                        END_IF;
+                    16 :
+                        IF  VERB_STAT[ERROR]<>B#16#10 THEN
+                            pbVERB_OK:=true;
+                            VERB_DIAG:=true;
+                        END_IF;
+                    18 :
+                        pbVERB_RED:=true;
+                        IF  VERB_STAT[ERROR]=B#16#12 THEN
+                            pbVERB_OK:=CON_ARR[ERROR].DIS_CON;
+                            CON_ARR[ERROR].DIS_CON:=false;
+                            VERB_DIAG:=VERB_DIAG OR pbVERB_OK;
+                        END_IF;
+                    19 :
+                        IF  VERB_STAT[ERROR]<>B#16#11 THEN
+                            pbVERB_OK:=CON_ARR[ERROR].DIS_CON;
+                            CON_ARR[ERROR].DIS_CON:=false;
+                            VERB_DIAG:=VERB_DIAG OR pbVERB_OK;
+                        END_IF;
+                        IF NOT pbVERB_OK THEN
+                            IF  VERB_STAT[ERROR]<>B#16#12 THEN
+                                pbVERB_RED:=CON_ARR[ERROR].DIS_PCON;
+                                CON_ARR[ERROR].DIS_PCON:=false;
+                                VERB_DIAG:=VERB_DIAG OR pbVERB_RED;
+                            END_IF;
+                        END_IF;
+                ELSE:
+                    OK:=false;
+                END_CASE;
+               
+                IF WORD_TO_INT(CON_ARR[ERROR].CON_ID)<3072 THEN
+                    VERB_STAT[ERROR]:=CON_ARR[ERROR].STAT_CON;
+                    VERB_ID[ERROR]:=CON_ARR[ERROR].CON_ID;
+                    IF VERB_OK[ERROR]<>pbVERB_OK THEN
+                        EVENT[ERROR/8+1]:=true;
+                        VERB_OK[ERROR]:=pbVERB_OK;
+                    END_IF;
+                    IF VERB_RED[ERROR]<>pbVERB_RED THEN
+                        EVENT[ERROR/8+17]:=true;
+                        VERB_RED[ERROR]:=pbVERB_RED;
+                    END_IF;
+                ELSE
+                    IF VERB_OK[ERROR] THEN
+                        EVENT[ERROR/8+1]:=true;
+                        VERB_OK[ERROR]:=false;
+                    END_IF;
+                    IF VERB_RED[ERROR] THEN
+                        EVENT[ERROR/8+17]:=true;
+                        VERB_RED[ERROR]:=false;
+                    END_IF;
+                END_IF;
+            END_FOR;
+        END_IF;
+    END_IF;
+END_IF;
+ 
+IF EN_MSG THEN
+    IF EVENT[1] THEN
+        ALARM_8P_01(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID1
+                       ,SIG_1 :=  VERB_OK[0]
+                       ,SIG_2 :=  VERB_OK[1]
+                       ,SIG_3 :=  VERB_OK[2]
+                       ,SIG_4 :=  VERB_OK[3]
+                       ,SIG_5 :=  VERB_OK[4]
+                       ,SIG_6 :=  VERB_OK[5]
+                       ,SIG_7 :=  VERB_OK[6]
+                       ,SIG_8 :=  VERB_OK[7]
+                       ,SD_1 :=  VERB_ID[0]
+                       ,SD_2 :=  VERB_ID[1]
+                       ,SD_3 :=  VERB_ID[2]
+                       ,SD_4 :=  VERB_ID[3]
+                       ,SD_5 :=  VERB_ID[4]
+                       ,SD_6 :=  VERB_ID[5]
+                       ,SD_7 :=  VERB_ID[6]
+                       ,SD_8 :=  VERB_ID[7]
+                       );
+        QMSGER1:=ALARM_8P_01.ERROR;
+        MSGSTA1:=ALARM_8P_01.STATUS;
+        IF ALARM_8P_01.STATUS<>W#16#19 AND
+           NOT ALARM_8P_01.ERROR AND
+           ALARM_8P_01.STATUS<>W#16#B AND
+           ALARM_8P_01.STATUS<>W#16#14 
+        THEN
+            EVENT[1]:=false;
+        END_IF;
+    ELSIF EVENT[2] THEN
+            ALARM_8P_02(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID2
+                           ,SIG_1 :=  VERB_OK[8]
+                           ,SIG_2 :=  VERB_OK[9]
+                           ,SIG_3 :=  VERB_OK[10]
+                           ,SIG_4 :=  VERB_OK[11]
+                           ,SIG_5 :=  VERB_OK[12]
+                           ,SIG_6 :=  VERB_OK[13]
+                           ,SIG_7 :=  VERB_OK[14]
+                           ,SIG_8 :=  VERB_OK[15]
+                           ,SD_1 :=  VERB_ID[8]
+                           ,SD_2 :=  VERB_ID[9]
+                           ,SD_3 :=  VERB_ID[10]
+                           ,SD_4 :=  VERB_ID[11]
+                           ,SD_5 :=  VERB_ID[12]
+                           ,SD_6 :=  VERB_ID[13]
+                           ,SD_7 :=  VERB_ID[14]
+                           ,SD_8 :=  VERB_ID[15]
+                           );
+            QMSGER2:=ALARM_8P_02.ERROR;
+            MSGSTA2:=ALARM_8P_02.STATUS;
+            IF ALARM_8P_02.STATUS<>W#16#19 AND
+               NOT ALARM_8P_02.ERROR AND
+               ALARM_8P_02.STATUS<>W#16#B AND
+               ALARM_8P_02.STATUS<>W#16#14 
+            THEN
+                EVENT[2]:=false;
+            END_IF;
+    ELSIF EVENT[3] THEN
+            ALARM_8P_03(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID3
+                           ,SIG_1 :=  VERB_OK[16]
+                           ,SIG_2 :=  VERB_OK[17]
+                           ,SIG_3 :=  VERB_OK[18]
+                           ,SIG_4 :=  VERB_OK[19]
+                           ,SIG_5 :=  VERB_OK[20]
+                           ,SIG_6 :=  VERB_OK[21]
+                           ,SIG_7 :=  VERB_OK[22]
+                           ,SIG_8 :=  VERB_OK[23]
+                           ,SD_1 :=  VERB_ID[16]
+                           ,SD_2 :=  VERB_ID[17]
+                           ,SD_3 :=  VERB_ID[18]
+                           ,SD_4 :=  VERB_ID[19]
+                           ,SD_5 :=  VERB_ID[20]
+                           ,SD_6 :=  VERB_ID[21]
+                           ,SD_7 :=  VERB_ID[22]
+                           ,SD_8 :=  VERB_ID[23]
+                           );
+            QMSGER3:=ALARM_8P_03.ERROR;
+            MSGSTA3:=ALARM_8P_03.STATUS;
+            IF ALARM_8P_03.STATUS<>W#16#19 AND
+               NOT ALARM_8P_03.ERROR AND
+               ALARM_8P_03.STATUS<>W#16#B AND
+               ALARM_8P_03.STATUS<>W#16#14 
+            THEN
+                EVENT[3]:=false;
+            END_IF;
+    ELSIF EVENT[4] THEN
+            ALARM_8P_04(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID4
+                           ,SIG_1 :=  VERB_OK[24]
+                           ,SIG_2 :=  VERB_OK[25]
+                           ,SIG_3 :=  VERB_OK[26]
+                           ,SIG_4 :=  VERB_OK[27]
+                           ,SIG_5 :=  VERB_OK[28]
+                           ,SIG_6 :=  VERB_OK[29]
+                           ,SIG_7 :=  VERB_OK[30]
+                           ,SIG_8 :=  VERB_OK[31]
+                           ,SD_1 :=  VERB_ID[24]
+                           ,SD_2 :=  VERB_ID[25]
+                           ,SD_3 :=  VERB_ID[26]
+                           ,SD_4 :=  VERB_ID[27]
+                           ,SD_5 :=  VERB_ID[28]
+                           ,SD_6 :=  VERB_ID[29]
+                           ,SD_7 :=  VERB_ID[30]
+                           ,SD_8 :=  VERB_ID[31]
+                           );
+            QMSGER4:=ALARM_8P_04.ERROR;
+            MSGSTA4:=ALARM_8P_04.STATUS;
+            IF ALARM_8P_04.STATUS<>W#16#19 AND
+               NOT ALARM_8P_04.ERROR AND
+               ALARM_8P_04.STATUS<>W#16#B AND
+               ALARM_8P_04.STATUS<>W#16#14 
+            THEN
+                EVENT[4]:=false;
+            END_IF;
+    ELSIF EVENT[5] THEN
+            ALARM_8P_05(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID5
+                           ,SIG_1 :=  VERB_OK[32]
+                           ,SIG_2 :=  VERB_OK[33]
+                           ,SIG_3 :=  VERB_OK[34]
+                           ,SIG_4 :=  VERB_OK[35]
+                           ,SIG_5 :=  VERB_OK[36]
+                           ,SIG_6 :=  VERB_OK[37]
+                           ,SIG_7 :=  VERB_OK[38]
+                           ,SIG_8 :=  VERB_OK[39]
+                           ,SD_1 :=  VERB_ID[32]
+                           ,SD_2 :=  VERB_ID[33]
+                           ,SD_3 :=  VERB_ID[34]
+                           ,SD_4 :=  VERB_ID[35]
+                           ,SD_5 :=  VERB_ID[36]
+                           ,SD_6 :=  VERB_ID[37]
+                           ,SD_7 :=  VERB_ID[38]
+                           ,SD_8 :=  VERB_ID[39]
+                           );
+            QMSGER5:=ALARM_8P_05.ERROR;
+            MSGSTA5:=ALARM_8P_05.STATUS;
+            IF ALARM_8P_05.STATUS<>W#16#19 AND
+               NOT ALARM_8P_05.ERROR AND
+               ALARM_8P_05.STATUS<>W#16#B AND
+               ALARM_8P_05.STATUS<>W#16#14 
+            THEN
+                EVENT[5]:=false;
+            END_IF;
+    ELSIF EVENT[6] THEN
+            ALARM_8P_06(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID6
+                           ,SIG_1 :=  VERB_OK[40]
+                           ,SIG_2 :=  VERB_OK[41]
+                           ,SIG_3 :=  VERB_OK[42]
+                           ,SIG_4 :=  VERB_OK[43]
+                           ,SIG_5 :=  VERB_OK[44]
+                           ,SIG_6 :=  VERB_OK[45]
+                           ,SIG_7 :=  VERB_OK[46]
+                           ,SIG_8 :=  VERB_OK[47]
+                           ,SD_1 :=  VERB_ID[40]
+                           ,SD_2 :=  VERB_ID[41]
+                           ,SD_3 :=  VERB_ID[42]
+                           ,SD_4 :=  VERB_ID[43]
+                           ,SD_5 :=  VERB_ID[44]
+                           ,SD_6 :=  VERB_ID[45]
+                           ,SD_7 :=  VERB_ID[46]
+                           ,SD_8 :=  VERB_ID[47]
+                           );
+            QMSGER6:=ALARM_8P_06.ERROR;
+            MSGSTA6:=ALARM_8P_06.STATUS;
+            IF ALARM_8P_06.STATUS<>W#16#19 AND
+               NOT ALARM_8P_06.ERROR AND
+               ALARM_8P_06.STATUS<>W#16#B AND
+               ALARM_8P_06.STATUS<>W#16#14 
+            THEN
+                EVENT[6]:=false;
+            END_IF;
+    ELSIF EVENT[7] THEN
+            ALARM_8P_07(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID7
+                           ,SIG_1 :=  VERB_OK[48]
+                           ,SIG_2 :=  VERB_OK[49]
+                           ,SIG_3 :=  VERB_OK[50]
+                           ,SIG_4 :=  VERB_OK[51]
+                           ,SIG_5 :=  VERB_OK[52]
+                           ,SIG_6 :=  VERB_OK[53]
+                           ,SIG_7 :=  VERB_OK[54]
+                           ,SIG_8 :=  VERB_OK[55]
+                           ,SD_1 :=  VERB_ID[48]
+                           ,SD_2 :=  VERB_ID[49]
+                           ,SD_3 :=  VERB_ID[50]
+                           ,SD_4 :=  VERB_ID[51]
+                           ,SD_5 :=  VERB_ID[52]
+                           ,SD_6 :=  VERB_ID[53]
+                           ,SD_7 :=  VERB_ID[54]
+                           ,SD_8 :=  VERB_ID[55]
+                           );
+            QMSGER7:=ALARM_8P_07.ERROR;
+            MSGSTA7:=ALARM_8P_07.STATUS;
+            IF ALARM_8P_07.STATUS<>W#16#19 AND
+               NOT ALARM_8P_07.ERROR AND
+               ALARM_8P_07.STATUS<>W#16#B AND
+               ALARM_8P_07.STATUS<>W#16#14 
+            THEN
+                EVENT[7]:=false;
+            END_IF;
+    ELSIF EVENT[8] THEN
+            ALARM_8P_08(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID8
+                           ,SIG_1 :=  VERB_OK[56]
+                           ,SIG_2 :=  VERB_OK[57]
+                           ,SIG_3 :=  VERB_OK[58]
+                           ,SIG_4 :=  VERB_OK[59]
+                           ,SIG_5 :=  VERB_OK[60]
+                           ,SIG_6 :=  VERB_OK[61]
+                           ,SIG_7 :=  VERB_OK[62]
+                           ,SIG_8 :=  VERB_OK[63]
+                           ,SD_1 :=  VERB_ID[56]
+                           ,SD_2 :=  VERB_ID[57]
+                           ,SD_3 :=  VERB_ID[58]
+                           ,SD_4 :=  VERB_ID[59]
+                           ,SD_5 :=  VERB_ID[60]
+                           ,SD_6 :=  VERB_ID[61]
+                           ,SD_7 :=  VERB_ID[62]
+                           ,SD_8 :=  VERB_ID[63]
+                           );
+            QMSGER8:=ALARM_8P_08.ERROR;
+            MSGSTA8:=ALARM_8P_08.STATUS;
+            IF ALARM_8P_08.STATUS<>W#16#19 AND
+               NOT ALARM_8P_08.ERROR AND
+               ALARM_8P_08.STATUS<>W#16#B AND
+               ALARM_8P_08.STATUS<>W#16#14 
+            THEN
+                EVENT[8]:=false;
+            END_IF;
+    ELSIF EVENT[9] THEN
+        ALARM_8P_09(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID9
+                       ,SIG_1 :=  VERB_OK[64]
+                       ,SIG_2 :=  VERB_OK[65]
+                       ,SIG_3 :=  VERB_OK[66]
+                       ,SIG_4 :=  VERB_OK[67]
+                       ,SIG_5 :=  VERB_OK[68]
+                       ,SIG_6 :=  VERB_OK[69]
+                       ,SIG_7 :=  VERB_OK[70]
+                       ,SIG_8 :=  VERB_OK[71]
+                       ,SD_1 :=  VERB_ID[64]
+                       ,SD_2 :=  VERB_ID[65]
+                       ,SD_3 :=  VERB_ID[66]
+                       ,SD_4 :=  VERB_ID[67]
+                       ,SD_5 :=  VERB_ID[68]
+                       ,SD_6 :=  VERB_ID[69]
+                       ,SD_7 :=  VERB_ID[70]
+                       ,SD_8 :=  VERB_ID[71]
+                       );
+        QMSGER9:=ALARM_8P_09.ERROR;
+        MSGSTA9:=ALARM_8P_09.STATUS;
+        IF ALARM_8P_09.STATUS<>W#16#19 AND
+           NOT ALARM_8P_09.ERROR AND
+           ALARM_8P_09.STATUS<>W#16#B AND
+           ALARM_8P_09.STATUS<>W#16#14 
+        THEN
+            EVENT[9]:=false;
+        END_IF;
+     ELSIF EVENT[10] THEN
+            ALARM_8P_10(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID10
+                           ,SIG_1 :=  VERB_OK[72]
+                           ,SIG_2 :=  VERB_OK[73]
+                           ,SIG_3 :=  VERB_OK[74]
+                           ,SIG_4 :=  VERB_OK[75]
+                           ,SIG_5 :=  VERB_OK[76]
+                           ,SIG_6 :=  VERB_OK[77]
+                           ,SIG_7 :=  VERB_OK[78]
+                           ,SIG_8 :=  VERB_OK[79]
+                           ,SD_1 :=  VERB_ID[72]
+                           ,SD_2 :=  VERB_ID[73]
+                           ,SD_3 :=  VERB_ID[74]
+                           ,SD_4 :=  VERB_ID[75]
+                           ,SD_5 :=  VERB_ID[76]
+                           ,SD_6 :=  VERB_ID[77]
+                           ,SD_7 :=  VERB_ID[78]
+                           ,SD_8 :=  VERB_ID[79]
+                           );
+            QMSGER10:=ALARM_8P_10.ERROR;
+            MSGSTA10:=ALARM_8P_10.STATUS;
+            IF ALARM_8P_10.STATUS<>W#16#19 AND
+               NOT ALARM_8P_10.ERROR AND
+               ALARM_8P_10.STATUS<>W#16#B AND
+               ALARM_8P_10.STATUS<>W#16#14 
+            THEN
+                EVENT[10]:=false;
+            END_IF;
+       
+     ELSIF EVENT[11] THEN
+            ALARM_8P_11(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID11
+                           ,SIG_1 :=  VERB_OK[80]
+                           ,SIG_2 :=  VERB_OK[81]
+                           ,SIG_3 :=  VERB_OK[82]
+                           ,SIG_4 :=  VERB_OK[83]
+                           ,SIG_5 :=  VERB_OK[84]
+                           ,SIG_6 :=  VERB_OK[85]
+                           ,SIG_7 :=  VERB_OK[86]
+                           ,SIG_8 :=  VERB_OK[87]
+                           ,SD_1 :=  VERB_ID[80]
+                           ,SD_2 :=  VERB_ID[81]
+                           ,SD_3 :=  VERB_ID[82]
+                           ,SD_4 :=  VERB_ID[83]
+                           ,SD_5 :=  VERB_ID[84]
+                           ,SD_6 :=  VERB_ID[85]
+                           ,SD_7 :=  VERB_ID[86]
+                           ,SD_8 :=  VERB_ID[87]
+                           );
+            QMSGER11:=ALARM_8P_11.ERROR;
+            MSGSTA11:=ALARM_8P_11.STATUS;
+            IF ALARM_8P_11.STATUS<>W#16#19 AND
+               NOT ALARM_8P_11.ERROR AND
+               ALARM_8P_11.STATUS<>W#16#B AND
+               ALARM_8P_11.STATUS<>W#16#14 
+            THEN
+                EVENT[11]:=false;
+            END_IF;
+    ELSIF EVENT[12] THEN
+            ALARM_8P_12(EN_R :=  true
+                           ,ID :=  W#16#EEEE
+                           ,EV_ID := EV_ID12
+                           ,SIG_1 :=  VERB_OK[88]
+                           ,SIG_2 :=  VERB_OK[89]
+                           ,SIG_3 :=  VERB_OK[90]
+                           ,SIG_4 :=  VERB_OK[91]
+                           ,SIG_5 :=  VERB_OK[92]
+                           ,SIG_6 :=  VERB_OK[93]
+                           ,SIG_7 :=  VERB_OK[94]
+                           ,SIG_8 :=  VERB_OK[95]
+                           ,SD_1 :=  VERB_ID[88]
+                           ,SD_2 :=  VERB_ID[89]
+                           ,SD_3 :=  VERB_ID[90]
+                           ,SD_4 :=  VERB_ID[91]
+                           ,SD_5 :=  VERB_ID[92]
+                           ,SD_6 :=  VERB_ID[93]
+                           ,SD_7 :=  VERB_ID[94]
+                           ,SD_8 :=  VERB_ID[95]
+                           );
+            QMSGER12:=ALARM_8P_12.ERROR;
+            MSGSTA12:=ALARM_8P_12.STATUS;
+            IF ALARM_8P_12.STATUS<>W#16#19 AND
+               NOT ALARM_8P_12.ERROR AND
+               ALARM_8P_12.STATUS<>W#16#B AND
+               ALARM_8P_12.STATUS<>W#16#14 
+            THEN
+                EVENT[12]:=false;
+            END_IF;
+    ELSIF EVENT[13] THEN
+        ALARM_8P_13(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID13
+                       ,SIG_1 :=  VERB_OK[96]
+                       ,SIG_2 :=  VERB_OK[97]
+                       ,SIG_3 :=  VERB_OK[98]
+                       ,SIG_4 :=  VERB_OK[99]
+                       ,SIG_5 :=  VERB_OK[100]
+                       ,SIG_6 :=  VERB_OK[101]
+                       ,SIG_7 :=  VERB_OK[102]
+                       ,SIG_8 :=  VERB_OK[103]
+                       ,SD_1 :=  VERB_ID[96]
+                       ,SD_2 :=  VERB_ID[97]
+                       ,SD_3 :=  VERB_ID[98]
+                       ,SD_4 :=  VERB_ID[99]
+                       ,SD_5 :=  VERB_ID[100]
+                       ,SD_6 :=  VERB_ID[101]
+                       ,SD_7 :=  VERB_ID[102]
+                       ,SD_8 :=  VERB_ID[103]
+                       );
+        QMSGER13:=ALARM_8P_13.ERROR;
+        MSGSTA13:=ALARM_8P_13.STATUS;
+        IF ALARM_8P_13.STATUS<>W#16#19 AND
+           NOT ALARM_8P_13.ERROR AND
+           ALARM_8P_13.STATUS<>W#16#B AND
+           ALARM_8P_13.STATUS<>W#16#14 
+        THEN
+            EVENT[13]:=false;
+        END_IF;
+    ELSIF EVENT[14] THEN
+        ALARM_8P_14(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID14
+                       ,SIG_1 :=  VERB_OK[104]
+                       ,SIG_2 :=  VERB_OK[105]
+                       ,SIG_3 :=  VERB_OK[106]
+                       ,SIG_4 :=  VERB_OK[107]
+                       ,SIG_5 :=  VERB_OK[108]
+                       ,SIG_6 :=  VERB_OK[109]
+                       ,SIG_7 :=  VERB_OK[110]
+                       ,SIG_8 :=  VERB_OK[111]
+                       ,SD_1 :=  VERB_ID[104]
+                       ,SD_2 :=  VERB_ID[105]
+                       ,SD_3 :=  VERB_ID[106]
+                       ,SD_4 :=  VERB_ID[107]
+                       ,SD_5 :=  VERB_ID[108]
+                       ,SD_6 :=  VERB_ID[109]
+                       ,SD_7 :=  VERB_ID[110]
+                       ,SD_8 :=  VERB_ID[111]
+                       );
+        QMSGER14:=ALARM_8P_14.ERROR;
+        MSGSTA14:=ALARM_8P_14.STATUS;
+        IF ALARM_8P_14.STATUS<>W#16#19 AND
+           NOT ALARM_8P_14.ERROR AND
+           ALARM_8P_14.STATUS<>W#16#B AND
+           ALARM_8P_14.STATUS<>W#16#14 
+        THEN
+            EVENT[14]:=false;
+        END_IF;
+    ELSIF EVENT[15] THEN
+        ALARM_8P_15(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID15
+                       ,SIG_1 :=  VERB_OK[112]
+                       ,SIG_2 :=  VERB_OK[113]
+                       ,SIG_3 :=  VERB_OK[114]
+                       ,SIG_4 :=  VERB_OK[115]
+                       ,SIG_5 :=  VERB_OK[116]
+                       ,SIG_6 :=  VERB_OK[117]
+                       ,SIG_7 :=  VERB_OK[118]
+                       ,SIG_8 :=  VERB_OK[119]
+                       ,SD_1 :=  VERB_ID[112]
+                       ,SD_2 :=  VERB_ID[113]
+                       ,SD_3 :=  VERB_ID[114]
+                       ,SD_4 :=  VERB_ID[115]
+                       ,SD_5 :=  VERB_ID[116]
+                       ,SD_6 :=  VERB_ID[117]
+                       ,SD_7 :=  VERB_ID[118]
+                       ,SD_8 :=  VERB_ID[119]
+                       );
+        QMSGER15:=ALARM_8P_15.ERROR;
+        MSGSTA15:=ALARM_8P_15.STATUS;
+        IF ALARM_8P_15.STATUS<>W#16#19 AND
+           NOT ALARM_8P_15.ERROR AND
+           ALARM_8P_15.STATUS<>W#16#B AND
+           ALARM_8P_15.STATUS<>W#16#14 
+        THEN
+            EVENT[15]:=false;
+        END_IF;
+    ELSIF EVENT[16] THEN
+        ALARM_8P_16(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID16
+                       ,SIG_1 :=  VERB_OK[120]
+                       ,SIG_2 :=  VERB_OK[121]
+                       ,SIG_3 :=  VERB_OK[122]
+                       ,SIG_4 :=  VERB_OK[123]
+                       ,SIG_5 :=  VERB_OK[124]
+                       ,SIG_6 :=  VERB_OK[125]
+                       ,SIG_7 :=  VERB_OK[126]
+                       ,SIG_8 :=  VERB_OK[127]
+                       ,SD_1 :=  VERB_ID[120]
+                       ,SD_2 :=  VERB_ID[121]
+                       ,SD_3 :=  VERB_ID[122]
+                       ,SD_4 :=  VERB_ID[123]
+                       ,SD_5 :=  VERB_ID[124]
+                       ,SD_6 :=  VERB_ID[125]
+                       ,SD_7 :=  VERB_ID[126]
+                       ,SD_8 :=  VERB_ID[127]
+                       );
+        QMSGER16:=ALARM_8P_16.ERROR;
+        MSGSTA16:=ALARM_8P_16.STATUS;
+        IF ALARM_8P_16.STATUS<>W#16#19 AND
+           NOT ALARM_8P_16.ERROR AND
+           ALARM_8P_16.STATUS<>W#16#B AND
+           ALARM_8P_16.STATUS<>W#16#14 
+        THEN
+            EVENT[16]:=false;
+        END_IF;
+    ELSIF EVENT[17] THEN
+        ALARM_8P_17(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID17
+                       ,SIG_1 :=  VERB_RED[0]
+                       ,SIG_2 :=  VERB_RED[1]
+                       ,SIG_3 :=  VERB_RED[2]
+                       ,SIG_4 :=  VERB_RED[3]
+                       ,SIG_5 :=  VERB_RED[4]
+                       ,SIG_6 :=  VERB_RED[5]
+                       ,SIG_7 :=  VERB_RED[6]
+                       ,SIG_8 :=  VERB_RED[7]
+                       ,SD_1 :=  VERB_ID[0]
+                       ,SD_2 :=  VERB_ID[1]
+                       ,SD_3 :=  VERB_ID[2]
+                       ,SD_4 :=  VERB_ID[3]
+                       ,SD_5 :=  VERB_ID[4]
+                       ,SD_6 :=  VERB_ID[5]
+                       ,SD_7 :=  VERB_ID[6]
+                       ,SD_8 :=  VERB_ID[7]
+                       );
+        QMSGER17:=ALARM_8P_17.ERROR;
+        MSGSTA17:=ALARM_8P_17.STATUS;
+        IF ALARM_8P_17.STATUS<>W#16#19 AND
+           NOT ALARM_8P_17.ERROR AND
+           ALARM_8P_17.STATUS<>W#16#B AND
+           ALARM_8P_17.STATUS<>W#16#14 
+        THEN
+            EVENT[17]:=false;
+        END_IF;
+    ELSIF EVENT[18] THEN
+        ALARM_8P_18(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID18
+                       ,SIG_1 :=  VERB_RED[8]
+                       ,SIG_2 :=  VERB_RED[9]
+                       ,SIG_3 :=  VERB_RED[10]
+                       ,SIG_4 :=  VERB_RED[11]
+                       ,SIG_5 :=  VERB_RED[12]
+                       ,SIG_6 :=  VERB_RED[13]
+                       ,SIG_7 :=  VERB_RED[14]
+                       ,SIG_8 :=  VERB_RED[15]
+                       ,SD_1 :=  VERB_ID[8]
+                       ,SD_2 :=  VERB_ID[9]
+                       ,SD_3 :=  VERB_ID[10]
+                       ,SD_4 :=  VERB_ID[11]
+                       ,SD_5 :=  VERB_ID[12]
+                       ,SD_6 :=  VERB_ID[13]
+                       ,SD_7 :=  VERB_ID[14]
+                       ,SD_8 :=  VERB_ID[15]
+                       );
+        QMSGER18:=ALARM_8P_18.ERROR;
+        MSGSTA18:=ALARM_8P_18.STATUS;
+        IF ALARM_8P_18.STATUS<>W#16#19 AND
+           NOT ALARM_8P_18.ERROR AND
+           ALARM_8P_18.STATUS<>W#16#B AND
+           ALARM_8P_18.STATUS<>W#16#14 
+        THEN
+            EVENT[18]:=false;
+        END_IF;
+    ELSIF EVENT[19] THEN
+        ALARM_8P_19(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID19
+                       ,SIG_1 :=  VERB_RED[16]
+                       ,SIG_2 :=  VERB_RED[17]
+                       ,SIG_3 :=  VERB_RED[18]
+                       ,SIG_4 :=  VERB_RED[19]
+                       ,SIG_5 :=  VERB_RED[20]
+                       ,SIG_6 :=  VERB_RED[21]
+                       ,SIG_7 :=  VERB_RED[22]
+                       ,SIG_8 :=  VERB_RED[23]
+                       ,SD_1 :=  VERB_ID[16]
+                       ,SD_2 :=  VERB_ID[17]
+                       ,SD_3 :=  VERB_ID[18]
+                       ,SD_4 :=  VERB_ID[19]
+                       ,SD_5 :=  VERB_ID[20]
+                       ,SD_6 :=  VERB_ID[21]
+                       ,SD_7 :=  VERB_ID[22]
+                       ,SD_8 :=  VERB_ID[23]
+                       );
+        QMSGER19:=ALARM_8P_19.ERROR;
+        MSGSTA19:=ALARM_8P_19.STATUS;
+        IF ALARM_8P_19.STATUS<>W#16#19 AND
+           NOT ALARM_8P_19.ERROR AND
+           ALARM_8P_19.STATUS<>W#16#B AND
+           ALARM_8P_19.STATUS<>W#16#14 
+        THEN
+            EVENT[19]:=false;
+        END_IF;
+    ELSIF EVENT[20] THEN
+        ALARM_8P_20(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID20
+                       ,SIG_1 :=  VERB_RED[24]
+                       ,SIG_2 :=  VERB_RED[25]
+                       ,SIG_3 :=  VERB_RED[26]
+                       ,SIG_4 :=  VERB_RED[27]
+                       ,SIG_5 :=  VERB_RED[28]
+                       ,SIG_6 :=  VERB_RED[29]
+                       ,SIG_7 :=  VERB_RED[30]
+                       ,SIG_8 :=  VERB_RED[31]
+                       ,SD_1 :=  VERB_ID[24]
+                       ,SD_2 :=  VERB_ID[25]
+                       ,SD_3 :=  VERB_ID[26]
+                       ,SD_4 :=  VERB_ID[27]
+                       ,SD_5 :=  VERB_ID[28]
+                       ,SD_6 :=  VERB_ID[29]
+                       ,SD_7 :=  VERB_ID[30]
+                       ,SD_8 :=  VERB_ID[31]
+                       );
+        QMSGER20:=ALARM_8P_20.ERROR;
+        MSGSTA20:=ALARM_8P_20.STATUS;
+        IF ALARM_8P_20.STATUS<>W#16#19 AND
+           NOT ALARM_8P_20.ERROR AND
+           ALARM_8P_20.STATUS<>W#16#B AND
+           ALARM_8P_20.STATUS<>W#16#14 
+        THEN
+            EVENT[20]:=false;
+        END_IF;
+    ELSIF EVENT[21] THEN
+        ALARM_8P_21(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID21
+                       ,SIG_1 :=  VERB_RED[32]
+                       ,SIG_2 :=  VERB_RED[33]
+                       ,SIG_3 :=  VERB_RED[34]
+                       ,SIG_4 :=  VERB_RED[35]
+                       ,SIG_5 :=  VERB_RED[36]
+                       ,SIG_6 :=  VERB_RED[37]
+                       ,SIG_7 :=  VERB_RED[38]
+                       ,SIG_8 :=  VERB_RED[39]
+                       ,SD_1 :=  VERB_ID[32]
+                       ,SD_2 :=  VERB_ID[33]
+                       ,SD_3 :=  VERB_ID[34]
+                       ,SD_4 :=  VERB_ID[35]
+                       ,SD_5 :=  VERB_ID[36]
+                       ,SD_6 :=  VERB_ID[37]
+                       ,SD_7 :=  VERB_ID[38]
+                       ,SD_8 :=  VERB_ID[39]
+                       );
+        QMSGER21:=ALARM_8P_21.ERROR;
+        MSGSTA21:=ALARM_8P_21.STATUS;
+        IF ALARM_8P_21.STATUS<>W#16#19 AND
+           NOT ALARM_8P_21.ERROR AND
+           ALARM_8P_21.STATUS<>W#16#B AND
+           ALARM_8P_21.STATUS<>W#16#14 
+        THEN
+            EVENT[21]:=false;
+        END_IF;
+    ELSIF EVENT[22] THEN
+        ALARM_8P_22(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID22
+                       ,SIG_1 :=  VERB_RED[40]
+                       ,SIG_2 :=  VERB_RED[41]
+                       ,SIG_3 :=  VERB_RED[42]
+                       ,SIG_4 :=  VERB_RED[43]
+                       ,SIG_5 :=  VERB_RED[44]
+                       ,SIG_6 :=  VERB_RED[45]
+                       ,SIG_7 :=  VERB_RED[46]
+                       ,SIG_8 :=  VERB_RED[47]
+                       ,SD_1 :=  VERB_ID[40]
+                       ,SD_2 :=  VERB_ID[41]
+                       ,SD_3 :=  VERB_ID[42]
+                       ,SD_4 :=  VERB_ID[43]
+                       ,SD_5 :=  VERB_ID[44]
+                       ,SD_6 :=  VERB_ID[45]
+                       ,SD_7 :=  VERB_ID[46]
+                       ,SD_8 :=  VERB_ID[47]
+                       );
+        QMSGER22:=ALARM_8P_22.ERROR;
+        MSGSTA22:=ALARM_8P_22.STATUS;
+        IF ALARM_8P_22.STATUS<>W#16#19 AND
+           NOT ALARM_8P_22.ERROR AND
+           ALARM_8P_22.STATUS<>W#16#B AND
+           ALARM_8P_22.STATUS<>W#16#14 
+        THEN
+            EVENT[22]:=false;
+        END_IF;
+    ELSIF EVENT[23] THEN
+        ALARM_8P_23(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID23
+                       ,SIG_1 :=  VERB_RED[48]
+                       ,SIG_2 :=  VERB_RED[49]
+                       ,SIG_3 :=  VERB_RED[50]
+                       ,SIG_4 :=  VERB_RED[51]
+                       ,SIG_5 :=  VERB_RED[52]
+                       ,SIG_6 :=  VERB_RED[53]
+                       ,SIG_7 :=  VERB_RED[54]
+                       ,SIG_8 :=  VERB_RED[55]
+                       ,SD_1 :=  VERB_ID[48]
+                       ,SD_2 :=  VERB_ID[49]
+                       ,SD_3 :=  VERB_ID[50]
+                       ,SD_4 :=  VERB_ID[51]
+                       ,SD_5 :=  VERB_ID[52]
+                       ,SD_6 :=  VERB_ID[53]
+                       ,SD_7 :=  VERB_ID[54]
+                       ,SD_8 :=  VERB_ID[55]
+                       );
+        QMSGER23:=ALARM_8P_23.ERROR;
+        MSGSTA23:=ALARM_8P_23.STATUS;
+        IF ALARM_8P_23.STATUS<>W#16#19 AND
+           NOT ALARM_8P_23.ERROR AND
+           ALARM_8P_23.STATUS<>W#16#B AND
+           ALARM_8P_23.STATUS<>W#16#14 
+        THEN
+            EVENT[23]:=false;
+        END_IF;
+    ELSIF EVENT[24] THEN
+        ALARM_8P_24(EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID := EV_ID24
+                       ,SIG_1 :=  VERB_RED[56]
+                       ,SIG_2 :=  VERB_RED[57]
+                       ,SIG_3 :=  VERB_RED[58]
+                       ,SIG_4 :=  VERB_RED[59]
+                       ,SIG_5 :=  VERB_RED[60]
+                       ,SIG_6 :=  VERB_RED[61]
+                       ,SIG_7 :=  VERB_RED[62]
+                       ,SIG_8 :=  VERB_RED[63]
+                       ,SD_1 :=  VERB_ID[56]
+                       ,SD_2 :=  VERB_ID[57]
+                       ,SD_3 :=  VERB_ID[58]
+                       ,SD_4 :=  VERB_ID[59]
+                       ,SD_5 :=  VERB_ID[60]
+                       ,SD_6 :=  VERB_ID[61]
+                       ,SD_7 :=  VERB_ID[62]
+                       ,SD_8 :=  VERB_ID[63]
+                       );
+        QMSGER24:=ALARM_8P_24.ERROR;
+        MSGSTA24:=ALARM_8P_24.STATUS;
+        IF ALARM_8P_24.STATUS<>W#16#19 AND
+           NOT ALARM_8P_24.ERROR AND
+           ALARM_8P_24.STATUS<>W#16#B AND
+           ALARM_8P_24.STATUS<>W#16#14 
+        THEN
+            EVENT[24]:=false;
+        END_IF;
+    ELSE;
+    END_IF;         
+END_IF;     
+ 
+MS_AS:=MS AND DW#16#FF010000;
+sbMSDemanded:=false;
+sbMSAlarm:=false;
+ 
+FOR ERROR:=0 TO 63 BY 1 DO
+    IF VERB_OK[ERROR] THEN
+        sbMSAlarm:=true;
+    END_IF;
+    IF VERB_RED[ERROR] THEN
+        sbMSDemanded:=true;
+    END_IF;
+END_FOR;
+ 
+IF NOT EN_MSG OR NOT C_DIAG_VORH THEN
+    MS_AS:=MS_AS OR DW#16#8;
+ELSE
+    IF sbMSAlarm THEN
+        MS_AS:=MS_AS OR DW#16#7;
+    ELSE
+        IF sbMSDemanded THEN
+            MS_AS:=MS_AS OR DW#16#6;
+        ELSE;
+        END_IF;
+    END_IF;
+END_IF;
+MS:=MS_AS;
+O_MS:=MS_AS;
+   
+END_FUNCTION_BLOCK

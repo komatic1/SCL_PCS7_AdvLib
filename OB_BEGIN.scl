@@ -1,0 +1,2338 @@
+// Name: FB100
+// Symbolic Name: OB_BEGIN
+// Symbol Comment: CPU Function Block
+// Family: @SYSTEM
+// Version: 7.1
+// Author: DRIVER80
+// Last modified: 08/02/2012
+// Use: SFB35,SFB54,SFC49,SFC50,SFC51,SFC6,SFC64
+// Size: 11124 byte
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+FUNCTION_BLOCK FB1100
+TITLE ='CPU Function Block'
+{ S7_hardware := 'im'; S7_m_c := 'true'; S7_alarm_ui := '1'; S7_tasklist := 'OB1,OB70,OB72,OB80,OB81,OB82,OB83,OB84,OB85,OB86,OB88,OB100,OB121,OB122'; S7_tag := 'false' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : OB_BEGIN
+VERSION : '7.1'
+ 
+//--------------------------------------------------------------------------------------------- INPUT
+VAR_INPUT
+  SUB0ID00 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 0
+  SUB0ID01 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 1
+  SUB0ID02 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 2
+  SUB0ID03 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 3
+  SUB0ID04 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 4
+  SUB0ID05 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 5
+  SUB0ID06 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 6
+  SUB0ID07 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 7
+  SUB0ID08 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 8
+  SUB0ID09 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 9
+  SUB0ID10 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 10
+  SUB0ID11 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 11
+  SUB0ID12 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 12
+  SUB0ID13 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 13
+  SUB0ID14 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET primary ID 14
+  SUB1ID00 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 0
+  SUB1ID01 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 1
+  SUB1ID02 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 2
+  SUB1ID03 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 3
+  SUB1ID04 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 4
+  SUB1ID05 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 5
+  SUB1ID06 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 6
+  SUB1ID07 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 7
+  SUB1ID08 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 8
+  SUB1ID09 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 9
+  SUB1ID10 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 10
+  SUB1ID11 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 11
+  SUB1ID12 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 12
+  SUB1ID13 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 13
+  SUB1ID14 { S7_visible := 'false'; S7_link := 'false' }: BYTE  := B#16#FF;    //SUBNET secundary ID 14
+  EN_MSG { S7_visible := 'false'; S7_link := 'false' }: BOOL  := TRUE;    //Reserve
+  EV_ID1 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID2 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID3 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID4 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  MS { S7_link := 'false'; S7_m_c := 'true' }: DWORD ;    //Maintenance State
+  CPU_RT_DATA { S7_visible := 'false' }: STRUCT    
+   OB_NUM : BYTE ;    //OB Number which caused Request Error
+   MAX_LIM : BOOL ;    //Total Current Value > MAX_LIM
+   EMERGENCY_MODE : BOOL ;    //Emergency mode, cyclic OBґs get idle cycles
+   NOT_PCS7_COMPLIANT : BOOL ;    //priority of OB3x not PCS7 compliant
+   REQUEST_ERR : BOOL ;    //Request Error
+   RES_2 : BOOL ;    //Reserved
+   RES_3 : BOOL ;    //Reserved
+   RES_4 : BOOL ;    //Reserved
+   RES_5 : BOOL ;    //Reserved
+   RES : DINT ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+ 
+//--------------------------------------------------------------------------------------------- OUTPUT
+VAR_OUTPUT
+  O_MS { S7_visible := 'false' }: DWORD ;    //Maintenance State
+  QERR { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL  := TRUE;    //1=Runtime Error
+  CPUERR_0 { S7_dynamic := 'true' }: BOOL ;    //1=CPU Failure in Rack 0
+  CPUERR_1 { S7_dynamic := 'true' }: BOOL ;    //1=CPU Failure in Rack 1
+  MASTER_0 { S7_dynamic := 'true' }: BOOL ;    //1=Master CPU in Rack 0
+  MASTER_1 { S7_dynamic := 'true' }: BOOL ;    //1=Master CPU in Rack 1
+ 
+  EN_SUB0 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 0
+  EN_SUB0_b AT EN_SUB0 : ARRAY[0..0] OF BOOL;
+ 
+  EN_SUB1 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 1
+  EN_SUB2 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 2
+  EN_SUB3 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 3
+  EN_SUB4 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 4
+  EN_SUB5 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 5
+  EN_SUB6 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 6
+  EN_SUB7 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 7
+  EN_SUB8 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 8
+  EN_SUB9 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 9
+  EN_SUB10 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 10
+  EN_SUB11 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 11
+  EN_SUB12 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 12
+  EN_SUB13 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 13
+  EN_SUB14 { S7_visible := 'false' }: BOOL ;    //Enable Subnet 14
+ 
+  CPU_DIAG : STRUCT    
+   H_MODE : BOOL ;    //1= H-System
+   V1_MODE : BOOL ;    //1= CPU DP V1 Mode
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   OB1_TIME : DINT ;    //OB1_TIME_TCK
+   OB_S : STRUCT    
+    NUM_CNT : INT ;    //Counter Startinfo OB_NR
+    NUM_01 : BYTE ;    //Startinfo OB_NO
+    NUM_02 : BYTE ;    //Startinfo OB_NO
+    NUM_03 : BYTE ;    //Startinfo OB_NO
+    NUM_04 : BYTE ;    //Startinfo OB_NO
+    NUM_05 : BYTE ;    //Startinfo OB_NO
+    NUM_06 : BYTE ;    //Startinfo OB_NO
+    NUM_07 : BYTE ;    //Startinfo OB_NO
+    NUM_08 : BYTE ;    //Startinfo OB_NO
+    NUM_09 : BYTE ;    //Startinfo OB_NO
+    NUM_10 : BYTE ;    //Startinfo OB_NO
+    NUM_11 : BYTE ;    //Startinfo OB_NO
+    NUM_12 : BYTE ;    //Startinfo OB_NO
+    NUM_13 : BYTE ;    //Startinfo OB_NO
+    NUM_14 : BYTE ;    //Startinfo OB_NO
+    NUM_15 : BYTE ;    //Startinfo OB_NO
+    NUM_16 : BYTE ;    //Startinfo OB_NO
+   END_STRUCT ;   
+   OB_72 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+   OB_70 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   
+   END_STRUCT ;   
+   OB_82 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_83 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_85 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_86 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_81 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+  END_STRUCT ;   
+  SZL_71 { S7_visible := 'false' }: STRUCT    
+   REDINF : WORD ;    //16#11= Single H-CPU, 16#12 =1v2 H-System
+   MW_RES0 : BOOL ;    //Reserved
+   MW_RES1 : BOOL ;    //Reserved
+   MW_RES2 : BOOL ;    //Reserved
+   MW_RES3 : BOOL ;    //Reserved
+   MASTER_0 : BOOL ;    //1=Master CPU in Rack0
+   MASTER_1 : BOOL ;    //1=Master CPU in Rack1
+   MW_RES6 : BOOL ;    //Reserved
+   MW_RES7 : BOOL ;    //Reserved
+   MW2_SYN : BOOL ;    //Reserved
+   MW2_RES1 : BOOL ;    //Reserved
+   MW2_RES2 : BOOL ;    //Reserved
+   MW2_RES3 : BOOL ;    //Reserved
+   CPU_RAC0 : BOOL ;    //1=CPU  in Rack0 (solo mode)
+   CPU_RAC1 : BOOL ;    //1=CPU  in Rack1 (solo mode)
+   MW2_RES6 : BOOL ;    //Reserved
+   MW2_RES7 : BOOL ;    //Reserved
+   HSFCINFO : WORD ;    //Info word for SFC90 "H_CTRL"
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   S_RES2 : BOOL ;    //Reserved
+   S_RES3 : BOOL ;    //Reserved
+   FO_ERROR : BOOL ;    //1= FO cable link up error
+   S_RES5 : BOOL ;    //Reserved
+   S_RES6 : BOOL ;    //Reserved
+   S_RES7 : BOOL ;    //Reserved
+   S_RES : BYTE ;    //Reserved
+   BZ_CPU_0 : WORD ;    //Mode of CPU in Rack 0
+   BZ_CPU_1 : WORD ;    //Mode of CPU in Rack 1
+   BZ_CPU_2 : WORD ;    //Reserved
+   CPU_VALID : BYTE ;    //1=BZ_CPU_0 valid, 2=BZ_CPU_1 valid, 3=BZ_CPU_0 + BZ_CPU_1 valid
+   CPU_RES : BYTE ;    //Reserved
+  END_STRUCT ;   
+  CPU_OB_5X { S7_visible := 'false' }: STRUCT    
+   OB_55 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_56 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_57 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+  END_STRUCT ;   
+  CPU_OB_6X { S7_visible := 'false' }: STRUCT    
+   OB_60 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_61 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_62 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_63 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_64 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+  END_STRUCT ;   
+  CPU_OB_4X { S7_visible := 'false' }: STRUCT    
+   OB_40 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_41 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_42 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_43 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_44 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;    
+   OB_45 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_46 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_47 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+  END_STRUCT ;   
+ 
+ 
+  EXT_STAT { S7_visible := 'true'; S7_m_c := 'true' }: DWORD ;    //Extended Status
+  QMSGER1 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER2 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER3 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER4 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  MSGSTA1 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message: STATUS Output
+  MSGSTA2 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message: STATUS Output
+  MSGSTA3 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message: STATUS Output
+  MSGSTA4 { S7_visible := 'false'; S7_dynamic := 'true' }: WORD ;    //Message: STATUS Output
+END_VAR
+ 
+//--------------------------------------------------------------------------------------------- STAT
+VAR
+  sdwRESERVE : DWORD ;    //Reserve fьr zukьnftige Дnderungen
+  RESTART : BOOL  := TRUE;    //Erstlaufmerker
+  SFC49_OK : BOOL  := TRUE;    //Vorbesetzung SFC49 liefert Subnet /Rack/Slot
+  BUSY_T : BOOL  := TRUE;    //0: Lesevorgang abgeschlossen 
+  OB_WECK : BOOL ;   
+  OB_W_F : BOOL ;   
+  sbSUBN_TYP : BOOL ;    //Merker SUBN_TYP
+  EINBAUF : BOOL ;    //Meldung Einbaufehler
+  UEBERLAST : BOOL ;    //Zykluszeit Ьberlast
+  SENDFEHL : BOOL ;    //Sendefehler
+  PROGFEHL : BOOL ;    //Programmierfehler  
+  PERFEHL_L : BOOL ;    //Peripheriezugriffsfehler lesend 
+  PERFEHL_S : BOOL ;    //Peripheriezugriffsfehler schreibend
+  MPSSF : BOOL ;    //Schnittstellenfehler
+  RED_FEHL : BOOL ;    //Redundanzfehler (Saenger/18.03.99)
+  s_ir : BOOL ;    //Unterbrechung eines OB durch einen anderen ( Merker Ablaufebenenwechsel ) 7.8.2
+  OB_WECK_ALARM : BYTE ;   
+  sbRED_FEHL : BOOL ;    //gemeldeter RED_FEHL
+  B1 : BYTE ;   
+  B2 : BYTE ;   
+  ZI1 : WORD ;    //Begleitwert ZI1
+  ZI2_3 : DWORD ;    //Begleitwert ZI2_3
+  M_OB72 : STRUCT    
+   ZI1 : WORD ;    //Begleitwert ZI1
+  END_STRUCT ;   
+  CPU : STRUCT    
+   BAT0_ERR : BOOL ;   
+   BAT1_ERR : BOOL ;   
+   BUF0_ERR : BOOL ;   
+   BUF1_ERR : BOOL ;   
+   POW0_ERR : BOOL ;   
+   POW1_ERR : BOOL ;   
+   CPU0_ERR : BOOL ;   
+   CPU1_ERR : BOOL ;   
+  END_STRUCT ;   
+  DELAY_OB1 : BOOL ;   
+  DELAY_START_OB1 : DINT ;   
+  DELAY_OB121 : BOOL ;   
+  DELAY_START_OB121 : DINT ;   
+  M_OB121 : STRUCT    
+   SW_FLT : BYTE ;   
+   PRIO : BYTE ;   
+   BLK_TYP : ARRAY  [0 .. 4 ] OF BYTE  := 5 (B#16#0) ;   
+   FLT_RES : BYTE ;   
+   FLT_REG : WORD ;   
+   FLT_NUM : WORD ;   
+   FLT_ADDR : WORD ;   
+  END_STRUCT ;   
+  DELAY_OB122 : BOOL ;   
+  DELAY_START_OB122 : DINT ;   
+  M_OB122 : STRUCT    
+   BLK_TYP : ARRAY  [0 .. 4 ] OF BYTE  := 5 (B#16#0) ;   
+   BLK_NUM : WORD ;   
+   MEM_ADDR : WORD ;   
+  END_STRUCT ;   
+  M_OB80 : ARRAY  [0 .. 7 ] OF STRUCT    
+   ZI1 : WORD ;    //Begleitwert ZI1
+   ZI2_3_B1 : BYTE ;    //Begleitwert ZI2_3
+   ZI2_3_B2 : BYTE ;    //Begleitwert ZI2_3
+  END_STRUCT ;   
+  byOB80 : BYTE ;  
+  byOB80_bool AT byOB80 : ARRAY[0..7] OF BOOL;
+  
+  OB85_A1_A2 : BOOL ;   
+  OB85_A3 : BOOL ;   
+  M_OB85 : STRUCT    
+   ZI1 : WORD ;    //Begleitwert ZI1
+   ZI2_3_HW : WORD ;    //Begleitwert ZI2_3
+   ZI2_3_LW : WORD ;    //Begleitwert ZI2_3
+   BLK_TYP : ARRAY  [0 .. 4 ] OF //Bausteintyp
+   BYTE  := 5 (B#16#0) ;    //Bausteintyp
+  END_STRUCT ;   
+  EVENT : ARRAY  [1 .. 20 ] OF BOOL  := 20 (FALSE) ;   
+  ASIG_1 : BOOL ;    //Alarmsignal 1
+  ASIG_2 : BOOL ;    //Alarmsignal 2
+  ASIG_3 : BOOL ;    //Alarmsignal 3
+  ASIG_4 : BOOL ;    //Alarmsignal 4
+  ASIG_5 : BOOL ;    //Alarmsignal 5
+  ASIG_6 : BOOL ;    //Alarmsignal 6
+  ASIG_7 : BOOL ;    //Alarmsignal 7
+  ASIG_8 : BOOL ;    //Alarmsignal 8
+  sbASIG_1 : BOOL ;    //Letztes Alarmsignal 1
+  sbASIG_2 : BOOL ;    //Letztes Alarmsignal 2
+  sbASIG_3 : BOOL ;    //Letztes Alarmsignal 3
+  sbASIG_4 : BOOL ;    //Letztes Alarmsignal 4
+  sbASIG_5 : BOOL ;    //Letztes Alarmsignal 5
+  sbASIG_6 : BOOL ;    //Letztes Alarmsignal 6
+  sbASIG_7 : BOOL ;    //Letztes Alarmsignal 7
+  sbASIG_8 : BOOL ;    //Letztes Alarmsignal 8
+  sbyASIG2a : BYTE ;
+  sbyASIG2a_b AT sbyASIG2a : ARRAY [0..7] OF BOOL;
+ 
+  sbyASIG2b : BYTE ;   
+  DELAY_SFB54 : BOOL ;   
+  DELAY_OB88 : BOOL ;   
+  DELAY_START_OB88 : DINT ;   
+  DELAY_START_SFB54 : DINT ;   
+  M_OB88 : STRUCT    
+   T_OB88 : WORD ;   
+   FLT_OB : BYTE ;   
+   FLT_OB_PRIO : BYTE ;   
+   BLK_TYP : ARRAY  [0 .. 4 ] OF BYTE  := 5 (B#16#0) ;   
+   FLT_NUM : WORD ;   
+   FLT_ADDR : WORD ;   
+  END_STRUCT ;   
+  sdw_STATUS : DWORD ;    //Begleitwert STATUS
+  ALARM_8P_01 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_02 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_03 : SFB35;    //Multiinstanz ALARM_8P
+  ALARM_8P_04 : SFB35;    //Multiinstanz ALARM_8P
+  RALRM : SFB54;    //Multiinstanz RALRM
+  CPU_RACK : BYTE ;   
+END_VAR
+ 
+//--------------------------------------------------------------------------------------------- TEMP
+VAR_TEMP
+  SZL_HEADER : STRUCT    
+   LENTHDR : WORD ;    //Lдnge eines Datensatzes
+   N_DR : WORD ;    //Anzahl Datensдtze
+  END_STRUCT ;   
+  DEL_CNT : DINT ;   
+  MS_AS : DWORD ;   
+  PER_ADR : WORD ;    //aktuelle Peripherieadresse
+  pbEN_SUBxx : ARRAY  [0 .. 14 ] OF BOOL ;   
+  pbSUB_ALL : BOOL ;   
+  pbEN_SUB : BOOL ;   
+  pbEN_ALT : BOOL ;   
+  SZL_BUSY : BOOL ;    //Flag: SZL in Bearbeitung
+  pbVERB_OK : BOOL ;   
+  pbVERB_RED : BOOL ;   
+  N_CON_CNT : INT ;   
+  IO_ADDR : WORD ;    //Basisadresse eines OB85
+  IO_TYPE : BYTE ;    //E/A-Kennung eines OB85
+  IOID : BYTE ;    //Bereich 2#01010100 = PE; 2#01010101 = PA
+  ERROR : INT ;    //Error SFC
+  PECOUNT : INT ;   
+  PACOUNT : INT ;   
+  GEO : STRUCT    
+   SUBNET : BYTE ;   
+   RACK : BYTE ;   
+   SLOT : BYTE ;   
+   RESERVE : ARRAY  [0 .. 12 ] OF BYTE ;   
+  END_STRUCT ;   
+  BG_ZUST : STRUCT    
+   GEOADR1 : WORD ;    //Racknr
+   GEOADR2 : WORD ;    //Steckplatz
+   LOGADR : WORD ;    //Basisadr
+   SOLLTYP : WORD ;    //Soll BG-Typ
+   ISTTYP : WORD ;    //Ist BG-TYP
+   ALARM : WORD ;    //Alarmeigenschaften der BG
+   EASTAT : WORD ;    //BG-Status
+   BER_BGBR : WORD ;    //Bereichskennung/BG-breite
+  END_STRUCT ;   
+  START_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  TINFO : STRUCT    
+   TOP_SI : STRUCT    
+    EV_CLASS : BYTE ;   
+    EV_NUM : BYTE ;   
+    PRIORITY : BYTE ;   
+    NUM : BYTE ;   
+    TYP2_3 : BYTE ;   
+    TYP1 : BYTE ;   
+    ZI1 : WORD ;   
+    ZI2_3 : DWORD ;   
+   END_STRUCT ;   
+   T : DATE_AND_TIME ;   
+   SUBNET : BYTE ;          //Mastersystem
+   RACK : BYTE ;            //Racknr.
+   SL_TYP : BYTE ;          //Slave- und Profil-Typ
+   A_INF : BYTE ;           //A-Info- Typ/Struktur-Vers
+   ET_CR_FL : BYTE ;        //ET-CR-Flags
+   ET_ER_FL : BYTE ;        //ET-ER- Flags
+   PNO_ID : WORD ;          //PNO-Ident
+  END_STRUCT ;   
+  AINFO : STRUCT    
+   D_LENGTH : BYTE ;   
+   A_TYP : BYTE ;   
+   SLOT : BYTE ;   
+   A_SPEC : BYTE ;   
+   A_0 : BYTE ;   
+   A_1 : BYTE ;   
+   A_2 : BYTE ;   
+   A_3 : BYTE ;   
+   A_4 : BYTE ;   
+   A_5 : BYTE ;   
+   A_6 : BYTE ;   
+   A_7 : BYTE ;   
+   A_8 : BYTE ;   
+   A_9 : BYTE ;   
+   A_10 : BYTE ;   
+   A_11 : BYTE ;   
+   A_12 : BYTE ;   
+   A_13 : BYTE ;   
+   A_14 : BYTE ;   
+   A_15 : BYTE ;   
+   A_16 : BYTE ;   
+   A_17 : BYTE ;   
+   A_18 : BYTE ;   
+   A_19 : BYTE ;   
+   A_20 : BYTE ;   
+   A_21 : BYTE ;   
+   A_22 : BYTE ;   
+   A_23 : BYTE ;   
+   A_24 : BYTE ;   
+   A_25 : BYTE ;   
+   A_26 : BYTE ;   
+   A_27 : BYTE ;   
+   A_28 : BYTE ;   
+   A_29 : BYTE ;   
+   A_30 : BYTE ;   
+   A_31 : BYTE ;   
+   A_32 : BYTE ;   
+   A_33 : BYTE ;   
+   A_34 : BYTE ;   
+   A_35 : BYTE ;   
+   A_36 : BYTE ;   
+   A_37 : BYTE ;   
+   A_38 : BYTE ;   
+   A_39 : BYTE ;   
+   A_40 : BYTE ;   
+   A_41 : BYTE ;   
+   A_42 : BYTE ;   
+   A_43 : BYTE ;   
+   A_44 : BYTE ;    
+   A_45 : BYTE ;   
+   A_46 : BYTE ;   
+   A_47 : BYTE ;   
+   A_48 : BYTE ;   
+   A_49 : BYTE ;   
+   A_50 : BYTE ;   
+   A_51 : BYTE ;   
+   A_52 : BYTE ;   
+   A_53 : BYTE ;   
+   A_54 : BYTE ;   
+   A_55 : BYTE ;   
+   A_56 : BYTE ;   
+   A_57 : BYTE ;   
+   A_58 : BYTE ;   
+   A_59 : BYTE ;   
+    END_STRUCT ;
+  AINFO_ar AT AINFO : ARRAY[0..63] OF BYTE;
+   
+  NEW : BOOL ;          //Alarm empfangen
+  STATUS : DWORD ;      //Funktionsergebnis/Fehlermeldung
+  STATUS_b AT STATUS : STRUCT
+    x0 : BYTE;
+    END_STRUCT;
+  STATUS_w AT STATUS : STRUCT
+    x0 : WORD;
+    x1 : WORD;
+    END_STRUCT;
+ 
+ 
+ 
+  ID : DWORD ;          //DP-Handle des DP-Slaves, von dem ein Alarm empfangen wurde
+  LEN : INT ;           //Lдnge der in AINFO eingetragen Daten
+  V1_AKTIV : BOOL ;     //Merker DP_V1-Mode ist aktiv(nicht bei Temp. Fehler SFB54, STATUS = 0xC0809600 )
+  MS_OB84 : BOOL ;   
+END_VAR
+ 
+ 
+FOR ERROR:=0 TO 63 BY 1 DO AINFO_ar[ERROR]:=0; END_FOR;    
+ 
+//Receiving an Interrupt with SFB 54 "RALRM"
+//The SFB "RALRM" receives an interrupt with all corresponding information from an I/O module
+//(centralized structure) or from a DP slave or PROFINET IO device component.
+//It supplies this information to its output parameters.
+//The  information in the output parameters contains the start information of the called OB as well
+//as information on the interrupt source.
+RALRM(MODE := 1
+            ,MLEN := 63
+            ,TINFO :=  TINFO
+            ,AINFO :=  AINFO
+            );
+ 
+NEW         :=RALRM.NEW;
+STATUS      :=RALRM.STATUS;
+ID          :=RALRM.ID;
+LEN         :=RALRM.LEN;
+ 
+V1_AKTIV:=(STATUS_b.x0 = B#16#0); // no error, no warning
+ 
+IF NOT V1_AKTIV
+THEN
+    IF  (STATUS_w.x1 = W#16#80A7) OR // DP slave or modules is occupied (temporary error
+        (STATUS_w.x1 = W#16#80C0) OR // read constrain conflict          
+        (STATUS_w.x1 = W#16#80C2) OR // resource busy
+        (STATUS_w.x1 = W#16#80C3) OR // resource unavailable         
+        (STATUS_w.x1 = W#16#80C4)    // Internal temporary error. Job could not be carried out.
+    THEN
+        STATUS_w.x1:=W#16#80C4;      // Internal temporary error. Job could not be carried out.
+    ELSE
+        // Reading OB Start Information with SFC 6 "RD_SINFO"
+        ERROR:=RD_SINFO(TOP_SI := TINFO.TOP_SI
+                 ,START_UP_SI :=  START_UP_SI
+                 );
+        IF STATUS_w.x1 = W#16#8096   // A master-reserve switchover has occurred in an H system,
+        THEN                         // and the previous master CPU has gone into STOP mode.
+            STATUS_w.x1:=W#16#80C4;  // Internal temporary error. Job could not be carried out.
+        ELSE
+            IF NOT DELAY_SFB54
+            THEN
+                DELAY_SFB54:=true;
+                DELAY_START_SFB54:=CPU_DIAG.OB1_TIME;
+                EVENT[4]:=true;
+                ASIG_2:=true;
+                sdw_STATUS:=STATUS;
+            END_IF;
+        END_IF;           
+    END_IF;
+END_IF;     
+ 
+IF RESTART THEN RESTART:=false; TINFO.TOP_SI.NUM:=B#16#64; END_IF;
+ 
+pbEN_SUB:=true;
+SZL_BUSY:=true;
+pbSUB_ALL:=false;
+IO_ADDR:=TINFO.TOP_SI.ZI1;
+IO_TYPE:=TINFO.TOP_SI.TYP1;
+MS_AS:=MS AND DW#16#FF010000;
+ 
+CASE BYTE_TO_INT(TINFO.TOP_SI.NUM) OF
+1:                                                    // OB1 Cycle Execution         
+    pbSUB_ALL:=true;
+    CPU_DIAG.OB1_TIME:=TIME_TO_DINT(TIME_TCK());
+    
+    IF NOT EVENT[1]
+    THEN
+        EVENT[1]:=PERFEHL_L OR PERFEHL_S OR EINBAUF OR OB85_A1_A2 OR OB85_A3 OR RED_FEHL;
+        EINBAUF:=false;
+        OB85_A3:=false;
+        OB85_A1_A2:=false;
+        RED_FEHL:=false;
+        PERFEHL_L:=false;
+        PERFEHL_S:=false;
+    END_IF;
+ 
+    IF NOT EVENT[2]
+    THEN
+        EVENT[2]:=PROGFEHL OR sbyASIG2a_b[3] OR sbyASIG2a_b[4] OR sbyASIG2a_b[7];
+        PROGFEHL:=false;
+        sbyASIG2a_b[3]:=false;
+        sbyASIG2a_b[4]:=false;
+        sbyASIG2a_b[7]:=false;
+    END_IF;
+   
+    IF NOT EVENT[3]
+    THEN
+        FOR ERROR:= 0 TO 7 BY 1 DO
+            IF byOB80_bool[ERROR] AND (ERROR<>1 OR (ERROR=1 AND (NOT CPU_RT_DATA.REQUEST_ERR))) 
+            THEN
+                byOB80_bool[ERROR]:=false;
+                EVENT[3]:=true;
+                EXIT;
+            END_IF;
+        END_FOR;
+    END_IF;
+   
+    IF DELAY_SFB54
+    THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME-DELAY_START_SFB54;
+       
+        IF DEL_CNT < 0 THEN DEL_CNT:=DEL_CNT - (-2147483648); END_IF;
+        DELAY_SFB54:=DEL_CNT <= 10000;
+        IF NOT DELAY_SFB54
+        THEN
+            ASIG_2:=false;
+            EVENT[4]:=true;
+        END_IF;
+    END_IF;
+   
+    IF  DELAY_OB88
+    THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME-DELAY_START_OB88;
+        IF DEL_CNT<0
+        THEN
+            DEL_CNT:=DEL_CNT-(-2147483648);
+        END_IF;
+ 
+        DELAY_OB88:=DEL_CNT<=10000;
+ 
+        IF NOT DELAY_OB88
+        THEN
+            ASIG_1:=false;
+            EVENT[4]:=true;
+        END_IF;
+    END_IF;
+       
+    IF DELAY_OB121
+    THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME - DELAY_START_OB121;
+        IF DEL_CNT < 0
+        THEN
+            DEL_CNT:=DEL_CNT - (-2147483648);
+        END_IF; 
+         
+       DELAY_OB121:=DEL_CNT <= 10000;
+       
+    END_IF;
+   
+    IF DELAY_OB122
+    THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME - DELAY_START_OB122;
+        IF DEL_CNT < 0
+        THEN
+            DEL_CNT:=DEL_CNT - (-2147483648);
+        END_IF;
+       
+        DELAY_OB122:=DEL_CNT <= 10000;
+    END_IF;
+   
+    IF DELAY_OB1
+    THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME - DELAY_START_OB1;
+        IF DEL_CNT < 0
+        THEN
+            DEL_CNT:=DEL_CNT - (-2147483648);
+        END_IF;
+        DELAY_OB1:=DEL_CNT <= 10000;
+    END_IF;
+           
+40:                                                           // OB40 Hardware Interrupt 0
+    CPU_OB_4X.OB_40.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_40.STATUS:=STATUS;
+41:                                                           // OB41 Hardware Interrupt 1
+    CPU_OB_4X.OB_41.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_41.STATUS:=STATUS;   
+42:                                                           // OB42 Hardware Interrupt 2
+    CPU_OB_4X.OB_42.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_42.STATUS:=STATUS;
+43:                                                           // OB43 Hardware Interrupt 3
+    CPU_OB_4X.OB_43.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_43.STATUS:=STATUS;
+44:                                                           // OB44 Hardware Interrupt 4
+    CPU_OB_4X.OB_44.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_44.STATUS:=STATUS;
+45:                                                           // OB45 Hardware Interrupt 5
+    CPU_OB_4X.OB_45.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_45.STATUS:=STATUS;
+46:                                                           // OB46 Hardware Interrupt 6
+    CPU_OB_4X.OB_46.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_46.STATUS:=STATUS;
+47:                                                           // OB47 Hardware Interrupt 7
+    CPU_OB_4X.OB_47.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_4X.OB_47.STATUS:=STATUS;
+ 
+55:                                                           // OB55 DP: STATUS ALARM
+    CPU_OB_5X.OB_55.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_5X.OB_55.STATUS:=STATUS;
+    IF NOT V1_AKTIV THEN pbEN_SUB:=(STATUS_w.x1 = W#16#80C4); END_IF;
+   
+56:                                                           // OB56 DP: UPDATE ALARM
+    CPU_OB_5X.OB_56.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_5X.OB_56.STATUS:=STATUS;
+    IF NOT V1_AKTIV THEN pbEN_SUB:=(STATUS_w.x1 = W#16#80C4); END_IF;
+ 
+57:                                                           // OB57 DP: MANUFACTURE ALARM
+    CPU_OB_5X.OB_57.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_5X.OB_57.STATUS:=STATUS;
+    IF NOT V1_AKTIV THEN pbEN_SUB:=(STATUS_w.x1 = W#16#80C4); END_IF;
+ 
+60:                                                           // OB60 Multicomputing Interrupt
+    CPU_OB_6X.OB_60.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_6X.OB_60.STATUS:=STATUS;
+    pbEN_SUB:=false;
+ 
+61:                                                           // OB61 DP Synchronous Interrupt 1
+    CPU_OB_6X.OB_61.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_6X.OB_61.STATUS:=STATUS;
+    pbEN_SUB:=false;
+   
+62:                                                           // OB62 DP Synchronous Interrupt 2
+    CPU_OB_6X.OB_62.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_6X.OB_62.STATUS:=STATUS;
+    pbEN_SUB:=false;
+ 
+63:                                                           // OB63 DP Synchronous Interrupt 3
+    CPU_OB_6X.OB_63.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_6X.OB_63.STATUS:=STATUS;
+    pbEN_SUB:=false;
+ 
+64:                                                           // OB64 DP Synchronous Interrupt 4
+    CPU_OB_6X.OB_64.TOP_SI:=TINFO.TOP_SI;
+    CPU_OB_6X.OB_64.STATUS:=STATUS;
+    pbEN_SUB:=false;
+ 
+70:                                                           // OB70 Redundancy I/O Fault 1
+    CPU_DIAG.OB_70.TOP_SI:=TINFO.TOP_SI;
+    IF V1_AKTIV
+    THEN
+        CPU_DIAG.OB_70.SUBNET:=TINFO.SUBNET;
+        IF TINFO.TOP_SI.EV_NUM = B#16#A2
+        THEN
+            CPU_DIAG.OB_70.RACK:=B#16#FF;
+        ELSE
+            CPU_DIAG.OB_70.RACK:=TINFO.RACK;
+        END_IF;
+    ELSE
+        CPU_DIAG.OB_70.SUBNET:=DWORD_TO_BYTE(SHR(IN:=(TINFO.TOP_SI.ZI2_3 AND DW#16#FF00), N:=8));
+        IF TINFO.TOP_SI.EV_NUM = B#16#A2
+        THEN
+            CPU_DIAG.OB_70.RACK:=B#16#FF;
+        ELSE
+            IF TINFO.TOP_SI.EV_NUM = B#16#A3
+            THEN
+                CPU_DIAG.OB_70.RACK:=WORD_TO_BYTE(DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FF));
+            END_IF;
+        END_IF;
+    END_IF;
+    CPU_DIAG.OB_70.STATUS:=STATUS;
+    SZL_BUSY:=false;
+    GEO.SUBNET:=CPU_DIAG.OB_70.SUBNET;
+           
+72:                                                                         // OB72 Redundancy Fault
+    SZL_BUSY:=false;
+    pbSUB_ALL:=true;
+    CPU_DIAG.OB_72.TOP_SI:=TINFO.TOP_SI;
+    TINFO.TOP_SI.ZI1:=TINFO.TOP_SI.ZI1 AND W#16#FF00;
+    EVENT[1]:=true;
+    IF TINFO.TOP_SI.EV_NUM = B#16#3
+    THEN
+        SZL_71.CPU_ERR0:=false;
+        SZL_71.CPU_ERR1:=false;
+        SZL_71.MASTER_0:=TINFO.TOP_SI.ZI1 = W#16#F800;
+        SZL_71.MASTER_1:=TINFO.TOP_SI.ZI1 = W#16#F900;
+    ELSE
+        IF (TINFO.TOP_SI.EV_NUM = B#16#20) OR
+           (TINFO.TOP_SI.EV_NUM = B#16#21) OR
+           (TINFO.TOP_SI.EV_NUM = B#16#22) OR
+           (TINFO.TOP_SI.EV_NUM = B#16#23)
+        THEN
+            IF SZL_71.MASTER_0
+            THEN
+                SZL_71.CPU_ERR1:=true;
+               
+            ELSE
+                SZL_71.CPU_ERR0:=true;
+                
+            END_IF;
+        ELSE    
+            SZL_71.CPU_ERR1:=(TINFO.TOP_SI.ZI1 = W#16#F800) OR (TINFO.TOP_SI.ZI1 = W#16#F100);
+            SZL_71.CPU_ERR0:=(TINFO.TOP_SI.ZI1 = W#16#F900) OR (TINFO.TOP_SI.ZI1 = W#16#F000);  
+           
+            IF SZL_71.CPU_ERR0
+            THEN
+                SZL_71.MASTER_1:=true;
+                SZL_71.MASTER_0:=false;
+            ELSE
+                SZL_71.MASTER_0:=true;
+                SZL_71.MASTER_1:=false;
+            END_IF;
+        END_IF;
+       
+    END_IF;   
+   
+    MASTER_0:=SZL_71.MASTER_0;
+    MASTER_1:=SZL_71.MASTER_1;
+    CPUERR_0:=SZL_71.CPU_ERR0;
+    CPUERR_1:=SZL_71.CPU_ERR1;
+    CPU_DIAG.CPU_ERR0:=CPUERR_0;
+    CPU_DIAG.CPU_ERR1:=CPUERR_1;  
+   
+    IF CPUERR_0
+    THEN
+        CPU_RACK:=B#16#0;
+    ELSE
+        IF CPUERR_1
+        THEN
+            CPU_RACK:=B#16#1;
+        END_IF;
+    END_IF;
+    ASIG_3:=CPUERR_0 OR CPUERR_1;
+   
+ 80://OB80 Cycle Time Fault
+    //The operating system OF the S7-300 CPU calls OB80 whenever an error occurs
+    //WHILE executing an OB. Such errors include: exceeding the cycle TIME,
+    //an acknowledgement error when executing an OB, moving the TIME forward so that the
+    //start TIME FOR the OB is skipped, resume RUN mode after CiR. IF, FOR example,
+    //a start event FOR a cyclic interrupt OB occurs WHILE the same OB is still being
+    //executed following a previous call, the operating system calls OB80.
+  
+    pbEN_SUB:=false;
+    IF TINFO.TOP_SI.EV_NUM = B#16#1 
+    THEN
+        ERROR:=0;
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#2   
+    THEN
+        ERROR:=-1;
+        IF CPU_RT_DATA.REQUEST_ERR
+        THEN
+            ERROR:=1;
+        END_IF;
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#7
+    THEN
+        ERROR:=4;
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#5 OR TINFO.TOP_SI.EV_NUM = B#16#6
+    THEN
+        FOR ERROR:=10 TO 17 BY 1 DO
+             TINFO.TOP_SI.ZI1:=SHR(IN:=TINFO.TOP_SI.ZI1,N:=1);
+             IF TINFO.TOP_SI.ZI1 = W#16#0
+             THEN
+                TINFO.TOP_SI.ZI1:=INT_TO_WORD(ERROR);
+                EXIT;
+            END_IF;
+           
+         END_FOR;
+        
+         IF TINFO.TOP_SI.EV_NUM = B#16#5
+         THEN
+            ERROR:=2;
+         ELSE
+            ERROR:=3;
+         END_IF;
+         ZI1:=TINFO.TOP_SI.ZI1;
+        
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#8
+    THEN
+        ERROR:=5;
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#9
+    THEN
+        ERROR:=6;
+    ELSIF TINFO.TOP_SI.EV_NUM = B#16#A
+    THEN
+        ERROR:=7;
+    ELSE
+        ERROR:=-1;
+    END_IF;
+  
+    IF ERROR<>-1
+    THEN
+        byOB80_bool[ERROR]:=true;
+        M_OB80[ERROR].ZI1:=TINFO.TOP_SI.ZI1;
+        M_OB80[ERROR].ZI2_3_B1:=WORD_TO_BYTE(DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FF));
+        M_OB80[ERROR].ZI2_3_B2:=WORD_TO_BYTE(DWORD_TO_WORD(SHR(IN:=TINFO.TOP_SI.ZI2_3  AND DW#16#FFFF,N:=8)));
+        EVENT[3]:=true;
+    END_IF;
+   
+ 
+81:     
+    SZL_BUSY:=false;
+    GEO.SUBNET:=B#16#0;
+    CPU_DIAG.OB_81.TOP_SI:=TINFO.TOP_SI;
+ 
+82:     
+    CPU_DIAG.OB_82.TOP_SI:=TINFO.TOP_SI;
+    CPU_DIAG.OB_82.STATUS:=STATUS;
+    IF NOT V1_AKTIV
+    THEN
+        pbEN_SUB:=STATUS_w.x1 = W#16#80C4;
+    END_IF;
+       
+83:
+    CPU_DIAG.OB_83.TOP_SI:=TINFO.TOP_SI;
+    CPU_DIAG.OB_83.STATUS:=STATUS;
+ 
+84:  
+    IF TINFO.TOP_SI.EV_CLASS=B#16#39
+    THEN
+        IF TINFO.TOP_SI.EV_NUM=B#16#81
+        THEN
+            MPSSF:=TINFO.TOP_SI.EV_CLASS=B#16#39;
+            EVENT[1]:=true;
+        ELSE
+            RED_FEHL:=TINFO.TOP_SI.EV_NUM=B#16#86;
+            EVENT[1]:=RED_FEHL;
+        END_IF;  
+    END_IF;
+   
+    IF TINFO.TOP_SI.EV_CLASS=B#16#35
+    THEN
+        sbyASIG2a_b[3]:=TINFO.TOP_SI.EV_NUM=B#16#82;
+        sbyASIG2a_b[4]:=TINFO.TOP_SI.EV_NUM=B#16#83;
+        sbyASIG2a_b[5]:=TINFO.TOP_SI.EV_NUM=B#16#85;
+        sbyASIG2a_b[7]:=TINFO.TOP_SI.EV_NUM=B#16#87;
+        EVENT[2]:=true;
+    END_IF;
+   
+    pbEN_SUB:=false;
+ 
+85://Priority Class Error Organization Block (OB85)
+//The operating system OF the CPU calls OB85 whenever one OF the following events occurs:
+//·    Start event FOR an OB that has NOT been loaded (except OB80. OB81, OB82, OB83 AND OB86).
+//·    Error when the operating system accesses a module.
+//·    I/O access error during update OF the process image BY the system
+//(IF the OB85 call was NOT suppressed due TO the configuration).
+ 
+    IO_ADDR:=DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF);
+    CPU_DIAG.OB_85.TOP_SI:=TINFO.TOP_SI;
+    CPU_DIAG.OB_85.STATUS:=STATUS;
+   
+    CASE BYTE_TO_INT(TINFO.TOP_SI.EV_NUM) OF
+        161,162 :
+            pbEN_SUB:=false;
+            OB85_A1_A2:=true;
+            M_OB85.ZI1:=DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FF);
+       
+        163 :
+            pbEN_SUB:=false;
+            OB85_A3:=true;
+            M_OB85.ZI1:=TINFO.TOP_SI.ZI1;
+           
+        177,179:
+            IO_TYPE:=B#16#54;
+           
+        178,180:
+            IO_TYPE:=B#16#55;   
+    END_CASE;
+ 
+    IF NOT pbEN_SUB
+    THEN
+        M_OB85.ZI2_3_LW:=IO_ADDR;
+        M_OB85.ZI2_3_HW:=DWORD_TO_WORD(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF0000,N:=16));
+       
+        IF TINFO.TOP_SI.TYP2_3=B#16#88
+        THEN
+            M_OB85.BLK_TYP[0]:=B#16#4F;
+            M_OB85.BLK_TYP[1]:=B#16#42;
+        ELSE   
+            IF TINFO.TOP_SI.TYP2_3=B#16#8A
+            THEN
+                M_OB85.BLK_TYP[0]:=B#16#44;
+                M_OB85.BLK_TYP[1]:=B#16#42;
+            ELSE   
+                IF TINFO.TOP_SI.TYP2_3=B#16#8C
+                THEN
+                    M_OB85.BLK_TYP[0]:=B#16#46;
+                    M_OB85.BLK_TYP[1]:=B#16#43;     
+                ELSE
+                    IF TINFO.TOP_SI.TYP2_3=B#16#8E
+                    THEN
+                        M_OB85.BLK_TYP[0]:=B#16#46;
+                        M_OB85.BLK_TYP[1]:=B#16#42;
+                    ELSE
+                        M_OB85.BLK_TYP[0]:=B#16#58;
+                        M_OB85.BLK_TYP[1]:=B#16#58;
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF; 
+        EVENT[1]:=true;
+    ELSE
+        V1_AKTIV:=false;   
+    END_IF;
+ 
+86: // Rack Failure Organization Block (OB86)
+    CPU_DIAG.OB_86.TOP_SI:=TINFO.TOP_SI;
+    CPU_DIAG.OB_86.STATUS:=STATUS; 
+    CPU_DIAG.OB_86.SUBNET:=DWORD_TO_BYTE(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FF00,N:=8));
+    CPU_DIAG.OB_86.RACK:=B#16#FF;
+   
+   
+    CASE BYTE_TO_INT(TINFO.TOP_SI.EV_NUM) OF
+        193,194,198 :
+        // B#16#C1 Expansion rack failure/operational again
+        // B#16#C2 Expansion rack operational again  (with discrepancy between expected and actual configuration)
+        // B#16#C6 Expansion rack operational again, but still and error with module parameters.   
+            CPU_DIAG.OB_86.SUBNET:=B#16#0;
+        195 :
+        // B#16#C3 Distributed I/O devices: failure of a DP master system
+            CPU_DIAG.OB_86.SUBNET:=DWORD_TO_BYTE(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FF00,N:=8));
+        196,197,199,200 :
+        // B#16#C4 Failure of a DP station
+        // B#16#C5 Return of the station, but station faulty
+        // B#16#C7 Return of a DP station, but error in module parameter assignment  
+        // B#16#C8 Return of a DP station, however discrepancy in configured and actual configuration
+            CPU_DIAG.OB_86.RACK:=WORD_TO_BYTE(DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FF));
+    END_CASE;
+    SZL_BUSY:=false;
+    GEO.SUBNET:=CPU_DIAG.OB_86.SUBNET;   
+ 
+88: // Processing Interrupt OB(OB88)
+//The CPU operating system calls OB88 after a PROGRAM block execution is been aborted. Examples OF possible causes FOR this interruption may be:
+//·    the nesting depth OF synchronous errors is too high
+//·    the nesting depth OF block calls (I-Stack) is too high
+//·    Error during allocation OF local data
+    IF NOT DELAY_OB88
+    THEN
+        DELAY_OB88:=true;
+        DELAY_START_OB88:=CPU_DIAG.OB1_TIME;
+        EVENT[4]:=true;
+        ASIG_1:=true;
+        M_OB88.T_OB88:=BYTE_TO_WORD(TINFO.TOP_SI.EV_NUM);
+        M_OB88.FLT_OB:=WORD_TO_BYTE(TINFO.TOP_SI.ZI1 AND W#16#FF);
+        M_OB88.FLT_OB_PRIO:=WORD_TO_BYTE(SHR(IN:=TINFO.TOP_SI.ZI1 AND W#16#FF00,N:=8));
+        M_OB88.FLT_ADDR:=DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF);
+        M_OB88.FLT_NUM:=DWORD_TO_WORD(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF0000,N:=16)); 
+       
+        IF TINFO.TOP_SI.TYP2_3=B#16#88
+        THEN
+            M_OB88.BLK_TYP[0]:=B#16#4F;
+            M_OB88.BLK_TYP[1]:=B#16#42;
+        ELSE
+            IF TINFO.TOP_SI.TYP2_3=B#16#8A
+            THEN
+                M_OB88.BLK_TYP[0]:=B#16#44;
+                M_OB88.BLK_TYP[1]:=B#16#42;
+            ELSE
+                IF TINFO.TOP_SI.TYP2_3=B#16#8C
+                THEN
+                    M_OB88.BLK_TYP[0]:=B#16#46;
+                    M_OB88.BLK_TYP[1]:=B#16#43;
+                ELSE
+                    IF TINFO.TOP_SI.TYP2_3=B#16#8E
+                    THEN
+                        M_OB88.BLK_TYP[0]:=B#16#46;
+                        M_OB88.BLK_TYP[1]:=B#16#42;
+                    ELSE
+                        M_OB88.BLK_TYP[0]:=B#16#58;
+                        M_OB88.BLK_TYP[1]:=B#16#58;
+                    END_IF;
+                END_IF; 
+            END_IF;
+        END_IF;
+    END_IF;  
+    pbEN_SUB:=false;  
+    
+100: //Startup Organization Blocks (OB100)
+//The CPU executes a startup as follows:
+//·    After POWER ON
+//·    Whenever you switch the mode selector from STOP TO RUN-P
+//·    After a request using a communication FUNCTION (menu command from the programming device OR BY calling the communication FUNCTION blocks 19 "START" OR 21 "RESUME" on a different CPU).
+//·    Synchronization in multicomputing
+//·    In an H system after link-up (only on the standby CPU)  
+ 
+    CPU_DIAG.H_MODE:=true;
+    BUSY_T:=true;
+    
+    FOR ERROR:=1 TO 4 BY 1 DO
+        EVENT[ERROR]:=true;
+    END_FOR;
+ 
+    SZL_BUSY:=false;
+    pbSUB_ALL:=true;
+    CPU_DIAG.OB_S.NUM_CNT:=0;
+    EINBAUF:=false;
+    CPU_DIAG.V1_MODE:=false;
+ 
+   
+121: // Programming Error Organization Block (OB121)
+//Description
+//The operating system OF the CPU calls OB121 whenever an event occurs that
+//is caused BY an error related TO the processing OF the PROGRAM. FOR example,
+//IF your PROGRAM calls a block that has NOT been loaded on the CPU, OB121 is called.
+ 
+    IF NOT DELAY_OB121
+    THEN
+        PROGFEHL:=true;
+        EVENT[2]:=true;
+        DELAY_OB121:=true;
+        DELAY_START_OB121:=CPU_DIAG.OB1_TIME;
+        M_OB121.SW_FLT:=TINFO.TOP_SI.EV_NUM;
+        M_OB121.PRIO:=TINFO.TOP_SI.PRIORITY;
+        M_OB121.FLT_RES:=TINFO.TOP_SI.TYP1;
+        M_OB121.FLT_REG:=TINFO.TOP_SI.ZI1;
+        M_OB121.FLT_ADDR:=DWORD_TO_WORD(TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF);
+        M_OB121.FLT_NUM:=DWORD_TO_WORD(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF0000,N:=16));
+       
+        IF TINFO.TOP_SI.TYP2_3=B#16#88
+        THEN
+            M_OB121.BLK_TYP[0]:=B#16#4F;
+            M_OB121.BLK_TYP[1]:=B#16#42;  
+        ELSE
+            IF TINFO.TOP_SI.TYP2_3=B#16#8A
+            THEN
+                M_OB121.BLK_TYP[0]:=B#16#44;
+                M_OB121.BLK_TYP[1]:=B#16#42;
+            ELSE
+                IF TINFO.TOP_SI.TYP2_3=B#16#8C
+                THEN
+                    M_OB121.BLK_TYP[0]:=B#16#46;
+                    M_OB121.BLK_TYP[1]:=B#16#43;
+                ELSE
+                    IF TINFO.TOP_SI.TYP2_3=B#16#8E
+                    THEN
+                        M_OB121.BLK_TYP[0]:=B#16#46;
+                        M_OB121.BLK_TYP[1]:=B#16#42;
+                    ELSE
+                        M_OB121.BLK_TYP[0]:=B#16#58;
+                        M_OB121.BLK_TYP[1]:=B#16#58;
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF;  
+    END_IF;     
+    pbEN_SUB:=false; 
+ 
+122://I/O Access Error Organization Block (OB122)     
+//Description
+//The operating system OF the CPU calls OB122 whenever an error occurs
+//WHILE accessing data on a module. FOR example, IF the
+//CPU detects a read error when accessing data on an I/O module,
+//the operating system calls OB122.
+ 
+    IF NOT DELAY_OB122
+    THEN
+        EVENT[1]:=true;
+        IF TINFO.TOP_SI.EV_NUM=B#16#42
+        THEN
+            PERFEHL_L:=true;
+        ELSE
+            IF TINFO.TOP_SI.EV_NUM=B#16#43
+            THEN
+                PERFEHL_S:=true;
+            END_IF;
+        END_IF;
+       
+        M_OB122.MEM_ADDR:=TINFO.TOP_SI.ZI1;
+        M_OB122.BLK_NUM:=DWORD_TO_WORD(SHR(IN:=TINFO.TOP_SI.ZI2_3 AND DW#16#FFFF0000,N:=16));  
+ 
+        IF TINFO.TOP_SI.TYP2_3=B#16#88
+        THEN
+            M_OB122.BLK_TYP[0]:=B#16#4F;
+            M_OB122.BLK_TYP[1]:=B#16#42;
+        ELSE
+            IF TINFO.TOP_SI.TYP2_3=B#16#8A
+            THEN
+                M_OB122.BLK_TYP[0]:=B#16#44;
+                M_OB122.BLK_TYP[1]:=B#16#42;
+            ELSE
+                IF TINFO.TOP_SI.TYP2_3=B#16#8C
+                THEN
+                    M_OB122.BLK_TYP[0]:=B#16#46;
+                    M_OB122.BLK_TYP[1]:=B#16#43;
+                ELSE
+                    IF TINFO.TOP_SI.TYP2_3=B#16#8E
+                    THEN
+                        M_OB122.BLK_TYP[0]:=B#16#46;
+                        M_OB122.BLK_TYP[1]:=B#16#42;
+                    ELSE
+                        M_OB122.BLK_TYP[0]:=B#16#58;
+                        M_OB122.BLK_TYP[1]:=B#16#58;
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF;      
+        DELAY_START_OB121:=CPU_DIAG.OB1_TIME;
+        DELAY_OB122:=true;
+    END_IF;     
+    pbEN_SUB:=false;
+ELSE:
+    pbEN_SUB:=false;  
+END_CASE;
+ 
+IF pbEN_SUB AND SZL_BUSY
+THEN
+    IF NOT V1_AKTIV
+    THEN
+        IF SFC49_OK
+        THEN
+            //Querying the Module Slot Belonging to a Logical Address with SFC 49 "LGC_GADR"
+            ERROR:=LGC_GADR(IOID := IO_TYPE
+                     ,LADDR := IO_ADDR AND W#16#7FFF 
+                     ,AREA := IOID
+                     ,RACK := SZL_HEADER.LENTHDR
+                     ,SLOT := SZL_HEADER.N_DR
+                     ,SUBADDR := PER_ADR 
+                     );
+            GEO.SUBNET:=WORD_TO_BYTE(SHR(IN:=SZL_HEADER.LENTHDR AND W#16#FF00,N:=8));
+            GEO.RACK:=WORD_TO_BYTE(SZL_HEADER.LENTHDR AND W#16#FF);
+            GEO.SLOT:=WORD_TO_BYTE(SZL_HEADER.N_DR AND W#16#FF);
+           
+            IF IOID=B#16#2 AND GEO.SUBNET=B#16#0
+            THEN
+                SFC49_OK:=false;
+            ELSE
+                SFC49_OK:=true;
+            END_IF;
+        END_IF;
+ 
+        IF NOT SFC49_OK
+        THEN
+            //Querying all Logical Addresses of a Module with SFC 50 "RD_LGADR"
+            //You start with one logical address of a module. With SFC 50 "RD_LGADR" (read
+            //module logical addresses), you obtain all the declared logical addresses OF this
+            //module. You have already assigned addresses TO modules previously with STEP 7.
+            //SFC 50 enters the logical addresses obtained in the field PEADDR OR in the field
+            //PAADDR in ascending order.
+            ERROR:=RD_LGADR(IOID := IO_TYPE
+                     ,LADDR := IO_ADDR
+                     ,PEADDR := SZL_HEADER.LENTHDR
+                     ,PECOUNT := PECOUNT
+                     ,PAADDR := SZL_HEADER.N_DR 
+                     ,PACOUNT := PACOUNT
+                     );
+            IF  ERROR=0 OR ERROR=-32606 OR ERROR=-32605
+            THEN
+                IF PECOUNT=1 AND IO_TYPE=B#16#54
+                THEN
+                    IO_ADDR:=SZL_HEADER.LENTHDR; 
+                END_IF;
+               
+                IF PACOUNT=1 AND IO_TYPE=B#16#55
+                THEN
+                    IO_ADDR:=SZL_HEADER.N_DR OR W#16#8000; 
+                END_IF;
+               
+                SZL_BUSY:=false;
+               
+                REPEAT
+                    //Reading a System Status List or Partial List with SFC 51 "RDSYSST"
+                    //W#16#0C91  Module status information OF a module in the central rack OR
+                    //OF an integrated DP interface module OR an integrated
+                    //PROFINET interface module via the logical base address
+                    ERROR:=RDSYSST(REQ := true
+                            ,SZL_ID := W#16#C91
+                            ,INDEX := IO_ADDR
+                            ,BUSY := SZL_BUSY
+                            ,SZL_HEADER := SZL_HEADER
+                            ,DR := GEO
+                            );
+                        
+                UNTIL NOT SZL_BUSY
+                END_REPEAT;
+           
+                IF ERROR=0
+                THEN
+                    //Querying the Module Slot Belonging to a Logical Address with SFC 49 "LGC_GADR"
+                    ERROR:=LGC_GADR(IOID := IO_TYPE
+                             ,LADDR := IO_ADDR AND W#16#7FFF
+                             ,AREA := IOID
+                             ,RACK := SZL_HEADER.LENTHDR
+                             ,SLOT := SZL_HEADER.N_DR
+                             ,SUBADDR := PER_ADR
+                             );
+                ELSE
+                    ;
+                END_IF;
+               
+                IF ERROR=0
+                THEN
+                    GEO.RACK:=WORD_TO_BYTE(SZL_HEADER.LENTHDR AND W#16#FF);
+                    GEO.SLOT:=WORD_TO_BYTE(SZL_HEADER.N_DR AND W#16#FF);                   
+                ELSE
+                    pbEN_SUB:=false;
+                END_IF;
+            ELSE   
+                pbEN_SUB:=false;     
+            END_IF;
+        ELSE 
+            ;
+        END_IF;
+ 
+  
+ 
+        IF pbEN_SUB 
+        THEN
+            IF TINFO.TOP_SI.NUM=B#16#55
+            THEN
+                CPU_DIAG.OB_85.SUBNET:=GEO.SUBNET;
+                CPU_DIAG.OB_85.RACK:=GEO.RACK;
+                CPU_DIAG.OB_85.SLOT:=GEO.SLOT;
+            ELSIF TINFO.TOP_SI.NUM=B#16#52
+            THEN
+                CPU_DIAG.OB_82.SUBNET:=GEO.SUBNET;
+                CPU_DIAG.OB_82.RACK:=GEO.RACK;
+                CPU_DIAG.OB_82.AINFO.SLOT:=GEO.SLOT;    
+            ELSIF TINFO.TOP_SI.NUM=B#16#53
+            THEN
+                CPU_DIAG.OB_83.SUBNET:=GEO.SUBNET;
+                CPU_DIAG.OB_83.RACK:=GEO.RACK;
+                CPU_DIAG.OB_83.SLOT:=GEO.SLOT;
+            ELSIF TINFO.TOP_SI.NUM=B#16#37
+            THEN
+                CPU_OB_5X.OB_55.SUBNET:=GEO.SUBNET;
+                CPU_OB_5X.OB_55.RACK:=GEO.RACK;
+                CPU_OB_5X.OB_55.AINFO.SLOT:=GEO.SLOT;
+            ELSIF TINFO.TOP_SI.NUM=B#16#38
+            THEN
+                CPU_OB_5X.OB_56.SUBNET:=GEO.SUBNET;
+                CPU_OB_5X.OB_56.RACK:=GEO.RACK;  
+                CPU_OB_5X.OB_56.AINFO.SLOT:=GEO.SLOT; 
+            ELSIF TINFO.TOP_SI.NUM=B#16#39
+            THEN
+                CPU_OB_5X.OB_57.SUBNET:=GEO.SUBNET;
+                CPU_OB_5X.OB_57.RACK:=GEO.RACK;
+                CPU_OB_5X.OB_57.AINFO.SLOT:=GEO.SLOT;
+            ELSE
+                ;
+            END_IF;
+        END_IF;
+    ELSE
+        GEO.SUBNET:=TINFO.SUBNET;
+        IF TINFO.TOP_SI.NUM=B#16#52
+        THEN
+            CPU_DIAG.OB_82.SUBNET:=TINFO.SUBNET;
+            CPU_DIAG.OB_82.RACK:=TINFO.RACK;
+            CPU_DIAG.OB_82.SL_TYP:=TINFO.SL_TYP;
+            CPU_DIAG.OB_82.A_INF:=TINFO.A_INF;
+            CPU_DIAG.OB_82.ET_CR_FL:=TINFO.ET_CR_FL;
+            CPU_DIAG.OB_82.ET_ER_FL:=TINFO.ET_ER_FL;
+            CPU_DIAG.OB_82.PNO_ID:=TINFO.PNO_ID;
+            CPU_DIAG.OB_82.AINFO:=AINFO;
+        ELSIF TINFO.TOP_SI.NUM=B#16#53
+        THEN
+            CPU_DIAG.OB_83.SUBNET:=TINFO.SUBNET;
+            CPU_DIAG.OB_83.RACK:=TINFO.RACK;
+            CPU_DIAG.OB_83.SLOT:=AINFO.SLOT;
+        ELSIF TINFO.TOP_SI.NUM=B#16#37
+        THEN
+            CPU_OB_5X.OB_55.SUBNET:=TINFO.SUBNET;
+            CPU_OB_5X.OB_55.RACK:=TINFO.RACK;
+            CPU_OB_5X.OB_55.SL_TYP:=TINFO.SL_TYP;
+            CPU_OB_5X.OB_55.A_INF:=TINFO.A_INF;
+            CPU_OB_5X.OB_55.ET_CR_FL:=TINFO.ET_CR_FL;
+            CPU_OB_5X.OB_55.ET_ER_FL:=TINFO.ET_ER_FL;
+            CPU_OB_5X.OB_55.PNO_ID:=TINFO.PNO_ID;
+            CPU_OB_5X.OB_55.AINFO:=AINFO;
+        ELSIF TINFO.TOP_SI.NUM=B#16#38
+        THEN
+            CPU_OB_5X.OB_56.SUBNET:=TINFO.SUBNET;
+            CPU_OB_5X.OB_56.RACK:=TINFO.RACK;
+            CPU_OB_5X.OB_56.SL_TYP:=TINFO.SL_TYP;
+            CPU_OB_5X.OB_56.A_INF:=TINFO.A_INF;
+            CPU_OB_5X.OB_56.ET_CR_FL:=TINFO.ET_CR_FL;
+            CPU_OB_5X.OB_56.ET_ER_FL:=TINFO.ET_ER_FL;
+            CPU_OB_5X.OB_56.PNO_ID:=TINFO.PNO_ID;
+            CPU_OB_5X.OB_56.AINFO:=AINFO;
+        ELSIF TINFO.TOP_SI.NUM=B#16#39
+        THEN
+            CPU_OB_5X.OB_57.SUBNET:=TINFO.SUBNET;
+            CPU_OB_5X.OB_57.RACK:=TINFO.RACK;
+            CPU_OB_5X.OB_57.SL_TYP:=TINFO.SL_TYP;
+            CPU_OB_5X.OB_57.A_INF:=TINFO.A_INF;
+            CPU_OB_5X.OB_57.ET_CR_FL:=TINFO.ET_CR_FL;
+            CPU_OB_5X.OB_57.ET_ER_FL:=TINFO.ET_ER_FL;
+            CPU_OB_5X.OB_57.PNO_ID:=TINFO.PNO_ID;
+            CPU_OB_5X.OB_57.AINFO:=AINFO;
+        ELSE
+            ;
+        END_IF;
+    END_IF;
+ELSE
+    ;
+END_IF;
+ 
+ 
+pbEN_ALT:=true;
+CPU_DIAG.OB_S.NUM_CNT:=CPU_DIAG.OB_S.NUM_CNT+1;
+ 
+CASE CPU_DIAG.OB_S.NUM_CNT OF
+    1 :
+        pbEN_ALT:=false;
+        CPU_DIAG.OB_S.NUM_01:=TINFO.TOP_SI.NUM;
+    2 :
+        IF CPU_DIAG.OB_S.NUM_01=B#16#1
+        THEN
+            pbEN_ALT:=false;
+        END_IF;
+        CPU_DIAG.OB_S.NUM_02:=TINFO.TOP_SI.NUM;
+    3 :
+        CPU_DIAG.OB_S.NUM_03:=TINFO.TOP_SI.NUM;
+    4 :
+        CPU_DIAG.OB_S.NUM_04:=TINFO.TOP_SI.NUM;
+    5 :
+        CPU_DIAG.OB_S.NUM_05:=TINFO.TOP_SI.NUM;
+    6 :
+        CPU_DIAG.OB_S.NUM_06:=TINFO.TOP_SI.NUM;
+    7 :
+        CPU_DIAG.OB_S.NUM_07:=TINFO.TOP_SI.NUM;
+    8 :
+        CPU_DIAG.OB_S.NUM_08:=TINFO.TOP_SI.NUM;
+    9 :
+        CPU_DIAG.OB_S.NUM_09:=TINFO.TOP_SI.NUM;
+    10 :
+        CPU_DIAG.OB_S.NUM_10:=TINFO.TOP_SI.NUM;
+    11 :
+        CPU_DIAG.OB_S.NUM_11:=TINFO.TOP_SI.NUM;
+    12 :
+        CPU_DIAG.OB_S.NUM_12:=TINFO.TOP_SI.NUM;
+    13 :
+        CPU_DIAG.OB_S.NUM_13:=TINFO.TOP_SI.NUM;
+    14 :
+        CPU_DIAG.OB_S.NUM_14:=TINFO.TOP_SI.NUM;
+    15 :
+        CPU_DIAG.OB_S.NUM_15:=TINFO.TOP_SI.NUM;
+    16 :
+        CPU_DIAG.OB_S.NUM_16:=TINFO.TOP_SI.NUM;
+ELSE: //
+    pbEN_SUB:=false;
+    pbSUB_ALL:=false; 
+   
+    IF NOT DELAY_OB1
+    THEN
+        B1:=INT_TO_BYTE(CPU_DIAG.OB_S.NUM_CNT);
+        B2:=TINFO.TOP_SI.NUM;
+        EINBAUF:=true;
+        EVENT[1]:=true;
+        DELAY_START_OB1:=CPU_DIAG.OB1_TIME;
+        DELAY_OB1:=true;
+    END_IF;
+END_CASE;
+ 
+IF CPU_DIAG.H_MODE AND BUSY_T
+THEN
+    BUSY_T:=false;
+    //SSL-ID W#16#xy71 - H CPU Group Information
+    ERROR:=RDSYSST(REQ := true
+            ,SZL_ID := W#16#71
+            ,INDEX := W#16#0
+            ,BUSY := BUSY_T
+            ,SZL_HEADER := SZL_HEADER 
+            ,DR := SZL_71
+            );
+    IF (ERROR<32767) AND (NOT BUSY_T) AND NOT (ERROR=-32638)
+    THEN
+        CPU_DIAG.H_MODE:=SZL_71.REDINF=W#16#12;
+    ELSE      
+        IF ERROR=-32638
+        THEN
+            CPU_DIAG.H_MODE:=false;
+            SZL_71.REDINF:=W#16#0;
+            SZL_71.MASTER_0:=true;
+            SZL_71.MASTER_1:=false;
+            SZL_71.CPU_RAC0:=false;
+            SZL_71.CPU_RAC1:=false;
+        END_IF;
+    END_IF;
+   
+    MASTER_0:=SZL_71.MASTER_0;
+    MASTER_1:=SZL_71.MASTER_1;        
+    IF CPU_DIAG.H_MODE
+    THEN
+        CPUERR_0:=SZL_71.CPU_RAC1;
+        CPUERR_1:=SZL_71.CPU_RAC0;
+    ELSE
+        CPUERR_0:=SZL_71.CPU_ERR0;
+        CPUERR_1:=SZL_71.CPU_ERR1;
+    END_IF;
+    CPU_DIAG.CPU_ERR0:=CPUERR_0;
+    CPU_DIAG.CPU_ERR1:=CPUERR_1;
+ELSE
+    ;
+END_IF;
+ 
+IF CPU_DIAG.H_MODE
+THEN
+    MS_AS:=MS_AS OR DW#16#10000;
+ELSE
+    MS_AS:=MS_AS AND DW#16#FFFEFFFF;
+END_IF;
+ 
+FOR ERROR:=0 TO 14 BY 1 DO
+    IF pbSUB_ALL
+    THEN
+        pbEN_SUBxx[ERROR]:=true;   
+    ELSE
+        IF pbEN_ALT
+        THEN
+            pbEN_SUBxx[ERROR]:=EN_SUB0_b[ERROR]; 
+        ELSE
+            pbEN_SUBxx[ERROR]:=false;
+        END_IF;
+    END_IF;
+END_FOR;
+ 
+IF NOT pbSUB_ALL AND pbEN_SUB
+THEN
+    IF SUB0ID01=GEO.SUBNET OR SUB1ID01=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[1]:=true;
+    ELSIF SUB0ID02=GEO.SUBNET OR SUB1ID02=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[2]:=true;
+    ELSIF SUB0ID03=GEO.SUBNET OR SUB1ID03=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[3]:=true;
+    ELSIF SUB0ID04=GEO.SUBNET OR SUB1ID04=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[4]:=true;
+    ELSIF SUB0ID05=GEO.SUBNET OR SUB1ID05=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[5]:=true;
+    ELSIF SUB0ID06=GEO.SUBNET OR SUB1ID06=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[6]:=true;
+    ELSIF SUB0ID07=GEO.SUBNET OR SUB1ID07=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[7]:=true;
+    ELSIF SUB0ID08=GEO.SUBNET OR SUB1ID08=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[8]:=true;
+    ELSIF SUB0ID09=GEO.SUBNET OR SUB1ID09=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[9]:=true;
+    ELSIF SUB0ID10=GEO.SUBNET OR SUB1ID10=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[10]:=true;
+    ELSIF SUB0ID11=GEO.SUBNET OR SUB1ID11=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[11]:=true;
+    ELSIF SUB0ID12=GEO.SUBNET OR SUB1ID12=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[12]:=true;
+    ELSIF SUB0ID13=GEO.SUBNET OR SUB1ID13=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[13]:=true;
+    ELSIF SUB0ID14=GEO.SUBNET OR SUB1ID14=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[14]:=true;
+    ELSIF SUB0ID00=GEO.SUBNET OR SUB1ID00=GEO.SUBNET
+    THEN
+        pbEN_SUBxx[0]:=true;
+    ELSE
+        ;
+    END_IF;
+END_IF;
+ 
+REPEAT
+    s_ir:=false;
+    EN_SUB0:=pbEN_SUBxx[0];
+    EN_SUB1:=pbEN_SUBxx[1];
+    EN_SUB2:=pbEN_SUBxx[2];
+    EN_SUB3:=pbEN_SUBxx[3];
+    EN_SUB4:=pbEN_SUBxx[4];
+    EN_SUB5:=pbEN_SUBxx[5];
+    EN_SUB6:=pbEN_SUBxx[6];
+    EN_SUB7:=pbEN_SUBxx[7];
+    EN_SUB8:=pbEN_SUBxx[8];
+    EN_SUB9:=pbEN_SUBxx[9];
+    EN_SUB10:=pbEN_SUBxx[10];
+    EN_SUB11:=pbEN_SUBxx[11];
+    EN_SUB12:=pbEN_SUBxx[12];
+    EN_SUB13:=pbEN_SUBxx[13];
+    EN_SUB14:=pbEN_SUBxx[14];
+UNTIL NOT s_ir
+END_REPEAT;
+ 
+s_ir:=TRUE;
+ 
+sbyASIG2a_b[0]:=CPU_RT_DATA.MAX_LIM;
+sbyASIG2a_b[1]:=CPU_RT_DATA.EMERGENCY_MODE;
+sbyASIG2a_b[2]:=CPU_RT_DATA.NOT_PCS7_COMPLIANT;
+ 
+EVENT[2]:=sbyASIG2b<>sbyASIG2a OR EVENT[2];
+EVENT[4]:=sbASIG_3 <> ASIG_3 OR EVENT[4];
+ 
+IF EVENT[1]
+THEN
+    ALARM_8P_01(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID := EV_ID1
+                   ,SIG_1 := OB85_A1_A2 
+                   ,SIG_2 := false
+                   ,SIG_3 := MPSSF
+                   ,SIG_4 := EINBAUF
+                   ,SIG_5 := OB85_A3
+                   ,SIG_6 := PERFEHL_L
+                   ,SIG_7 := PERFEHL_S
+                   ,SIG_8 := RED_FEHL
+                   ,SD_1 := B1
+                   ,SD_2 := B2
+                   ,SD_3 := M_OB72.ZI1
+                   ,SD_4 := M_OB122.BLK_TYP
+                   ,SD_5 := M_OB122.BLK_NUM
+                   ,SD_6 := M_OB122.MEM_ADDR
+                   ,SD_7 := M_OB85.ZI1
+                   ,SD_8 := M_OB85.ZI2_3_HW
+                   ,SD_9 := M_OB85.ZI2_3_LW
+                   ,SD_10:= M_OB85.BLK_TYP
+                   );
+    IF EINBAUF
+    THEN
+        CPU_DIAG.OB_S.NUM_CNT:=1;
+        OK:=false;
+    END_IF;
+   
+    QMSGER1:=ALARM_8P_01.ERROR;
+    MSGSTA1:=ALARM_8P_01.STATUS;      
+   
+    IF (NOT ALARM_8P_01.DONE  AND NOT ALARM_8P_01.ERROR)
+       AND
+       ALARM_8P_01.STATUS<>W#16#B
+       AND      
+       ALARM_8P_01.STATUS<>W#16#14 
+    THEN 
+        EVENT[1]:=false;
+    END_IF;
+ELSIF EVENT[2]
+THEN
+    ALARM_8P_02(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID := EV_ID2
+                   ,SIG_1 := sbyASIG2a_b[0] 
+                   ,SIG_2 := sbyASIG2a_b[1]
+                   ,SIG_3 := sbyASIG2a_b[2]
+                   ,SIG_4 := sbyASIG2a_b[3]
+                   ,SIG_5 := sbyASIG2a_b[4]
+                   ,SIG_6 := sbyASIG2a_b[5]
+                   ,SIG_7 := PROGFEHL
+                   ,SIG_8 := sbyASIG2a_b[7]
+                   ,SD_1 := M_OB121.SW_FLT
+                   ,SD_2 := M_OB121.BLK_TYP
+                   ,SD_3 := M_OB121.FLT_RES
+                   ,SD_4 := M_OB121.FLT_REG
+                   ,SD_5 := M_OB121.FLT_NUM
+                   ,SD_6 := M_OB121.FLT_ADDR
+                   );
+    sbyASIG2b:=sbyASIG2a;
+    QMSGER2:=ALARM_8P_02.ERROR;
+    MSGSTA2:=ALARM_8P_02.STATUS;
+   
+    IF (NOT ALARM_8P_02.DONE  AND NOT ALARM_8P_02.ERROR)
+       AND
+       ALARM_8P_02.STATUS<>W#16#B
+       AND      
+       ALARM_8P_02.STATUS<>W#16#14
+    THEN
+        EVENT[2]:=false;
+    END_IF;
+ELSIF EVENT[3]
+THEN
+    ALARM_8P_03(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID := EV_ID3
+                   ,SIG_1 := byOB80_bool[0] 
+                   ,SIG_2 := byOB80_bool[1]
+                   ,SIG_3 := byOB80_bool[2]
+                   ,SIG_4 := byOB80_bool[3]
+                   ,SIG_5 := byOB80_bool[4]
+                   ,SIG_6 := byOB80_bool[5]
+                   ,SIG_7 := byOB80_bool[6]
+                   ,SIG_8 := byOB80_bool[7]
+                   ,SD_1 := M_OB80[0].ZI1
+                   ,SD_2 := M_OB80[0].ZI2_3_B1
+                   ,SD_3 := M_OB80[2].ZI1
+                   ,SD_4 := M_OB80[3].ZI1
+                   ,SD_5 := M_OB80[4].ZI2_3_B2
+                   ,SD_6 := M_OB80[5].ZI2_3_B1
+                   ,SD_7 := M_OB80[5].ZI2_3_B2
+                   ,SD_8 := M_OB80[6].ZI2_3_B1
+                   ,SD_9 := M_OB80[6].ZI2_3_B2
+                   ,SD_10 :=M_OB80[7].ZI1 
+                   );
+   
+    QMSGER3:=ALARM_8P_03.ERROR;
+    MSGSTA3:=ALARM_8P_03.STATUS;
+   
+    IF (NOT ALARM_8P_03.DONE  AND NOT ALARM_8P_03.ERROR)
+        AND
+        ALARM_8P_03.STATUS<>W#16#B
+        AND      
+        ALARM_8P_03.STATUS<>W#16#14
+    THEN
+        EVENT[3]:=false;
+    END_IF;
+ELSIF EVENT[4]
+THEN
+    ALARM_8P_04(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID := EV_ID4
+                   ,SIG_1 := ASIG_1 
+                   ,SIG_2 := ASIG_2
+                   ,SIG_3 := ASIG_3
+                   ,SD_1 := M_OB88.FLT_OB
+                   ,SD_2 := M_OB88.FLT_OB_PRIO
+                   ,SD_3 := M_OB88.BLK_TYP
+                   ,SD_4 := M_OB88.FLT_NUM
+                   ,SD_5 := M_OB88.FLT_ADDR
+                   ,SD_6 := M_OB88.T_OB88
+                   ,SD_7 := sdw_STATUS
+                   ,SD_8 := CPU_RACK
+                   );
+   
+    sbASIG_3:=ASIG_3;
+    QMSGER4:=ALARM_8P_04.ERROR;
+    MSGSTA4:=ALARM_8P_04.STATUS;
+ 
+    IF ALARM_8P_04.STATUS<>W#16#19 AND NOT ALARM_8P_04.ERROR
+       AND ALARM_8P_04.STATUS<>W#16#B AND ALARM_8P_04.STATUS<>W#16#14
+    THEN
+        EVENT[4]:=false;
+    END_IF;
+ELSE
+    ;   
+END_IF;
+ 
+ 
+QERR:=NOT OK;
+ 
+IF EN_MSG
+THEN
+    MS_OB84:=sbyASIG2a_b[3] OR sbyASIG2a_b[4] OR sbyASIG2a_b[5] OR sbyASIG2a_b[7];
+   
+    IF OB85_A1_A2 OR
+       MPSSF OR
+       EINBAUF OR
+       OB85_A3 OR
+       PERFEHL_L OR
+       PERFEHL_S OR
+       PROGFEHL OR
+       ASIG_1 OR
+       ASIG_2 OR
+       CPU_RT_DATA.EMERGENCY_MODE OR
+       byOB80_bool[0] OR
+       byOB80_bool[2] OR
+       byOB80_bool[3] OR
+       byOB80_bool[4] OR
+       byOB80_bool[5] OR
+       byOB80_bool[6] OR
+       byOB80_bool[7] OR
+       RED_FEHL OR
+       MS_OB84
+    THEN
+        MS_AS:=MS_AS OR DW#16#707;
+    ELSIF byOB80_bool[1]
+    THEN
+        MS_AS:=MS_AS OR DW#16#606;
+    ELSIF CPU_RT_DATA.MAX_LIM OR CPU_RT_DATA.NOT_PCS7_COMPLIANT
+    THEN
+        MS_AS:=MS_AS OR DW#16#505;
+    ELSE
+        ;
+    END_IF;
+         
+    IF CPUERR_0
+    THEN
+        MS_AS:=MS_AS AND DW#16#FFFFFFF0;
+        MS_AS:=MS_AS OR DW#16#7;
+    END_IF;
+   
+    IF CPUERR_1 
+    THEN
+        MS_AS:=MS_AS AND DW#16#FFFFF0FF;
+        MS_AS:=MS_AS OR DW#16#700;
+    END_IF;
+ELSE      
+    MS_AS:=MS_AS OR DW#16#808;
+END_IF;
+ 
+IF MASTER_1
+THEN
+    MS_AS:=MS_AS OR DW#16#20000;
+END_IF;
+  
+MS:=MS_AS;
+O_MS:=MS_AS;
+ 
+END_FUNCTION_BLOCK

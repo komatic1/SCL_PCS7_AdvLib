@@ -1,0 +1,868 @@
+// Name: FB91
+// Symbolic Name: MOD_1
+// Symbol Comment: Non-diagnostic Module Check (<=16 Channel)
+// Family: @SYSTEM
+// Version: 7.2
+// Author: DRIVER80
+// Last modified: 04/11/2012
+// Use: SFB35,SFC51, UDT1
+// Size: 5214 byte
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'y' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB191
+TITLE ='Non-diagnostic Module Check (<=16 Channel)'
+{ S7_hardware := 'sm'; S7_alarm_ui := '1'; S7_tasklist := 'OB1,OB83,OB85,OB86,OB100'; S7_tag := 'false' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : MOD_1
+VERSION : '7.2'
+ 
+ 
+VAR_INPUT
+  LADDR { S7_link := 'false' }: INT ;    //Logical Address of Module
+  SUBN_TYP { S7_link := 'false' }: BOOL ;    //1=External DP-Interface
+  SUBN1_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Primary Subnet
+  SUBN2_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Redundant Subnet
+  RACK_NO { S7_link := 'false' }: BYTE ;    //Rack Number
+  SLOT_NO { S7_link := 'false' }: BYTE ;    //Slot Number
+  CHAN_NUM { S7_link := 'false' }: INT ;    //Highest Channel Address
+  MODE_00 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 0
+  MODE_00_ar AT MODE_00: ARRAY[0..0] OF DWORD;
+  MODE_01 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 1
+  MODE_02 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 2
+  MODE_03 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 3
+  MODE_04 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 4
+  MODE_05 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 5
+  MODE_06 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 6
+  MODE_07 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 7
+  MODE_08 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 8
+  MODE_09 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 9
+  MODE_10 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 10
+  MODE_11 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 11
+  MODE_12 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 12
+  MODE_13 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 13
+  MODE_14 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 14
+  MODE_15 { S7_visible := 'false'; S7_link := 'false' }: DWORD ;    //Mode Channel 15
+  DELAY1 { S7_visible := 'false'; S7_link := 'false' }: INT  := 2;    //Alarm Delay 1 (s)
+  DELAY2 { S7_visible := 'false'; S7_link := 'false' }: INT  := 2;    //Alarm Delay 2 (s)
+  EV_ID { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EN_MSG { S7_visible := 'false'; S7_link := 'false' }: BOOL  := TRUE;    //1=Enable Alarm
+  MS { S7_link := 'false'; S7_m_c := 'true' }: DWORD ;    //Maintenance State
+END_VAR
+VAR_OUTPUT
+  QERR { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL  := TRUE;    //1=Runtime Error
+  QRACKF { S7_dynamic := 'true' }: BOOL ;    //1=Rack Failure
+  QMODF { S7_dynamic := 'true' }: BOOL ;    //1=Module Removed / Out of Order
+  QPERAF { S7_dynamic := 'true' }: BOOL ;    //1=Module I/O Access Failure
+  O_MS { S7_visible := 'false' }: DWORD ;    //Maintenance State
+ 
+  CH_EXIST { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Channel exist
+  CH_EXIST_byte AT CH_EXIST: ARRAY[0..3] OF BYTE;
+  CH_ACTIVE { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Channel active
+  CH_ACTIVE_byte AT CH_ACTIVE: ARRAY[0..3] OF BYTE;
+  CH_OK { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Channel OK
+  CH_OK_byte AT CH_OK: ARRAY[0..3] OF BYTE;
+  EXT_STAT { S7_visible := 'true'; S7_m_c := 'true' }: DWORD ;    //Maintenance Release - Extended Status
+  EXT_STAT_byte AT EXT_STAT: ARRAY[0..3] OF BYTE;
+  OMODE_00 { S7_visible := 'false' }: DWORD ;    //Mode Channel 0
+  OMODE_00_ar AT OMODE_00: ARRAY[0..0] OF DWORD;
+  OMODE_01 { S7_visible := 'false' }: DWORD ;    //Mode Channel 1
+  OMODE_02 { S7_visible := 'false' }: DWORD ;    //Mode Channel 2
+  OMODE_03 { S7_visible := 'false' }: DWORD ;    //Mode Channel 3
+  OMODE_04 { S7_visible := 'false' }: DWORD ;    //Mode Channel 4
+  OMODE_05 { S7_visible := 'false' }: DWORD ;    //Mode Channel 5
+  OMODE_06 { S7_visible := 'false' }: DWORD ;    //Mode Channel 6
+  OMODE_07 { S7_visible := 'false' }: DWORD ;    //Mode Channel 7
+  OMODE_08 { S7_visible := 'false' }: DWORD ;    //Mode Channel 8
+  OMODE_09 { S7_visible := 'false' }: DWORD ;    //Mode Channel 9
+  OMODE_10 { S7_visible := 'false' }: DWORD ;    //Mode Channel 10
+  OMODE_11 { S7_visible := 'false' }: DWORD ;    //Mode Channel 11
+  OMODE_12 { S7_visible := 'false' }: DWORD ;    //Mode Channel 12
+  OMODE_13 { S7_visible := 'false' }: DWORD ;    //Mode Channel 13
+  OMODE_14 { S7_visible := 'false' }: DWORD ;    //Mode Channel 14
+  OMODE_15 { S7_visible := 'false' }: DWORD ;    //Mode Channel 15
+  DXCHG_00 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 0
+  DXCHG_00_ar AT DXCHG_00: ARRAY[0..0] OF DWORD;
+  DXCHG_01 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 1
+  DXCHG_02 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 2
+  DXCHG_03 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 3
+  DXCHG_04 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 4
+  DXCHG_05 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 5
+  DXCHG_06 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 6
+  DXCHG_07 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 7
+  DXCHG_08 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 8
+  DXCHG_09 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 9
+  DXCHG_10 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 10
+  DXCHG_11 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 11
+  DXCHG_12 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 12
+  DXCHG_13 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 13
+  DXCHG_14 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 14
+  DXCHG_15 { S7_visible := 'false' }: DWORD ;    //Bidirectional data exchange Channel 15
+  MSG_STAT { S7_visible := 'false' }: WORD ;    //Message Failure
+  MSG_ACK { S7_visible := 'false' }: WORD ;    //Message Acknowledged
+  MOD_INF { S7_visible := 'false' }: STRUCT    
+   SUBN_ID : BYTE ;    //Subnet Number
+   RACK_NO : BYTE ;    //Rack Number
+   SLOT_NO : BYTE ;    //Slot Number
+   SUBSL_NO : BYTE ;    //Subslot Number
+   BASADR : WORD ;    //Base Address
+   EXPECTYP : WORD ;    //Expected Module Type
+   ACTTYP : WORD ;    //Actual Module Type
+   RESERVE : WORD ;    //Reserved
+   IOSTAT : BYTE ;    //Data ID of Logical Address
+   IOSTAT_0 : BOOL ;    //1=Module Fault
+   IOSTAT_1 : BOOL ;    //1=Module Exists
+   IOSTAT_2 : BOOL ;    //1=Module Removed
+   IOSTAT_3 : BOOL ;    //Reserved
+   IOSTAT_4 : BOOL ;    //Reserved
+   IOSTAT_5 : BOOL ;    //1=Module can be  Host for Submodule
+   IOSTAT_6 : BOOL ;    //Reserved for S7-400
+   IOSTAT_7 : BOOL ;    //1=Module on Local  Bus Segment
+   AREA_ID : WORD ;    //Area ID
+  END_STRUCT ;   
+END_VAR
+VAR_IN_OUT
+  CPU_DIAG : STRUCT    
+   H_MODE : BOOL ;    //1= H-System
+   V1_MODE : BOOL ;    //1= CPU DP V1 Mode
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   OB1_TIME : DINT ;    //OB1_TIME_TCK
+   OB_S : STRUCT    
+    NUM_CNT : INT ;    //Counter Startinfo OB_NR
+    NUM_01 : BYTE ;    //Startinfo OB_NO
+    NUM_02 : BYTE ;    //Startinfo OB_NO
+    NUM_03 : BYTE ;    //Startinfo OB_NO
+    NUM_04 : BYTE ;    //Startinfo OB_NO
+    NUM_05 : BYTE ;    //Startinfo OB_NO
+    NUM_06 : BYTE ;    //Startinfo OB_NO
+    NUM_07 : BYTE ;    //Startinfo OB_NO
+    NUM_08 : BYTE ;    //Startinfo OB_NO
+    NUM_09 : BYTE ;    //Startinfo OB_NO
+    NUM_10 : BYTE ;    //Startinfo OB_NO
+    NUM_11 : BYTE ;    //Startinfo OB_NO
+    NUM_12 : BYTE ;    //Startinfo OB_NO
+    NUM_13 : BYTE ;    //Startinfo OB_NO
+    NUM_14 : BYTE ;    //Startinfo OB_NO
+    NUM_15 : BYTE ;    //Startinfo OB_NO
+    NUM_16 : BYTE ;    //Startinfo OB_NO
+   END_STRUCT ;   
+   OB_72 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+   OB_70 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_82 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_83 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_85 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_86 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_81 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+  END_STRUCT ;   
+  RAC_DIAG : STRUCT    
+   SUBN1_ID : BYTE ;    //ID of Primary Subnet
+   SUBN2_ID : BYTE ;    //ID of Redundant Subnet
+   RACK_NO : BYTE ;    //Rack Number
+   SUBN_TYP : BOOL ;    //1=External DP-Interface
+   SUBN1ERR : BOOL ;    //1=Slave 1 Failure
+   SUBN2ERR : BOOL ;    //1=Slave 2 Failure
+   SUBN1ACT : BOOL ;    //1=Slave 1 Active
+   SUBN2ACT : BOOL ;    //1=Slave 2 Active
+   RACK_ERR : BOOL ;    //1=Rack Error
+   V1_MODE : BOOL ;    //1= DPV1 - Mode
+  END_STRUCT ;   
+  ACC_MODE { S7_link := 'false' }: BOOL ;    //1=Accept New Mode Settings
+END_VAR
+VAR
+  sdwRESERVE : DWORD ;    //Reserve fьr zukьnftige Дnderungen
+  sdwRESERVE_bool AT sdwRESERVE: ARRAY[0..31] OF BOOL;
+  ID : STRUCT    
+   IOTYP : BYTE  := B#16#FF;    //Ein- oder Ausgabemodul
+   CHECK : BOOL ;    //Konfiguration OK?
+  END_STRUCT ;   
+  RQ : STRUCT    
+   PARA : BOOL ;    //Parametrierung angefordert / lдuft
+   OB1PARA : BOOL ;    //OB1 liest Parametrierung
+   OB1OUTP : BOOL ;    //OB1 schreibt Ausgдnge
+   OB1ALRM : BOOL ;    //OB1 sendet ALARM_8P
+   OB1INT : BOOL ;    //OB1 wдhrend Parametrierung oder Diagnose unterbrochen?
+  END_STRUCT ;   
+  MODF : STRUCT    
+   ZS : BOOL ;    //Baugruppe gezogen
+   ZSMEL : BOOL ;    //Baugruppe gezogen melden // 2.8.2001 SCH
+   FBG : BOOL ;    //Falsche Bauruppe         //2.8.2001 SCH
+   ACC : BOOL ;    //Peripheriezugriffsfehler
+  END_STRUCT ;   
+  T_BG_ZS : INT ;    //Ziehen Stecken Fehlertextnummer  4.5 Schultz
+  INI_ALRM : BOOL  := TRUE;    //1=ALARM_8P muЯ initialisiert werden
+  KIR : BOOL ;    //Konfiguration im Run
+  KIR_OLD : BOOL ;    //Hilfsmerker Konfiguration im Run
+  sbMODFZS : BOOL ;    //Letztes gemeldetes ZS-Ereignis
+  sbPERAF : BOOL ;    //Letztes gemeldetes PERAF-Ereignis
+  DEL_ACT : BOOL ;    //PERAF wird fьr ьbergeordneten Fehler verzцgert
+  DEL_CNT : DINT ;    //Verzцgerung (ms)
+  DEL_TIM : DINT ;    //Start der Verzцgerung
+  DELAY : DINT ;    //Eingestellte Verzцgerung
+  ALARM_8P_1 : SFB35;    //Multiinstanzierte ALARM_8P
+END_VAR
+VAR_TEMP
+  EN_OUTP : BOOL ;    //Ausgдnge freigeben
+  EN_ALRM : BOOL ;    //Alarm_8P freigeben
+  sbRACKF : BOOL ;    //Rackfehler
+  ZI1 : WORD ;   
+  ZI2_3 : DWORD ;   
+  NUM : BYTE ;   
+  OB_START : WORD ;  
+  OB_START_bool AT OB_START : ARRAY[0..15] OF BOOL;
+  RETURN_CODE : INT ;    //Hilfsparameter (Wechselnde Bedeutung)!
+  CHANNELS : INT ;    //Kanalanzahl der Baugruppe
+  SZL_HEADER : STRUCT    
+   LENTHDR : WORD ;   
+   N_DR : WORD ;   
+  END_STRUCT ;   
+  GEO : STRUCT    
+   SUBNET : BYTE ;    //SUBNET belegt 1 WORD im Speicher!
+   RACK : BYTE ;   
+   SLOT : BYTE ;   
+  END_STRUCT ;   
+  TOP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  CH_O : DWORD ;
+  CH_O_bool AT CH_O: ARRAY[0..31] OF BOOL;    
+  CH_O_byte AT CH_O: ARRAY[0..3] OF BYTE;
+  CH_A : DWORD ; 
+  CH_A_bool AT CH_A: ARRAY[0..31] OF BOOL; 
+  CH_A_byte AT CH_A: ARRAY[0..3] OF BYTE;
+  CH_E : DWORD ;
+  CH_E_bool AT CH_E: ARRAY[0..31] OF BOOL;   
+  CH_E_byte AT CH_E: ARRAY[0..3] OF BYTE;
+  EXT_S : DWORD ;   
+  EXT_S_bool AT EXT_S: ARRAY[0..31] OF BOOL;
+  EXT_S_byte AT EXT_S: ARRAY[0..3] OF BYTE;
+  MS_AS : DWORD ;    //Maintenance State AS
+  tDXCHG : DWORD ;
+  tDXCHG_bool AT tDXCHG: ARRAY[0..31] OF BOOL;  
+  MOD_INF_TEMP : STRUCT    
+   SUBN_ID_RACK_NO : WORD ;    //bei dezentralem Aufbau mit PROFINET IO: Bit 15 = 1 (PROFINET IO-Kennung), die l
+   SLOT_NO_SUBSL_NO : WORD ;    //bei dezentralem Aufbau mit PROFINET IO: Steckplatznummer
+   BASADR : WORD ;    //Base Address
+   EXPECTYP : WORD ;    //Expected Module Type
+   ACTTYP : WORD ;    //Actual Module Type
+   RESERVE : WORD ;    //Reserved
+   IOSTAT : BYTE ;    //Data ID of Logical Address
+   IOSTAT_0 : BOOL ;    //1=Module Fault
+   IOSTAT_1 : BOOL ;    //1=Module Exists
+   IOSTAT_2 : BOOL ;    //1=Module Removed
+   IOSTAT_3 : BOOL ;    //Reserved
+   IOSTAT_4 : BOOL ;    //Reserved
+   IOSTAT_5 : BOOL ;    //1=Module can be  Host for Submodule
+   IOSTAT_6 : BOOL ;    //Reserved for S7-400
+   IOSTAT_7 : BOOL ;    //1=Module on Local  Bus Segment
+   AREA_ID : WORD ;    //Area ID
+  END_STRUCT ;   
+END_VAR
+BEGIN
+OB_START:=W#16#0;
+CASE CPU_DIAG.OB_S.NUM_CNT OF
+    1 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_01;
+    2 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_02;
+    3 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_03;
+    4 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_04;
+    5 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_05;
+    6 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_06;
+    7 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_07;
+    8 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_08;
+    9 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_09;
+    10 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_10;
+    11 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_11;
+    12 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_12;
+    13 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_13;
+    14 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_14;
+    15 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_15;
+    16 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_16;
+ELSE;
+END_CASE;
+ 
+IF TOP_SI.NUM=B#16#1 THEN
+    OB_START_bool[6]:=true;
+    sbRACKF:=RAC_DIAG.RACK_ERR;
+    IF sbRACKF <> QRACKF THEN
+        IF SUBN1_ID=B#16#FF THEN
+            ACC_MODE:= NOT sbRACKF;
+        END_IF;
+        QRACKF:=sbRACKF;
+    END_IF;
+   
+ELSIF TOP_SI.NUM=B#16#55 THEN
+    OB_START_bool[4]:=true;
+    GEO.SUBNET:=CPU_DIAG.OB_85.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_85.RACK;
+    GEO.SLOT:=CPU_DIAG.OB_85.SLOT;
+    TOP_SI.EV_CLASS:=CPU_DIAG.OB_85.TOP_SI.EV_CLASS;
+   
+ELSIF TOP_SI.NUM=B#16#56 THEN
+    OB_START_bool[5]:=true;
+    GEO.SUBNET:=CPU_DIAG.OB_86.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_86.RACK;
+    TOP_SI.EV_CLASS:=CPU_DIAG.OB_86.TOP_SI.EV_CLASS;
+    TOP_SI.EV_NUM:=CPU_DIAG.OB_86.TOP_SI.EV_NUM;
+    TOP_SI.ZI2_3:=CPU_DIAG.OB_86.TOP_SI.ZI2_3;
+   
+ELSIF TOP_SI.NUM=B#16#53 THEN
+    OB_START_bool[3]:=true;
+    GEO.SUBNET:=CPU_DIAG.OB_83.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_83.RACK;
+    GEO.SLOT:=CPU_DIAG.OB_83.SLOT;   
+    TOP_SI.EV_CLASS:=CPU_DIAG.OB_83.TOP_SI.EV_CLASS;
+    TOP_SI.EV_NUM:=CPU_DIAG.OB_83.TOP_SI.EV_NUM;
+ 
+ELSIF TOP_SI.NUM=B#16#64 THEN
+    OB_START_bool[7]:=true;   
+   
+ELSIF TOP_SI.NUM=B#16#46 THEN
+    OB_START_bool[0]:=true;
+    GEO.SUBNET:=CPU_DIAG.OB_70.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_70.RACK;
+    TOP_SI.EV_NUM:=CPU_DIAG.OB_70.TOP_SI.EV_NUM;
+    TOP_SI.EV_CLASS:=CPU_DIAG.OB_70.TOP_SI.EV_CLASS;
+ 
+ELSIF TOP_SI.NUM=B#16#48 THEN
+    OB_START_bool[1]:=true; 
+ELSE;
+END_IF;
+ 
+EN_OUTP:=false;
+ 
+IF OB_START_bool[6] OR OB_START_bool[7] THEN
+    EN_ALRM:=true;
+    IF OB_START_bool[6] THEN
+        EN_OUTP:=ACC_MODE;
+        RQ.PARA:=RQ.OB1INT AND RQ.OB1PARA OR RQ.PARA;
+        RQ.OB1INT:=false;
+        INI_ALRM:=(MSG_ACK AND W#16#FF)<>W#16#FF AND EN_MSG;
+    ELSE;
+    END_IF;
+    IF NOT RQ.PARA AND ACC_MODE OR OB_START_bool[7] THEN
+        ID.CHECK:=false;
+        RQ.PARA:=true;
+        CH_E:=DW#16#0;
+        FOR RETURN_CODE:= 0 TO CHAN_NUM BY 1 DO
+            CH_E_bool[RETURN_CODE]:=true;        ;
+        END_FOR;
+        CH_EXIST_byte[3]:=CH_E_byte[0];
+        CH_EXIST_byte[2]:=CH_E_byte[1];
+        CH_EXIST_byte[1]:=CH_E_byte[2];
+        CH_EXIST_byte[0]:=CH_E_byte[3];
+        IF LADDR<0 THEN
+            ID.IOTYP:=B#16#55;
+        ELSE
+            ID.IOTYP:=B#16#54;
+        END_IF;
+    END_IF;
+   
+    ACC_MODE:=false;
+    IF RQ.PARA THEN
+        RQ.OB1PARA:=OB_START_bool[6];
+ 
+        IF RAC_DIAG.SUBN_TYP THEN
+            IF BYTE_TO_INT(SUBN1_ID)>=100 THEN
+                ZI1:= W#16#C91;
+            ELSE
+                ZI1:= W#16#4C91;
+            END_IF;
+        ELSE
+            ZI1:= W#16#C91;
+        END_IF;
+        MOD_INF_TEMP.SUBN_ID_RACK_NO:=W#16#0;
+        MOD_INF_TEMP.SLOT_NO_SUBSL_NO:=W#16#0;
+        MOD_INF_TEMP.BASADR:=W#16#0;
+        MOD_INF_TEMP.EXPECTYP:=W#16#0;
+        MOD_INF_TEMP.ACTTYP:=W#16#0;
+        MOD_INF_TEMP.RESERVE:=W#16#0;
+        MOD_INF_TEMP.IOSTAT:=B#16#0;
+        MOD_INF_TEMP.IOSTAT_0:=false;
+        MOD_INF_TEMP.IOSTAT_1:=false;
+        MOD_INF_TEMP.IOSTAT_2:=false;
+        MOD_INF_TEMP.IOSTAT_3:=false;
+        MOD_INF_TEMP.IOSTAT_4:=false;
+        MOD_INF_TEMP.IOSTAT_5:=false;
+        MOD_INF_TEMP.IOSTAT_6:=false;
+        MOD_INF_TEMP.IOSTAT_7:=false;
+        MOD_INF_TEMP.AREA_ID:=W#16#0;
+       
+        REPEAT
+             RETURN_CODE:=RDSYSST(REQ := true
+                         ,SZL_ID := ZI1
+                         ,INDEX :=  INT_TO_WORD(LADDR)
+                         ,BUSY :=  RQ.PARA
+                         ,SZL_HEADER :=  SZL_HEADER
+                         ,DR := MOD_INF_TEMP
+                         );
+        UNTIL NOT OB_START_bool[7] OR NOT RQ.PARA
+        END_REPEAT;
+       
+        IF NOT RQ.PARA THEN
+            IF RETURN_CODE=0 THEN
+                IF SHR(IN:=MOD_INF_TEMP.SUBN_ID_RACK_NO,N:=15)=W#16#1 THEN
+                    MOD_INF.SUBN_ID:=INT_TO_BYTE(WORD_TO_INT(SHR(IN:=MOD_INF_TEMP.SUBN_ID_RACK_NO AND W#16#7800,N:=11))+100);
+                    MOD_INF.RACK_NO:=WORD_TO_BYTE(MOD_INF_TEMP.SUBN_ID_RACK_NO AND W#16#EFF);
+                    MOD_INF.SLOT_NO:=WORD_TO_BYTE(MOD_INF_TEMP.SLOT_NO_SUBSL_NO);
+                ELSE
+                    MOD_INF.SUBN_ID:=WORD_TO_BYTE(SHR(IN:=MOD_INF_TEMP.SUBN_ID_RACK_NO,N:=8));
+                    MOD_INF.RACK_NO:=WORD_TO_BYTE(MOD_INF_TEMP.SUBN_ID_RACK_NO AND W#16#FF);
+                    MOD_INF.SLOT_NO:=WORD_TO_BYTE(SHR(IN:=MOD_INF_TEMP.SLOT_NO_SUBSL_NO,N:=8));
+                    MOD_INF.SUBSL_NO:=WORD_TO_BYTE(MOD_INF_TEMP.SLOT_NO_SUBSL_NO AND W#16#FF);
+                END_IF;
+                MOD_INF.BASADR:=MOD_INF_TEMP.BASADR;
+                MOD_INF.EXPECTYP:=MOD_INF_TEMP.EXPECTYP;
+                MOD_INF.ACTTYP:=MOD_INF_TEMP.ACTTYP;
+                MOD_INF.RESERVE:=MOD_INF_TEMP.RESERVE;
+                MOD_INF.IOSTAT:=MOD_INF_TEMP.IOSTAT;
+                MOD_INF.IOSTAT_0:=MOD_INF_TEMP.IOSTAT_0;
+                MOD_INF.IOSTAT_1:=MOD_INF_TEMP.IOSTAT_1;
+                MOD_INF.IOSTAT_2:=MOD_INF_TEMP.IOSTAT_2;
+                MOD_INF.IOSTAT_3:=MOD_INF_TEMP.IOSTAT_3;
+                MOD_INF.IOSTAT_4:=MOD_INF_TEMP.IOSTAT_4;
+                MOD_INF.IOSTAT_5:=MOD_INF_TEMP.IOSTAT_5;
+                MOD_INF.IOSTAT_6:=MOD_INF_TEMP.IOSTAT_6;
+                MOD_INF.IOSTAT_7:=MOD_INF_TEMP.IOSTAT_7;
+                MOD_INF.AREA_ID:=MOD_INF_TEMP.AREA_ID;
+               
+                ID.CHECK:=MOD_INF.SUBN_ID=RAC_DIAG.SUBN1_ID OR MOD_INF.SUBN_ID=RAC_DIAG.SUBN2_ID;
+            ELSE
+                RQ.PARA:=(RETURN_CODE=-32635) OR (RETURN_CODE=-32604) OR (RETURN_CODE=-32605) OR (RETURN_CODE=-32606) OR (RETURN_CODE=-32571);
+                IF NOT RQ.PARA THEN
+                    ID.CHECK:=false;
+                ELSE;
+                END_IF;
+            END_IF;   
+            IF ID.CHECK THEN
+                INI_ALRM:=EN_MSG;
+            ELSE
+                MODF.ACC:=false;
+            END_IF;
+        ELSE;
+        END_IF;
+        EN_OUTP:=NOT RQ.PARA;
+        IF EN_OUTP THEN
+            RQ.OB1PARA:=false;
+            QRACKF:=RAC_DIAG.RACK_ERR;
+            DEL_ACT:=false;
+            MODF.ZSMEL:=false;
+            MODF.ZS:=false;
+            MODF.ACC:=false;
+            IF NOT QRACKF  THEN //a813
+                MODF.ZS:=MOD_INF.ACTTYP<>MOD_INF.EXPECTYP OR NOT MOD_INF.IOSTAT_1 OR MOD_INF.IOSTAT_2;
+                MODF.ZSMEL:=MODF.ZS;
+            END_IF;
+        END_IF;
+    END_IF;
+ELSE
+    RQ.OB1INT:=true;
+    EN_ALRM:=false;
+    IF ID.CHECK THEN
+        IF (TOP_SI.EV_NUM=B#16#C1 OR TOP_SI.EV_NUM=B#16#C2 OR TOP_SI.EV_NUM=B#16#C6) AND OB_START_bool[5] THEN
+            FOR RETURN_CODE:=1 TO 21 BY 1 DO
+                TOP_SI.ZI2_3:=SHR(IN:=TOP_SI.ZI2_3,N:=1);
+                IF ((TOP_SI.ZI2_3 AND DW#16#1) <> DW#16#0) AND (RETURN_CODE=BYTE_TO_INT(RACK_NO)) THEN
+                    GEO.RACK:=RACK_NO;
+                    EXIT;
+                END_IF;
+            END_FOR;
+        END_IF;
+       
+        IF (GEO.SUBNET=SUBN1_ID OR GEO.SUBNET=SUBN2_ID) AND GEO.RACK=RACK_NO THEN
+            sbRACKF:=RAC_DIAG.RACK_ERR;
+            IF QRACKF<>sbRACKF THEN
+                EN_OUTP:=true;
+                QRACKF:=sbRACKF;
+                IF QRACKF THEN
+                    DEL_ACT:=false;
+                ELSE
+                    DEL_ACT:=DELAY2>0;
+                    DELAY:=DELAY2*1000;
+                    DEL_TIM:=CPU_DIAG.OB1_TIME;
+                END_IF;
+            END_IF;
+            IF GEO.SLOT=SLOT_NO THEN
+                IF OB_START_bool[3] THEN
+                    EN_OUTP:=true;
+                    DEL_ACT:=false;
+                    IF  TOP_SI.EV_NUM=B#16#61 OR
+                        ((BYTE_TO_INT(SUBN1_ID)>=100) AND
+                        (TOP_SI.EV_NUM=B#16#51 OR TOP_SI.EV_NUM=B#16#54))                            
+                    THEN
+                        MODF.ZS:=TOP_SI.EV_CLASS=B#16#39;
+                        MODF.FBG:=false;
+                        IF MODF.ZS THEN
+                            MODF.ZSMEL:=true;
+                        ELSE
+                            MODF.ACC:=false;
+                            MODF.ZSMEL:=false;
+                        END_IF;
+                    ELSE
+                        IF TOP_SI.EV_CLASS=B#16#33 AND TOP_SI.EV_NUM=B#16#67 THEN
+                            KIR:=true;
+                            T_BG_ZS:=40;
+                        ELSE
+                            IF TOP_SI.EV_CLASS=B#16#32 AND TOP_SI.EV_NUM=B#16#67 THEN
+                                KIR:=false;
+                                T_BG_ZS:=40;
+                            ELSE
+                                IF TOP_SI.EV_CLASS=B#16#39 AND TOP_SI.EV_NUM=B#16#68 THEN
+                                    KIR:=false;
+                                    T_BG_ZS:=41;
+                                ELSE    
+                                    IF NOT (TOP_SI.EV_NUM=B#16#58) THEN
+                                        MODF.FBG:=true;
+                                        MODF.ZSMEL:=false;
+                                    END_IF;
+                                    IF TOP_SI.EV_NUM=B#16#63 OR TOP_SI.EV_NUM=B#16#55 THEN
+                                        T_BG_ZS:=35;
+                                    ELSE
+                                        IF TOP_SI.EV_NUM=B#16#64 OR TOP_SI.EV_NUM=B#16#57 THEN
+                                            T_BG_ZS:=36;
+                                        ELSE
+                                            IF TOP_SI.EV_NUM=B#16#65 OR TOP_SI.EV_NUM=B#16#56 THEN
+                                                T_BG_ZS:=37;
+                                            END_IF;
+                                        END_IF;
+                                    END_IF;
+                                END_IF;   
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                ELSE
+           
+                    IF OB_START_bool[4] THEN
+                        MODF.ACC:=TOP_SI.EV_CLASS=B#16#39;
+                        IF MODF.ACC THEN
+                            IF MODF.ZS THEN
+                                MODF.ACC:=false;
+                            ELSE
+                                DEL_ACT:=DELAY1>0 AND NOT QRACKF;
+                                DELAY:=INT_TO_DINT(DELAY1)*1000;
+                                DEL_TIM:=CPU_DIAG.OB1_TIME;
+                           
+                            END_IF;
+                        ELSE
+                            MODF.ZS:=false;
+                            MODF.ZSMEL:=false;   
+                        END_IF;
+                        EN_OUTP:=true;
+                    END_IF;
+                END_IF;
+            END_IF;
+            EN_ALRM:=NOT DEL_ACT;
+        END_IF;
+    ELSE
+        RQ.PARA:=true;
+    END_IF;       
+END_IF;
+ 
+IF EN_ALRM THEN
+    IF DEL_ACT THEN
+        DEL_CNT:=CPU_DIAG.OB1_TIME - DEL_TIM;
+        IF DEL_CNT<0 THEN
+            DEL_CNT:=DEL_CNT+1879048192;
+            DEL_CNT:=DEL_CNT+268435456;
+        END_IF;
+        DEL_ACT:=DEL_CNT<=DELAY;
+    END_IF; //A839
+    QPERAF:= (NOT (MODF.ZS OR QRACKF OR DEL_ACT)) AND MODF.ACC;
+    INI_ALRM:=MODF.ZSMEL<>sbMODFZS OR QPERAF<>sbPERAF OR INI_ALRM OR KIR<>KIR_OLD;
+END_IF; //A838
+ 
+FOR RETURN_CODE:= 0 TO CHAN_NUM BY 1 DO
+    OMODE_00:= OMODE_00_ar[RETURN_CODE] AND DW#16#10000 OR OMODE_00;
+END_FOR;
+IF (EN_OUTP OR OB_START_bool[7] OR ((OMODE_00 AND DW#16#10000) = DW#16#10000))
+    OR (NOT QRACKF AND sdwRESERVE_bool[25])
+THEN  
+    sdwRESERVE_bool[25]:=QRACKF;
+    QMODF:=NOT ID.CHECK OR MODF.ZS;
+    IF QMODF OR QRACKF OR MODF.ACC THEN
+        ZI2_3:=DW#16#40000000;
+    ELSE
+        ZI2_3:=DW#16#80000000;
+    END_IF;
+    IF OB_START_bool[7] THEN
+        ZI2_3:=ZI2_3 OR DW#16#10000;
+    END_IF;
+    CH_O:=DW#16#0;
+    CH_A:=DW#16#0;
+ 
+    FOR RETURN_CODE:= 0 TO CHAN_NUM BY 1 DO
+        IF NOT ((MODE_00_ar[RETURN_CODE] AND DW#16#FFFF)=DW#16#0) THEN
+            OMODE_00_ar[RETURN_CODE]:=ZI2_3 OR MODE_00_ar[RETURN_CODE];
+        ELSE
+            OMODE_00_ar[RETURN_CODE]:=DW#16#0;
+        END_IF;
+        IF NOT ((MODE_00_ar[RETURN_CODE] AND DW#16#FFFF)=DW#16#0) THEN
+            CH_A_bool[RETURN_CODE]:=true;
+        ELSE
+            CH_A_bool[RETURN_CODE]:=false;
+        END_IF;
+        IF (OMODE_00_ar[RETURN_CODE] AND DW#16#FF000000)=DW#16#80000000 THEN
+            CH_O_bool[RETURN_CODE]:=true;
+        ELSIF (OMODE_00_ar[RETURN_CODE] AND DW#16#FF000000)=DW#16#40000000 THEN
+                CH_O_bool[RETURN_CODE]:=false;
+        END_IF;
+    END_FOR;
+    CH_OK_byte[3]:=CH_O_byte[0];
+    CH_OK_byte[2]:=CH_O_byte[1];
+    CH_OK_byte[1]:=CH_O_byte[2];
+    CH_OK_byte[0]:=CH_O_byte[3];
+    CH_ACTIVE_byte[3]:=CH_A_byte[0];
+    CH_ACTIVE_byte[2]:=CH_A_byte[1];
+    CH_ACTIVE_byte[1]:=CH_A_byte[2];
+    CH_ACTIVE_byte[0]:=CH_A_byte[3];
+END_IF;
+IF EN_MSG THEN
+    IF INI_ALRM THEN
+        ALARM_8P_1   (EN_R :=  true
+                       ,ID :=  W#16#EEEE
+                       ,EV_ID :=  EV_ID
+                       ,SIG_1 :=  MODF.ZSMEL
+                       ,SIG_2 :=  QPERAF
+                       ,SIG_3 :=  MODF.FBG
+                       ,SIG_4 :=  KIR
+                       ,SD_1 :=  MOD_INF.SUBN_ID
+                       ,SD_2 :=  MOD_INF.RACK_NO
+                       ,SD_3 :=  MOD_INF.SLOT_NO
+                       ,SD_4 :=  T_BG_ZS
+                       );
+        
+        sbMODFZS:=MODF.ZSMEL;
+        sbPERAF:=QPERAF;
+        KIR_OLD:=KIR;
+        MSG_STAT:=ALARM_8P_1.STATUS;
+        MSG_ACK:=ALARM_8P_1.ACK_STATE;
+        IF NOT ALARM_8P_1.DONE AND NOT ALARM_8P_1.ERROR AND ALARM_8P_1.STATUS<>W#16#B AND ALARM_8P_1.STATUS<>W#16#14 THEN
+            INI_ALRM:=false;
+        END_IF;
+    ELSE;
+    END_IF;
+ELSE
+    INI_ALRM:=false;
+END_IF;
+MS_AS:=MS AND DW#16#FF010000;
+IF NOT EN_MSG OR QRACKF THEN
+     MS_AS:=MS_AS OR DW#16#8;
+ELSIF (QMODF OR QPERAF OR (T_BG_ZS=49 AND KIR)) AND EN_MSG THEN
+        MS_AS:=MS_AS OR DW#16#7;
+ELSE;
+END_IF;
+ 
+FOR RETURN_CODE:= 0 TO CHAN_NUM BY 1 DO
+    tDXCHG:=DXCHG_00_ar[RETURN_CODE];
+    EXT_S_bool[RETURN_CODE]:=tDXCHG_bool[24];
+END_FOR;
+ 
+EXT_STAT_byte[3]:=EXT_S_byte[0];
+EXT_STAT_byte[2]:=EXT_S_byte[1];
+EXT_STAT_byte[1]:=EXT_S_byte[2];
+EXT_STAT_byte[0]:=EXT_S_byte[3];
+MS:=MS_AS;
+O_MS:=MS_AS;
+QERR:=NOT OK;
+ 
+END_FUNCTION_BLOCK

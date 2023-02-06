@@ -1,3 +1,14 @@
+// Name: FB1844
+// Symbolic Name: LPOptim
+// Symbol Comment: Linear Optimization
+// Family: Control
+// Version: 2.1
+// Author: AdvLib80
+// Last modified: 08/07/2012
+// Use:
+// Size: 6576 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
 {
     Scl_ResetOptions ; 
     Scl_OverwriteBlocks:=           'y' ;

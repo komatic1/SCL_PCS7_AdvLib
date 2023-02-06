@@ -1,0 +1,1010 @@
+// Name: FB115
+// Symbolic Name: DPAY_V1
+// Symbol Comment: DP/PA or Y_LINK as DP V1 Function Block
+// Family: @SYSTEM
+// Version: 7.0
+// Author: DRIVER80
+// Last modified: 02/02/2011
+// Use: -
+// Size: 2178 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.06.00_01.03.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+FUNCTION_BLOCK FB1115
+TITLE ='DP/PA or Y_LINK as DP V1 Function Block'
+{ S7_hardware := 'rack'; S7_tasklist := 'OB1,OB70,OB72,OB82,OB83,OB85,OB86,OB100'; S7_tag := 'false' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : DPAY_V1
+VERSION : '7.0'
+ 
+ 
+VAR_INPUT
+  SUBN1_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Primary Subnet
+  SUBN2_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Redundant Subnet
+  RACK_NO { S7_link := 'false' }: BYTE ;    //Rack Number
+  DPPA_00 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 PA-Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;
+DPPA_00_st AT DPPA_00 : ARRAY[0..0] OF   STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 PA-Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;
+  DPPA_01 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_02 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_03 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_04 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_05 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_06 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_07 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_08 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_09 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_10 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_11 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_12 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_13 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_14 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_15 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_16 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_17 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_18 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_19 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_20 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_21 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_22 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_23 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_24 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_25 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_26 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_27 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_28 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_29 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_30 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_31 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_32 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_33 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_34 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_35 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_36 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_37 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_38 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_39 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_40 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_41 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_42 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_43 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_44 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_45 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_46 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_47 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_48 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_49 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_50 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_51 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_52 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_53 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_54 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_55 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_56 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_57 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_58 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_59 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_60 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_61 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_62 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+  DPPA_63 { S7_visible := 'false' }: STRUCT    
+   SLOT0_NO : BYTE ;    //Number Slot0 Device in DP/PA-Link or Y-Link
+   SLOTS_NO : BYTE ;    //Slot Number of Device
+  END_STRUCT ;   
+END_VAR
+VAR_OUTPUT
+  EN_M0 { S7_visible := 'false' }: BOOL ;    //Enable Device 0
+  EN_M0_bool AT EN_M0 : ARRAY[0..0] OF BOOL;
+  EN_M1 { S7_visible := 'false' }: BOOL ;    //Enable Device 1
+  EN_M2 { S7_visible := 'false' }: BOOL ;    //Enable Device 2
+  EN_M3 { S7_visible := 'false' }: BOOL ;    //Enable Device 3
+  EN_M4 { S7_visible := 'false' }: BOOL ;    //Enable Device 4
+  EN_M5 { S7_visible := 'false' }: BOOL ;    //Enable Device 5
+  EN_M6 { S7_visible := 'false' }: BOOL ;    //Enable Device 6
+  EN_M7 { S7_visible := 'false' }: BOOL ;    //Enable Device 7
+  EN_M8 { S7_visible := 'false' }: BOOL ;    //Enable Device 8
+  EN_M9 { S7_visible := 'false' }: BOOL ;    //Enable Device 9
+  EN_M10 { S7_visible := 'false' }: BOOL ;    //Enable Device 10
+  EN_M11 { S7_visible := 'false' }: BOOL ;    //Enable Device 11
+  EN_M12 { S7_visible := 'false' }: BOOL ;    //Enable Device 12
+  EN_M13 { S7_visible := 'false' }: BOOL ;    //Enable Device 13
+  EN_M14 { S7_visible := 'false' }: BOOL ;    //Enable Device 14
+  EN_M15 { S7_visible := 'false' }: BOOL ;    //Enable Device 15
+  EN_M16 { S7_visible := 'false' }: BOOL ;    //Enable Device 16
+  EN_M17 { S7_visible := 'false' }: BOOL ;    //Enable Device 17
+  EN_M18 { S7_visible := 'false' }: BOOL ;    //Enable Device 18
+  EN_M19 { S7_visible := 'false' }: BOOL ;    //Enable Device 19
+  EN_M20 { S7_visible := 'false' }: BOOL ;    //Enable Device 20
+  EN_M21 { S7_visible := 'false' }: BOOL ;    //Enable Device 21
+  EN_M22 { S7_visible := 'false' }: BOOL ;    //Enable Device 22
+  EN_M23 { S7_visible := 'false' }: BOOL ;    //Enable Device 23
+  EN_M24 { S7_visible := 'false' }: BOOL ;    //Enable Device 24
+  EN_M25 { S7_visible := 'false' }: BOOL ;    //Enable Device 25
+  EN_M26 { S7_visible := 'false' }: BOOL ;    //Enable Device 26
+  EN_M27 { S7_visible := 'false' }: BOOL ;    //Enable Device 27
+  EN_M28 { S7_visible := 'false' }: BOOL ;    //Enable Device 28
+  EN_M29 { S7_visible := 'false' }: BOOL ;    //Enable Device 29
+  EN_M30 { S7_visible := 'false' }: BOOL ;    //Enable Device 30
+  EN_M31 { S7_visible := 'false' }: BOOL ;    //Enable Device 31
+  EN_M32 { S7_visible := 'false' }: BOOL ;    //Enable Device 32
+  EN_M33 { S7_visible := 'false' }: BOOL ;    //Enable Device 33
+  EN_M34 { S7_visible := 'false' }: BOOL ;    //Enable Device 34
+  EN_M35 { S7_visible := 'false' }: BOOL ;    //Enable Device 35
+  EN_M36 { S7_visible := 'false' }: BOOL ;    //Enable Device 36
+  EN_M37 { S7_visible := 'false' }: BOOL ;    //Enable Device 37
+  EN_M38 { S7_visible := 'false' }: BOOL ;    //Enable Device 38
+  EN_M39 { S7_visible := 'false' }: BOOL ;    //Enable Device 39
+  EN_M40 { S7_visible := 'false' }: BOOL ;    //Enable Device 40
+  EN_M41 { S7_visible := 'false' }: BOOL ;    //Enable Device 41
+  EN_M42 { S7_visible := 'false' }: BOOL ;    //Enable Device 42
+  EN_M43 { S7_visible := 'false' }: BOOL ;    //Enable Device 43
+  EN_M44 { S7_visible := 'false' }: BOOL ;    //Enable Device 44
+  EN_M45 { S7_visible := 'false' }: BOOL ;    //Enable Device 45
+  EN_M46 { S7_visible := 'false' }: BOOL ;    //Enable Device 46
+  EN_M47 { S7_visible := 'false' }: BOOL ;    //Enable Device 47
+  EN_M48 { S7_visible := 'false' }: BOOL ;    //Enable Device 48
+  EN_M49 { S7_visible := 'false' }: BOOL ;    //Enable Device 49
+  EN_M50 { S7_visible := 'false' }: BOOL ;    //Enable Device 50
+  EN_M51 { S7_visible := 'false' }: BOOL ;    //Enable Device 51
+  EN_M52 { S7_visible := 'false' }: BOOL ;    //Enable Device 52
+  EN_M53 { S7_visible := 'false' }: BOOL ;    //Enable Device 53
+  EN_M54 { S7_visible := 'false' }: BOOL ;    //Enable Device 54
+  EN_M55 { S7_visible := 'false' }: BOOL ;    //Enable Device 55
+  EN_M56 { S7_visible := 'false' }: BOOL ;    //Enable Device 56
+  EN_M57 { S7_visible := 'false' }: BOOL ;    //Enable Device 57
+  EN_M58 { S7_visible := 'false' }: BOOL ;    //Enable Device 58
+  EN_M59 { S7_visible := 'false' }: BOOL ;    //Enable Device 59
+  EN_M60 { S7_visible := 'false' }: BOOL ;    //Enable Device 60
+  EN_M61 { S7_visible := 'false' }: BOOL ;    //Enable Device 61
+  EN_M62 { S7_visible := 'false' }: BOOL ;    //Enable Device 62
+  EN_M63 { S7_visible := 'false' }: BOOL ;    //Enable Device 63
+END_VAR
+VAR_IN_OUT
+  CPU_DIAG : STRUCT    
+   H_MODE : BOOL ;    //1= H-System
+   V1_MODE : BOOL ;    //1= CPU DP V1 Mode
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   OB1_TIME : DINT ;    //OB1_TIME_TCK
+   OB_S : STRUCT    
+    NUM_CNT : INT ;    //Counter Startinfo OB_NR
+    NUM_01 : BYTE ;    //Startinfo OB_NO
+    NUM_02 : BYTE ;    //Startinfo OB_NO
+    NUM_03 : BYTE ;    //Startinfo OB_NO
+    NUM_04 : BYTE ;    //Startinfo OB_NO
+    NUM_05 : BYTE ;    //Startinfo OB_NO
+    NUM_06 : BYTE ;    //Startinfo OB_NO
+    NUM_07 : BYTE ;    //Startinfo OB_NO
+    NUM_08 : BYTE ;    //Startinfo OB_NO
+    NUM_09 : BYTE ;    //Startinfo OB_NO
+    NUM_10 : BYTE ;    //Startinfo OB_NO
+    NUM_11 : BYTE ;    //Startinfo OB_NO
+    NUM_12 : BYTE ;    //Startinfo OB_NO
+    NUM_13 : BYTE ;    //Startinfo OB_NO
+    NUM_14 : BYTE ;    //Startinfo OB_NO
+    NUM_15 : BYTE ;    //Startinfo OB_NO
+    NUM_16 : BYTE ;    //Startinfo OB_NO
+   END_STRUCT ;   
+   OB_72 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+   OB_70 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_82 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_83 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_85 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SLOT : BYTE ;    //Slot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_86 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_81 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+  END_STRUCT ;   
+  CPU_OB_5X : STRUCT    
+   OB_55 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_56 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_57 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : BYTE ;    //SUBNET ID
+    RACK : BYTE ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     D_LENGTH : BYTE ;    //Data Length
+     A_TYP : BYTE ;    //Alarm Type
+     SLOT : BYTE ;    //Slot Number
+     A_SPEC : BYTE ;    //Alarm-Specifire
+     A_0 : BYTE ;    //Alarm Information
+     A_1 : BYTE ;    //Alarm Information
+     A_2 : BYTE ;    //Alarm Information
+     A_3 : BYTE ;    //Alarm Information
+     A_4 : BYTE ;    //Alarm Information
+     A_5 : BYTE ;    //Alarm Information
+     A_6 : BYTE ;    //Alarm Information
+     A_7 : BYTE ;    //Alarm Information
+     A_8 : BYTE ;    //Alarm Information
+     A_9 : BYTE ;    //Alarm Information
+     A_10 : BYTE ;    //Alarm Information
+     A_11 : BYTE ;    //Alarm Information
+     A_12 : BYTE ;    //Alarm Information
+     A_13 : BYTE ;    //Alarm Information
+     A_14 : BYTE ;    //Alarm Information
+     A_15 : BYTE ;    //Alarm Information
+     A_16 : BYTE ;    //Alarm Information
+     A_17 : BYTE ;    //Alarm Information
+     A_18 : BYTE ;    //Alarm Information
+     A_19 : BYTE ;    //Alarm Information
+     A_20 : BYTE ;    //Alarm Information
+     A_21 : BYTE ;    //Alarm Information
+     A_22 : BYTE ;    //Alarm Information
+     A_23 : BYTE ;    //Alarm Information
+     A_24 : BYTE ;    //Alarm Information
+     A_25 : BYTE ;    //Alarm Information
+     A_26 : BYTE ;    //Alarm Information
+     A_27 : BYTE ;    //Alarm Information
+     A_28 : BYTE ;    //Alarm Information
+     A_29 : BYTE ;    //Alarm Information
+     A_30 : BYTE ;    //Alarm Information
+     A_31 : BYTE ;    //Alarm Information
+     A_32 : BYTE ;    //Alarm Information
+     A_33 : BYTE ;    //Alarm Information
+     A_34 : BYTE ;    //Alarm Information
+     A_35 : BYTE ;    //Alarm Information
+     A_36 : BYTE ;    //Alarm Information
+     A_37 : BYTE ;    //Alarm Information
+     A_38 : BYTE ;    //Alarm Information
+     A_39 : BYTE ;    //Alarm Information
+     A_40 : BYTE ;    //Alarm Information
+     A_41 : BYTE ;    //Alarm Information
+     A_42 : BYTE ;    //Alarm Information
+     A_43 : BYTE ;    //Alarm Information
+     A_44 : BYTE ;    //Alarm Information
+     A_45 : BYTE ;    //Alarm Information
+     A_46 : BYTE ;    //Alarm Information
+     A_47 : BYTE ;    //Alarm Information
+     A_48 : BYTE ;    //Alarm Information
+     A_49 : BYTE ;    //Alarm Information
+     A_50 : BYTE ;    //Alarm Information
+     A_51 : BYTE ;    //Alarm Information
+     A_52 : BYTE ;    //Alarm Information
+     A_53 : BYTE ;    //Alarm Information
+     A_54 : BYTE ;    //Alarm Information
+     A_55 : BYTE ;    //Alarm Information
+     A_56 : BYTE ;    //Alarm Information
+     A_57 : BYTE ;    //Alarm Information
+     A_58 : BYTE ;    //Alarm Information
+     A_59 : BYTE ;    //Alarm Information
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+  END_STRUCT ;   
+END_VAR
+VAR
+  sdwRESERVE : DWORD ;    //Reserve fьr zukьnftige Дnderungen
+  s_ir : BOOL ;    //Unterbrechung eines OB durch einen anderen ( Merker Ablaufebenenwechsel ) 7.8.2
+END_VAR
+VAR_TEMP
+  RETURN_CODE : INT ;    //SZL-Returnwert bzw. Fehlercode und Zдhlervariable
+  OB_START : WORD ;  
+  OB_START_bool AT OB_START : ARRAY[0..15] OF BOOL;
+  pbEN_ALT : BOOL ;   
+  pbEN_Mxx : ARRAY  [0 .. 63 ] OF //Temporдre SUBNET Ausgдnge: EN_Mxx
+  BOOL ;    //Temporдre SUBNET Ausgдnge: EN_Mxx
+  GEO : STRUCT    
+   SUBNET : BYTE ;    //SUBNET belegt 1 WORD im Speicher!
+   RACK : BYTE ;   
+   SLOT : BYTE ;   
+  END_STRUCT ;   
+  ZI1 : WORD ;   
+  ZI2_3 : DWORD ;   
+  ZI2_3a : DWORD ;   
+  DP_MASTER_INF : STRUCT    
+   dp_m_id : BYTE ;   
+   rack_dp_m : BYTE ;   
+   slot_dp_m : BYTE ;   
+   subm_dp_m : BYTE ;   
+   logadr : WORD ;   
+   dp_m_sys_cpu : WORD ;   
+   dp_m_sys_dpm : WORD ;   
+   dp_m_state : ARRAY  [0 .. 7 ] OF BOOL ;   
+   res1 : BYTE ;   
+   res2 : BYTE ;   
+   res3 : BYTE ;   
+  END_STRUCT ;   
+  TOP_SI : STRUCT    
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  INDEX : INT ;   
+  INDEX1 : INT ;   
+END_VAR
+BEGIN
+OB_START:=W#16#0;
+pbEN_ALT:=OK;
+CASE CPU_DIAG.OB_S.NUM_CNT OF
+    1 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_01;
+        pbEN_ALT:=false;
+    2 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_02;
+        IF CPU_DIAG.OB_S.NUM_01=1 THEN
+            pbEN_ALT:=false;
+        END_IF;
+    3 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_03;
+    4 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_04;
+    5 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_05;
+    6 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_06;
+    7 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_07;
+    8 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_08;
+    9 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_09;
+    10 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_10;
+    11 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_11;
+    12 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_12;
+    13 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_13;
+    14 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_14;
+    15 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_15;
+    16 :
+        TOP_SI.NUM:=CPU_DIAG.OB_S.NUM_16;
+ELSE;
+END_CASE;
+ 
+IF TOP_SI.NUM=1 THEN
+    OB_START_bool[6]:=true;
+ELSIF TOP_SI.NUM=B#16#55 THEN // ob85
+    OB_START_bool[4]:=true;   
+    GEO.SUBNET:=CPU_DIAG.OB_85.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_85.RACK;
+    GEO.SLOT:=CPU_DIAG.OB_85.SLOT;
+ELSIF TOP_SI.NUM=B#16#52 THEN // ob82
+    OB_START_bool[2]:=true;   
+    GEO.SUBNET:=CPU_DIAG.OB_82.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_82.RACK;
+    GEO.SLOT:=CPU_DIAG.OB_82.AINFO.SLOT;
+ELSIF TOP_SI.NUM=B#16#56 THEN // ob86
+    OB_START_bool[5]:=true;   
+    GEO.SUBNET:=CPU_DIAG.OB_86.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_86.RACK;
+ELSIF TOP_SI.NUM=B#16#53 THEN // ob83
+    OB_START_bool[3]:=true;   
+    GEO.SUBNET:=CPU_DIAG.OB_83.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_83.RACK;
+    GEO.SLOT:=CPU_DIAG.OB_83.SLOT;
+ELSIF TOP_SI.NUM=B#16#37 THEN // ob55
+    OB_START_bool[8]:=true;   
+    GEO.SUBNET:=CPU_OB_5X.OB_55.SUBNET;
+    GEO.RACK:=CPU_OB_5X.OB_55.RACK;
+    GEO.SLOT:=CPU_OB_5X.OB_55.AINFO.SLOT;
+ELSIF TOP_SI.NUM=B#16#38 THEN // ob56
+    OB_START_bool[9]:=true;   
+    GEO.SUBNET:=CPU_OB_5X.OB_56.SUBNET;
+    GEO.RACK:=CPU_OB_5X.OB_56.RACK;
+    GEO.SLOT:=CPU_OB_5X.OB_56.AINFO.SLOT;
+ELSIF TOP_SI.NUM=B#16#39 THEN // ob57
+    OB_START_bool[10]:=true;   
+    GEO.SUBNET:=CPU_OB_5X.OB_57.SUBNET;
+    GEO.RACK:=CPU_OB_5X.OB_57.RACK;
+    GEO.SLOT:=CPU_OB_5X.OB_57.AINFO.SLOT;
+ELSIF TOP_SI.NUM=B#16#64 THEN // ob100
+    OB_START_bool[7]:=true;   
+ELSIF TOP_SI.NUM=B#16#46 THEN // ob70
+    OB_START_bool[0]:=true;   
+    GEO.SUBNET:=CPU_DIAG.OB_70.SUBNET;
+    GEO.RACK:=CPU_DIAG.OB_70.RACK;
+ELSIF TOP_SI.NUM=B#16#48 THEN // ob72
+    OB_START_bool[1]:=true;   
+ELSE;
+END_IF;   
+ 
+ 
+ 
+IF OB_START_bool[6] OR OB_START_bool[7] OR OB_START_bool[1] THEN //ob1,ob100,ob72
+    FOR RETURN_CODE:=0 TO 63 BY 1 DO
+        EN_M0_bool[RETURN_CODE]:=true;
+    END_FOR;
+ELSE
+    FOR RETURN_CODE:=0 TO 63 BY 1 DO
+        IF pbEN_ALT THEN
+            pbEN_Mxx[RETURN_CODE]:=EN_M0_bool[RETURN_CODE];
+        ELSE
+            pbEN_Mxx[RETURN_CODE]:=false;
+        END_IF;   
+    END_FOR;
+    IF GEO.SUBNET=SUBN1_ID OR GEO.SUBNET=SUBN2_ID THEN
+        IF OB_START_bool[5] OR OB_START_bool[0]  THEN // ob86,ob70
+            FOR RETURN_CODE:=0 TO 63 BY 1 DO
+                pbEN_Mxx[RETURN_CODE]:=true;
+            END_FOR;
+        ELSE
+            IF GEO.RACK=RACK_NO THEN
+                IF  OB_START_bool[4] OR //ob85
+                    OB_START_bool[3] OR //ob83
+                    OB_START_bool[2] OR //ob82
+                    OB_START_bool[8] OR //ob55
+                    OB_START_bool[9] OR //ob56
+                    OB_START_bool[10]   //ob57
+                THEN
+                    INDEX:=BYTE_TO_INT(GEO.SLOT);
+                    FOR RETURN_CODE:=0 TO 63 BY 1 DO
+                        IF INDEX>=BYTE_TO_INT(DPPA_00_st[RETURN_CODE].SLOT0_NO) AND
+                           INDEX<(BYTE_TO_INT(DPPA_00_st[RETURN_CODE].SLOT0_NO)+BYTE_TO_INT(DPPA_00_st[RETURN_CODE].SLOTS_NO))
+                        THEN
+                            pbEN_Mxx[RETURN_CODE]:=true;
+                            EXIT;
+                        END_IF;
+                    END_FOR;
+                END_IF;
+            END_IF;
+        END_IF;
+    END_IF;
+    REPEAT
+        s_ir:=0;
+        FOR RETURN_CODE:=0 TO 63 BY 1 DO
+            EN_M0_bool[RETURN_CODE]:=pbEN_Mxx[RETURN_CODE];
+        END_FOR;
+    UNTIL NOT s_ir
+    END_REPEAT;
+    s_ir:=true;
+END_IF;     
+END_FUNCTION_BLOCK

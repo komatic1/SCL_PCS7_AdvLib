@@ -1,0 +1,611 @@
+// Name: FB1883
+// Symbolic Name: Ratio
+// Symbol Comment: Ratio Control
+// Family: Control
+// Version: 2.1
+// Author: AdvLib80
+// Last modified: 09/03/2012
+// Use: FC260,FC369,SFC6
+// Size: 2446 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB11883
+TITLE ='Ratio Control'
+{ S7_m_c := 'true'; S7_tasklist := 'OB100' }
+AUTHOR : AdvLib80
+FAMILY : Control
+NAME : Ratio
+VERSION : '2.1'
+// reversed by komatic
+ 
+VAR_INPUT
+  In { S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_xshortcut := 'Value,;' }: STRUCT     //Analog Input Value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  InUnit { S7_m_c := 'true'; S7_edit := 'para'; S7_unit := '' }: INT  := 1001;    //Engineering units of In
+  InPV { S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Actual measured process value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SecComPV { S7_edit := 'para'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;' }: STRUCT     //Secondary component process value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SecComUnit { S7_m_c := 'true'; S7_edit := 'para'; S7_unit := '' }: INT  := 1001;    //Engineering units of secondary component process value
+  RatioInt { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: REAL  := 1.000000e+000;    //Ratio (Internal)
+  RatioExt { S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Ratio (External)
+   Value : REAL  := 1.000000e+000;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  RatioUnit { S7_m_c := 'true'; S7_unit := ''; S7_edit := 'para' }: INT ;    //Engineering units of RatioPV
+  Offset { S7_edit := 'para'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //Offset
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RatOpScale { S7_m_c := 'true'; S7_xm_c := 'High,true;Low,true;'; S7_edit := 'para'; S7_xedit := 'High,para;Low,para;' }: STRUCT     //Ratio - Bar Display Limits for OS
+   High : REAL  := 1.000000e+002;    // High Value
+   Low : REAL ;    // Low Value
+  END_STRUCT ;   
+  RatHiLim { Op_Level := '2'; S7_edit := 'para'; S7_m_c := 'true'; S7_dynamic := 'true' }: REAL  := 1.000000e+002;    //Ratio High Limit
+  RatLoLim { Op_Level := '2'; S7_edit := 'para'; S7_m_c := 'true'; S7_dynamic := 'true' }: REAL ;    //Ratio Low Limit
+  OutHiLim { Op_Level := '2'; S7_edit := 'para'; S7_m_c := 'true'; S7_dynamic := 'true' }: REAL  := 1.000000e+002;    //Out High Limit
+  OutLoLim { Op_Level := '2'; S7_edit := 'para'; S7_m_c := 'true'; S7_dynamic := 'true' }: REAL ;    //Out Low Limit
+  RatLiOp { S7_edit := 'para'; S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1=Link, 0=Operator
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RatExtLi { S7_contact := 'true' }: STRUCT     //Linkable Input to Select External Ratio
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RatIntLi { S7_contact := 'true' }: STRUCT     //Linkable Input to Select Internal Ratio
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RatExtOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Operator Input to Select External Ratio
+  RatIntOp { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL  := TRUE;    //Operator Input to Select Internal Ratio
+  RatTrkExt { Op_Level := '2'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Bumpless Transfer from External to Internal
+  OnOp { Op_Level := '1'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=On Mode: On Mode by Operator
+  OosOp { Op_Level := '2'; S7_m_c := 'true'; S7_visible := 'false' }: BOOL ;    //1=Oos Mode: Oos Mode by Operator
+  OosLi { S7_dynamic := 'true' }: STRUCT     //1=Oos Mode: Oos Mode by Field Signal
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimLiOp { S7_edit := 'para'; S7_visible := 'false' }: STRUCT     //Simulation on/off via 0 = Operator, 1 = Interconnection or SFC
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimOnLi { S7_visible := 'false' }: STRUCT     //1 = Simulation activated by interconnection or SFC (controlled by SimLiOp = 1)
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SimOn { Op_Level := '3'; S7_visible := 'false'; S7_m_c := 'true' }: BOOL ;    //Simulation On/Off
+  SimIn { Op_Level := '1'; S7_visible := 'false'; S7_m_c := 'true' }: REAL ;    //In Simulation Value, tracks when not in simulation
+  SimInLi { S7_visible := 'false' }: STRUCT     //Linkable simulation value In
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  SelFp1 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 1
+  SelFp2 { BLK_Jump := '1'; S7_visible := 'false' }: ANY ;    //Select Faceplate 2
+  UserStatus { S7_m_c := 'true'; S7_visible := 'false' }: BYTE ;    //User Status Bits
+  OS_Perm { S7_visible := 'false' }: STRUCT     //Operator Permissions
+   Bit0 : BOOL  := TRUE;    //Reserved
+   Bit1 : BOOL  := TRUE;    //1 = Operator can shift to on mode
+   Bit2 : BOOL  := TRUE;    //Reserved
+   Bit3 : BOOL  := TRUE;    //1 = Operator can shift to out of service mode
+   Bit4 : BOOL  := TRUE;    //1 = Operator can change Internal to External(RatExtOp)
+   Bit5 : BOOL  := TRUE;    //1 = Operator can change External to Internal(RatIntOp)
+   Bit6 : BOOL  := TRUE;    //1 = Operator can enter Setpoint(RatioInt)
+   Bit7 : BOOL  := TRUE;    //Reserved
+   Bit8 : BOOL  := TRUE;    //Reserved
+   Bit9 : BOOL  := TRUE;    //Reserved
+   Bit10 : BOOL  := TRUE;    //Reserved
+   Bit11 : BOOL  := TRUE;    //1 = Operator can enable function simulation
+   Bit12 : BOOL  := TRUE;    //1 = Operator can switch to Internal/External Tracking
+   Bit13 : BOOL  := TRUE;    //Reserved
+   Bit14 : BOOL  := TRUE;    //1 = Operator can alter the Ratio Hi limit
+   Bit15 : BOOL  := TRUE;    //1 = Operator can alter the Ratio Lo limit
+   Bit16 : BOOL  := TRUE;    //1 = Operator can alter the Out Hi limit
+   Bit17 : BOOL  := TRUE;    //1 = Operator can alter the Out Lo limit
+   Bit18 : BOOL  := TRUE;    //Reserved
+   Bit19 : BOOL  := TRUE;    //Reserved
+   Bit20 : BOOL  := TRUE;    //Reserved
+   Bit21 : BOOL  := TRUE;    //Reserved
+   Bit22 : BOOL  := TRUE;    //Reserved
+   Bit23 : BOOL  := TRUE;    //Reserved
+   Bit24 : BOOL  := TRUE;    //Reserved
+   Bit25 : BOOL  := TRUE;    //Reserved
+   Bit26 : BOOL  := TRUE;    //Reserved
+   Bit27 : BOOL  := TRUE;    //Reserved
+   Bit28 : BOOL  := TRUE;    //Reserved
+   Bit29 : BOOL  := TRUE;    //Reserved
+   Bit30 : BOOL  := TRUE;    //Reserved
+   Bit31 : BOOL  := TRUE;    //Reserved
+  END_STRUCT ;
+OS_Perm_b AT OS_Perm : ARRAY[0..3] OF BYTE; 
+OS_Perm_dw AT OS_Perm : DWORD;
+  OpSt_In { BLK_Jump := '1'; S7_visible := 'false' }: DWORD ;    //Enabled operator stations
+  Feature { S7_visible := 'false' }: STRUCT     //Status of various features
+   Bit0 : BOOL ;    //0 = Start up with defined initializing in OB100; 1 = keep last stored values
+   Bit1 : BOOL ;    //1 = OosLi can switch to Out of Service
+   Bit2 : BOOL ;    //Reserved
+   Bit3 : BOOL ;    //Reserved
+   Bit4 : BOOL ;    //Reserved
+   Bit5 : BOOL ;    //Reserved
+   Bit6 : BOOL ;    //Reserved
+   Bit7 : BOOL ;    //Reserved
+   Bit8 : BOOL ;    //Reserved
+   Bit9 : BOOL ;    //Reserved
+   Bit10 : BOOL ;    //Reserved
+   Bit11 : BOOL ;    //Reserved
+   Bit12 : BOOL ;    //Reserved
+   Bit13 : BOOL ;    //Reserved
+   Bit14 : BOOL ;    //Reserved
+   Bit15 : BOOL ;    //Reserved
+   Bit16 : BOOL ;    //Reserved
+   Bit17 : BOOL ;    //Reserved
+   Bit18 : BOOL ;    //Reserved
+   Bit19 : BOOL ;    //Reserved
+   Bit20 : BOOL ;    //Reserved
+   Bit21 : BOOL ;    //Reserved
+   Bit22 : BOOL ;    //Reserved
+   Bit23 : BOOL ;    //Reserved
+   Bit24 : BOOL ;    //1 = Local authorization active
+   Bit25 : BOOL ;    //Reserved
+   Bit26 : BOOL ;    //Reserved
+   Bit27 : BOOL ;    //Reserved
+   Bit28 : BOOL ;    //Reserved
+   Bit29 : BOOL ;    //Reserved
+   Bit30 : BOOL ;    //Reserved
+   Bit31 : BOOL ;    //Reserved
+  END_STRUCT ;   
+END_VAR
+VAR_OUTPUT
+  Out { S7_edit := 'para'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_contact := 'true' }: STRUCT     //Analog Output Value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ; 
+  Out_w AT Out: STRUCT
+   Value : REAL ;    // Value
+   ST : WORD;    // Signal Status
+  END_STRUCT;
+  RatioPV { S7_edit := 'para'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xtrend := 'Value,RatOpScale.Low,RatOpScale.High;' }: STRUCT     //Actual Ratio Output Value
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;
+RatioPV_w AT RatioPV : STRUCT
+   Value : REAL ;    // Value
+   ST : WORD;    // Signal Status
+  END_STRUCT ;   
+ 
+  RatioOut { S7_edit := 'para'; S7_xqc := 'Value,true;'; S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;'; S7_xtrend := 'Value,RatOpScale.Low,RatOpScale.High;' }: STRUCT     //Selected Ratio Output Value (RatioInt or RatioExt)
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+RatioOut_w AT RatioOut : STRUCT
+   Value : REAL ;    // Value
+   ST : WORD;    // Signal Status
+  END_STRUCT ;   
+ 
+  OnAct { S7_visible := 'false'; S7_dynamic := 'true' }: STRUCT     //On Mode is active
+   Value : BOOL  := TRUE;    //Value
+   ST : BYTE  := B#16#80;    //Signal Status
+  END_STRUCT ;   
+  OosAct { S7_dynamic := 'true'; S7_m_c := 'true'; S7_xm_c := 'Value,true;' }: STRUCT     //Out of service is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  RatExtAct { S7_dynamic := 'true'; S7_contact := 'true' }: STRUCT     //1: External Ratio is active, 0: Internal Ratio is active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;
+RatExtAct_w AT RatExtAct : WORD; 
+  OutHiLmOut { S7_dynamic := 'true' }: STRUCT     //Out High Limit Output
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OutLoLmOut { S7_dynamic := 'true' }: STRUCT     //Out Low Limit Output
+   Value : REAL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OutHiAct { S7_dynamic := 'true' }: STRUCT     //Out High Limit Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OutHiAct_w AT OutHiAct : WORD;
+  OutLoAct { S7_dynamic := 'true' }: STRUCT     //Out Low Limit Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;   
+  OutLoAct_w AT OutLoAct : WORD;
+  RatHiAct { S7_visible := 'false' }: STRUCT     //Ratio High Limit Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;
+RatHiAct_w AT RatHiAct : WORD; 
+  RatLoAct { S7_visible := 'false' }: STRUCT     //Ratio Low Limit Active
+   Value : BOOL ;    // Value
+   ST : BYTE  := B#16#80;    // Signal Status
+  END_STRUCT ;
+RatLoAct_w AT RatLoAct : WORD; 
+  OS_PermOut { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator Permission: Output for OS
+  OS_PermLog { S7_visible := 'false'; S7_m_c := 'true' }: DWORD  := DW#16#FFFFFFFF;    //Operator Permission: Output for OS
+  OpSt_Out { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Enabled operator stations
+  ST_Worst { S7_visible := 'false'; S7_m_c := 'true' }: BYTE  := B#16#80;    //Worst Signal Status
+  Status { S7_visible := 'false'; S7_m_c := 'true' }: DWORD ;    //Status Word
+  ErrorNum { S7_visible := 'false'; S7_dynamic := 'true' }: INT  := -1;    //Error Number
+END_VAR
+VAR
+  SnErr : INT ;    //Error information.
+  SrRatioInt : REAL ;   
+  Sar_reserve : ARRAY  [0 .. 7 ] OF //8 bytes reserved for future use.
+  BYTE ;    //8 bytes reserved for future use.
+  SxLastVal : BOOL ;    //Temporary storage of Last value of internal/external selection
+  SxFirstStart : BOOL  := TRUE;    //Initial run.
+  SxOosLi : BOOL ;    //rising edge of OosLi
+END_VAR
+VAR_TEMP
+  TOP_SI : STRUCT     
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  START_UP_SI : STRUCT    
+   EV_CLASS : BYTE ;    // Bits 0 to 3: Event ID·  Bits 4 to 7: Event class
+   EV_NUM : BYTE ;    // Event number
+   PRIORITY : BYTE ;    // Number of the priority class (meaning OF B#16#FE: OB NOT available or locked)
+   NUM : BYTE ;    // OB number.
+   TYP2_3 : BYTE ;    // Data ID 2_3: identifies the information entered in ZI2_3
+   TYP1 : BYTE ;    // Data ID 1  : identifies the information entered in ZI1
+   ZI1 : WORD ;    // Additional information 1
+   ZI2_3 : DWORD ;    // Additional information 2_3
+  END_STRUCT ;   
+  rRatio : REAL ;   
+  rOut : REAL ;    //Temporary storage of output
+  rIn : REAL ;    //Variable for Input
+  nInfErr : INT ;    //Infinity Error Nos
+  dwStatus : DWORD ;    //Variable for status
+  dwStatus_b AT dwStatus : ARRAY [0..31] OF BOOL;
+  xSimAct : BOOL ;    //simulation active
+  xFeatStartupWithOutInit : BOOL ;    //Bit 0 = 0 Start up with defined init in OB100 (default)  -> Start the motor in
+  xFeatOosLiEn : BOOL ;    //Bit 2= 0, OosLiEn: OosLi cannґt switch to Out of Service
+  xFeatLocalAuth : BOOL ;    //Bit 24 = 1, Function local authorization active
+  xOSPerOn : BOOL ;    //1 = Operator enabled to switch to On mode
+  xOSPerOOS : BOOL ;    //1 = Operator enabled to switch to OOS mode
+  xOSPerRatExtOp : BOOL ;    //1 = Operator is enabled for changing Internal to External(RatExtOp)
+  xOSPerRatIntOp : BOOL ;    //1 = Operator is enabled for changing External to Internal(RatIntOp)
+  xOSPerRatioInt : BOOL ;    //1 = Operator enabled for entering Setpoint(RatioInt)
+  xOSPerSim : BOOL ;    //1 = Operator enabled to switch on simulation
+  xOSPerRatHiLim : BOOL ;    //1 = Operator can alter the Ratio Hi limit
+  xOSPerRatLoLim : BOOL ;    //1 = Operator can alter the Ratio Lo limit
+  xOSPerOutHiLim : BOOL ;    //1 = Operator can alter the Out Hi limit
+  xOSPerOutLoLim : BOOL ;    //1 = Operator can alter the Out Lo limit
+  xOSPerIntExtTrk : BOOL ;    //1 = Operator can switch to Internal/External Tracking
+  byTemp : BYTE ;    //Variable used in swapping of bytes
+  dwOS_Perm : DWORD ;    //OS_Perm
+  dwOS_Perm_b AT dwOS_Perm : ARRAY[0..3] OF BYTE;
+  dwOS_Perm_bool AT dwOS_Perm : ARRAY[0..31] OF BOOL;
+ 
+  stcInST : STRUCT     //Input 0..15 Signal Status
+   b0 : BYTE ;   
+   b1 : BYTE ;   
+   b2 : BYTE ;   
+   b3 : BYTE ;   
+   b4 : BYTE ;   
+   b5 : BYTE ;   
+   b6 : BYTE ;   
+   b7 : BYTE ;   
+   b8 : BYTE ;   
+   b9 : BYTE ;   
+   b10 : BYTE ;   
+   b11 : BYTE ;    
+   b12 : BYTE ;   
+   b13 : BYTE ;   
+   b14 : BYTE ;   
+   b15 : BYTE ;   
+  END_STRUCT ;   
+  stcAnaVal : STRUCT    
+   Value : REAL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;   
+  stcAnaVal_w AT stcAnaVal : STRUCT
+   Value : REAL ;    // Value
+   ST : WORD ;    // Signal Status
+  END_STRUCT ;   
+ 
+  stcDigVal : STRUCT    
+   Value : BOOL ;    // Value
+   ST : BYTE ;    // Signal Status
+  END_STRUCT ;
+stcDigVal_w AT stcDigVal : WORD; 
+ 
+END_VAR
+BEGIN
+dwStatus:=Status;
+xFeatStartupWithOutInit:=Feature.Bit0;
+xFeatOosLiEn:=Feature.Bit1;
+xFeatLocalAuth:=Feature.Bit24;
+xSimAct:=(NOT SimLiOp.Value AND SimOn) OR (SimOnLi.Value AND SimLiOp.Value);
+IF xFeatLocalAuth THEN
+    OpSt_Out:=OpSt_In OR DW#16#80000000;
+ELSE
+    OpSt_Out:=OpSt_In AND DW#16#7FFFFFFF;
+END_IF;
+ 
+dwOS_Perm_b[3]:=OS_Perm_b[0];
+dwOS_Perm_b[2]:=OS_Perm_b[1];
+dwOS_Perm_b[1]:=OS_Perm_b[2];
+dwOS_Perm_b[0]:=OS_Perm_b[3];
+OS_PermOut:=dwOS_Perm;
+ErrorNum:=0;
+IF OnOp THEN
+    OosAct.Value:=false;
+ELSIF (OosLi.Value AND xFeatOosLiEn) AND NOT SxOosLi OR OosOp THEN
+    OosAct.Value:=true;
+END_IF;   
+SxOosLi:=OosLi.Value;
+OnAct.Value:=NOT OosAct.Value;
+ 
+SnErr:=RD_SINFO(TOP_SI :=  TOP_SI
+         ,START_UP_SI :=  START_UP_SI
+         );
+IF OosAct.Value THEN
+    Out.ST:=In.ST;
+    RatioPV.ST:=SecComPV.ST;
+    OutHiAct.Value:=false;
+    OutLoAct.Value:=false;
+    RatHiAct.Value:=false;
+    RatLoAct.Value:=false;
+    xOSPerRatExtOp:=false;
+    xOSPerRatIntOp:=false;
+    ErrorNum:=0;
+    OS_PermLog:=DW#16#2 AND OS_PermOut;
+ELSE
+    xOSPerOn:=false;
+    xOSPerOOS:=OS_Perm.Bit3;
+    xOSPerRatExtOp:=OS_Perm.Bit4;
+    xOSPerRatIntOp:=OS_Perm.Bit5;
+    xOSPerRatioInt:=OS_Perm.Bit6;
+    xOSPerSim:=OS_Perm.Bit11;
+    xOSPerIntExtTrk:=OS_Perm.Bit12;
+    xOSPerRatHiLim:=OS_Perm.Bit14;
+    xOSPerRatLoLim:=OS_Perm.Bit15;
+    xOSPerOutHiLim:=OS_Perm.Bit16;
+    xOSPerOutLoLim:=OS_Perm.Bit17;
+    IF BYTE_TO_INT(TOP_SI.NUM)=100 OR SxFirstStart THEN
+        SxFirstStart:=false;
+        IF NOT xFeatStartupWithOutInit THEN
+            stcAnaVal.Value:=0.0;
+            stcAnaVal.ST:=B#16#80;
+            stcDigVal.Value:=false;
+            stcDigVal.ST:=B#16#80;
+            Out.Value:=stcAnaVal.Value;
+            Out_w.ST:=stcAnaVal_w.ST;
+            RatioPV.Value:=stcAnaVal.Value;
+            RatioPV_w.ST:=stcAnaVal_w.ST;
+            RatioOut.Value:=stcAnaVal.Value;
+            RatioOut_w.ST:=stcAnaVal_w.ST;
+            RatExtAct:=stcDigVal;
+            OutHiAct:=stcDigVal;
+            OutLoAct:=stcDigVal;
+            RatHiAct:=stcDigVal;
+            RatLoAct:=stcDigVal;
+            OS_PermOut:=DW#16#FFFFFFFF;
+            OS_PermLog:=DW#16#FFFFFFFF;
+            ST_Worst:=B#16#80;
+        END_IF;
+    ELSIF BYTE_TO_INT(TOP_SI.NUM)>=30 AND BYTE_TO_INT(TOP_SI.NUM)<=38 THEN
+        IF     RatLiOp.Value THEN
+            xOSPerRatExtOp:=false;
+            xOSPerRatIntOp:=false;
+            IF NOT RatExtLi.Value AND RatIntLi.Value THEN
+                RatExtAct.Value:=false;
+                SxLastVal:=RatExtAct.Value;
+                ErrorNum:=0;
+            ELSIF NOT RatIntLi.Value AND RatExtLi.Value THEN
+                RatExtAct.Value:=true;
+                SxLastVal:=RatExtAct.Value;
+                ErrorNum:=0;
+            ELSIF RatExtLi.Value AND RatIntLi.Value    THEN
+                ErrorNum:=51;
+                RatExtAct.Value:=SxLastVal;
+            ELSIF NOT RatExtLi.Value AND NOT RatIntLi.Value THEN
+                RatExtAct.Value:=SxLastVal;
+                ErrorNum:=0;
+            END_IF;
+        ELSE   
+            xOSPerRatExtOp:=NOT RatExtAct.Value AND xOSPerRatExtOp;
+            xOSPerRatIntOp:=RatExtAct.Value AND xOSPerRatIntOp;
+            IF RatIntOp THEN
+                RatExtAct.Value:=false;
+                SxLastVal:=RatExtAct.Value;
+                ErrorNum:=0;
+            ELSE
+                IF RatExtOp THEN
+                    RatExtAct.Value:=true;
+                    SxLastVal:=RatExtAct.Value;
+                    ErrorNum:=0;
+                END_IF;   
+            END_IF;
+        END_IF;   
+        IF xSimAct THEN
+            IF SimOnLi.Value AND SimLiOp.Value THEN
+                rIn:=SimInLi.Value;
+            ELSE
+                rIn:=SimIn;
+            END_IF;
+            Out.ST:=B#16#60;
+        ELSE   
+            rIn:=In.Value;
+            SimIn:=rIn;
+            Out.ST:=In.ST;
+        END_IF;
+        SimIn:=rIn;   
+        IF SimLiOp.Value THEN
+            SimOn:=SimOnLi.Value;
+        END_IF;
+        rIn:=ChkREAL(In := rIn,ErrNum := nInfErr);
+        IF nInfErr=1 OR nInfErr=3 THEN
+            ErrorNum:=30;
+        ELSE
+            SecComPV.Value:=ChkREAL(In := SecComPV.Value,ErrNum := nInfErr);
+            IF nInfErr=1 OR nInfErr=3 THEN
+                ErrorNum:=30;
+            ELSE
+                IF InPV.Value<>0.0 THEN
+                    RatioPV.Value:=(SecComPV.Value-Offset.Value)/InPV.Value;
+                ELSE
+                    RatioPV.Value:=0.0;
+                END_IF;
+                stcInST.b0:=SecComPV.ST;   
+                stcInST.b1:=InPV.ST;
+                stcInST.b2:=Offset.ST;
+                RatioPV.ST:=SelST16(InST :=  stcInST
+                                    ,Num :=  3
+                                    ,SelPrio :=  0
+                                    );
+                IF RatExtAct.Value THEN
+                    xOSPerRatioInt:=false;
+                    rRatio:=RatioExt.Value;
+                    RatioOut.ST:=RatioExt.ST;
+                    IF RatTrkExt THEN
+                        RatioInt:=RatioExt.Value;
+                    END_IF;
+                    RatHiAct.Value:=rRatio>=RatHiLim;
+                    RatLoAct.Value:=rRatio<=RatLoLim;
+                    IF RatHiAct.Value THEN
+                        rRatio:=RatHiLim;
+                    ELSIF RatLoAct.Value THEN
+                        rRatio:=RatLoLim;
+                    END_IF;   
+                ELSE
+                    RatHiAct.Value:=RatioInt>=RatHiLim;
+                    RatLoAct.Value:=RatioInt<=RatLoLim;
+                    RatioOut.ST:=B#16#80;
+                    IF RatioInt<RatLoLim OR RatioInt>RatHiLim THEN
+                        IF SrRatioInt<=RatLoLim THEN
+                            SrRatioInt:=RatLoLim;
+                        ELSIF SrRatioInt>=RatHiLim THEN
+                            SrRatioInt:=RatHiLim;
+                        END_IF;
+                        rRatio:=SrRatioInt;
+                    ELSE
+                        rRatio:=RatioInt;
+                        SrRatioInt:=RatioInt;
+                    END_IF;
+                END_IF;
+                RatioOut.Value:=rRatio;
+                rOut:=rRatio*rIn+Offset.Value;
+                OutHiAct.Value:=rOut>=OutHiLim;
+                OutLoAct.Value:=rOut<=OutLoLim;
+                IF OutHiAct.Value THEN
+                    rOut:=OutHiLim;
+                ELSIF OutLoAct.Value THEN
+                    rOut:=OutLoLim;
+                END_IF;   
+            END_IF;
+        END_IF;
+        Out.Value:=rOut;
+        IF NOT xSimAct THEN
+            stcInST.b0:=In.ST;
+            IF In.ST=B#16#60 THEN
+                stcInST.b0:=B#16#80;
+            END_IF;
+            IF RatExtAct.Value THEN
+                stcInST.b1:=RatioExt.ST;
+                IF RatioExt.ST=B#16#60 THEN
+                    stcInST.b1:=B#16#80;
+                END_IF;
+            ELSE       
+                stcInST.b1:=B#16#80;
+            END_IF;
+            stcInST.b2:=Offset.ST;
+            IF Offset.ST=B#16#60 THEN
+                stcInST.b2:=B#16#80;
+            END_IF;
+            Out.ST:=SelST16(InST :=  stcInST
+                                ,Num :=  3
+                                ,SelPrio :=  0
+                                );
+        END_IF;                        
+    END_IF;  
+    dwOS_Perm:=OS_Perm_dw;
+    dwOS_Perm_bool[1]:=xOSPerOn;
+    dwOS_Perm_bool[3]:=xOSPerOOS;
+    dwOS_Perm_bool[4]:=xOSPerRatExtOp;
+    dwOS_Perm_bool[5]:=xOSPerRatIntOp;
+    dwOS_Perm_bool[6]:=xOSPerRatioInt;
+    dwOS_Perm_bool[11]:=NOT SimLiOp.Value AND xOSPerSim;
+    dwOS_Perm_bool[12]:=xOSPerIntExtTrk;
+    dwOS_Perm_bool[14]:=xOSPerRatHiLim;
+    dwOS_Perm_bool[15]:=xOSPerRatLoLim;
+    dwOS_Perm_bool[16]:=xOSPerOutHiLim;
+    dwOS_Perm_bool[17]:=xOSPerOutLoLim;
+    byTemp:=dwOS_Perm_b[3];
+    dwOS_Perm_b[3]:=dwOS_Perm_b[0];
+    dwOS_Perm_b[0]:=byTemp;
+    byTemp:=dwOS_Perm_b[2];
+    dwOS_Perm_b[2]:=dwOS_Perm_b[1];
+    dwOS_Perm_b[1]:=byTemp;
+    OS_PermLog:=dwOS_Perm;
+    OutHiLmOut.Value:=OutHiLim;
+    OutLoLmOut.Value:=OutLoLim;
+    OutHiLmOut.ST:=B#16#80;
+    OutLoLmOut.ST:=B#16#80;
+    stcInST.b0:=Out.ST;
+    stcInST.b1:=SecComPV.ST;
+    stcInST.b2:=InPV.ST;
+    stcInST.b3:=RatioExt.ST;
+    stcInST.b4:=Offset.ST;
+    ST_Worst:=SelST16(InST :=  stcInST
+                        ,Num := 5
+                        ,SelPrio :=  0
+                        );
+    OutHiAct.ST:=Out.ST;
+    OutLoAct.ST:=Out.ST;
+    RatHiAct.ST:=RatioOut.ST;
+    RatLoAct.ST:=RatioOut.ST;
+END_IF;
+IF NOT OosAct.Value    THEN
+    dwStatus_b[26]:=xSimAct;
+    dwStatus_b[16]:=RatExtAct.Value;
+    dwStatus_b[17]:=RatLoAct.Value;
+    dwStatus_b[18]:=RatHiAct.Value;
+    dwStatus_b[19]:=OutLoAct.Value;
+    dwStatus_b[20]:=OutHiAct.Value;
+    dwStatus_b[21]:=RatTrkExt;
+    dwStatus_b[22]:=SimLiOp.Value;
+ELSE   
+    dwStatus:=DW#16#0;
+END_IF;
+dwStatus_b[27]:=OosAct.Value;
+dwStatus_b[28]:=OosLi.Value;
+dwStatus_b[30]:=OnAct.Value;
+Status:=dwStatus;
+IF BYTE_TO_INT(TOP_SI.NUM)=100 THEN
+    OS_PermLog:=DW#16#0;
+END_IF;
+OosOp:=false;
+OnOp:=false;
+RatExtOp:=false;
+RatIntOp:=false;   
+END_FUNCTION_BLOCK

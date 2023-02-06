@@ -1,0 +1,3150 @@
+// Name: FB82
+// Symbolic Name: SUBNET_PN
+// Symbol Comment: SUBNET Function Block - PROFINET-IO
+// Family: @SYSTEM
+// Version: 7.2
+// Author: DRIVER80
+// Last modified: 11/16/2012
+// Use: SFB35,UDT1,SFC51
+// Size: 12164 bytes
+// Signature: generiert vom SCL Übersetzer Version: SCLCOMP K05.03.07.00_01.02.00.01 release
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+ 
+FUNCTION_BLOCK FB1182
+TITLE ='SUBNET Function Block - PROFINET-IO'
+{ S7_hardware := 'im'; S7_alarm_ui := '1'; S7_tasklist := 'OB1,OB70,OB72,OB81,OB82,OB83,OB85,OB86,OB100'; S7_tag := 'false' }
+AUTHOR : DRIVER80
+FAMILY : '@SYSTEM'
+NAME : SUBNET_P
+VERSION : '7.2'
+ 
+ 
+VAR_INPUT
+  SUBN_TYP { S7_link := 'false' }: BOOL ;    //1=External PN-Interface
+  SUBN1_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Primary Subnet
+  SUBN2_ID { S7_link := 'false' }: BYTE  := B#16#FF;    //ID of Redundant Subnet
+  DADDR { S7_link := 'false' }: INT ;    //Diagnostic Address of Subnet
+  PNIO_ADR { S7_link := 'false' }: INT ;    //Diagnostic Address of PN-IO Interface - Primary Subnet
+  PORT1_ADR { S7_link := 'false' }: INT ;    //Diagnostic Address of PORT1 - Primary Subnet
+  PORT1_CONNECT { S7_link := 'false' }: BYTE ;    //1=Port1 connected - Primary Subnet
+  PORT2_ADR { S7_link := 'false' }: INT ;    //Diagnostic Address of PORT2 - Primary Subnet
+  PORT2_CONNECT { S7_link := 'false' }: BYTE ;    //1=Port2 connected - Primary Subnet
+  DADDR_1 { S7_link := 'false' }: INT ;    //Diagnostic Address of Subnet - Redundant Subnet
+  PNIO_ADR_1 { S7_link := 'false' }: INT ;    //Diagnostic Address of PN-IO Interface - Redundant Subnet
+  PORT1_ADR_1 { S7_link := 'false' }: INT ;    //Diagnostic Address of PORT1 - Redundant Subnet
+  PORT1_CONNECT_1 { S7_link := 'false' }: BYTE ;    //1=Port1 connected - Redundant Subnet
+  PORT2_ADR_1 { S7_link := 'false' }: INT ;    //Diagnostic Address of PORT2 - Redundant Subnet
+  PORT2_CONNECT_1 { S7_link := 'false' }: BYTE ;    //1=Port2 connected - Redundant Subnet
+  EN_MSG { S7_visible := 'false'; S7_link := 'false' }: BOOL  := TRUE;    //1=Enable Alarm
+  EV_ID { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  EV_ID1 { S7_visible := 'false'; S7_link := 'false'; S7_param := 'false'; S7_server := 'alarm_archiv'; S7_a_type := 'alarm_8p' }: DWORD ;    //Event ID
+  MS { S7_link := 'false'; S7_m_c := 'true' }: DWORD ;    //Maintenance State
+END_VAR
+VAR_OUTPUT
+  SUB_DIAG : STRUCT    
+   SUBN1_ID : BYTE ;    //ID of Primary Subnet
+   SUBN2_ID : BYTE ;    //ID of Redundant Subnet
+   SUBN_TYP : BOOL ;    //1=External PN-Interface
+   V1_MODE : BOOL ;    //1= DPV1 - Mode
+   SUB0_ERR : BOOL ;    //1= Error ID of Primary Subnet
+   SUB1_ERR : BOOL ;    //1= Error ID of Redundant Subnet
+  END_STRUCT ;   
+  O_MS { S7_visible := 'false' }: DWORD ;    //Maintenance State
+  SUBN1ERR { S7_dynamic := 'true' }: BOOL ;    //1=Subnet 1 Failure
+  SUBN2ERR { S7_dynamic := 'true' }: BOOL ;    //1=Subnet 2 Failure
+  MASTER_0 { S7_dynamic := 'true' }: BOOL ;    //1=Master CPU in Rack 0
+  MASTER_1 { S7_dynamic := 'true' }: BOOL ;    //1=Master CPU in Rack 1
+  EN_R0 { S7_visible := 'false' }: BOOL ;    //Enable Rack 0
+  EN_R0_ar AT EN_R0 : ARRAY[0..0] OF BOOL;
+  EN_R1 { S7_visible := 'false' }: BOOL ;    //Enable Rack 1
+  EN_R2 { S7_visible := 'false' }: BOOL ;    //Enable Rack 2
+  EN_R3 { S7_visible := 'false' }: BOOL ;    //Enable Rack 3
+  EN_R4 { S7_visible := 'false' }: BOOL ;    //Enable Rack 4
+  EN_R5 { S7_visible := 'false' }: BOOL ;    //Enable Rack 5
+  EN_R6 { S7_visible := 'false' }: BOOL ;    //Enable Rack 6
+  EN_R7 { S7_visible := 'false' }: BOOL ;    //Enable Rack 7
+  EN_R8 { S7_visible := 'false' }: BOOL ;    //Enable Rack 8
+  EN_R9 { S7_visible := 'false' }: BOOL ;    //Enable Rack 9
+  EN_R10 { S7_visible := 'false' }: BOOL ;    //Enable Rack 10
+  EN_R11 { S7_visible := 'false' }: BOOL ;    //Enable Rack 11
+  EN_R12 { S7_visible := 'false' }: BOOL ;    //Enable Rack 12
+  EN_R13 { S7_visible := 'false' }: BOOL ;    //Enable Rack 13
+  EN_R14 { S7_visible := 'false' }: BOOL ;    //Enable Rack 14
+  EN_R15 { S7_visible := 'false' }: BOOL ;    //Enable Rack 15
+  EN_R16 { S7_visible := 'false' }: BOOL ;    //Enable Rack 16
+  EN_R17 { S7_visible := 'false' }: BOOL ;    //Enable Rack 17
+  EN_R18 { S7_visible := 'false' }: BOOL ;    //Enable Rack 18
+  EN_R19 { S7_visible := 'false' }: BOOL ;    //Enable Rack 19
+  EN_R20 { S7_visible := 'false' }: BOOL ;    //Enable Rack 20
+  EN_R21 { S7_visible := 'false' }: BOOL ;    //Enable Rack 21
+  EN_R22 { S7_visible := 'false' }: BOOL ;    //Enable Rack 22
+  EN_R23 { S7_visible := 'false' }: BOOL ;    //Enable Rack 23
+  EN_R24 { S7_visible := 'false' }: BOOL ;    //Enable Rack 24
+  EN_R25 { S7_visible := 'false' }: BOOL ;    //Enable Rack 25
+  EN_R26 { S7_visible := 'false' }: BOOL ;    //Enable Rack 26
+  EN_R27 { S7_visible := 'false' }: BOOL ;    //Enable Rack 27
+  EN_R28 { S7_visible := 'false' }: BOOL ;    //Enable Rack 28
+  EN_R29 { S7_visible := 'false' }: BOOL ;    //Enable Rack 29
+  EN_R30 { S7_visible := 'false' }: BOOL ;    //Enable Rack 30
+  EN_R31 { S7_visible := 'false' }: BOOL ;    //Enable Rack 31
+  EN_R32 { S7_visible := 'false' }: BOOL ;    //Enable Rack 32
+  EN_R33 { S7_visible := 'false' }: BOOL ;    //Enable Rack 33
+  EN_R34 { S7_visible := 'false' }: BOOL ;    //Enable Rack 34
+  EN_R35 { S7_visible := 'false' }: BOOL ;    //Enable Rack 35
+  EN_R36 { S7_visible := 'false' }: BOOL ;    //Enable Rack 36
+  EN_R37 { S7_visible := 'false' }: BOOL ;    //Enable Rack 37
+  EN_R38 { S7_visible := 'false' }: BOOL ;    //Enable Rack 38
+  EN_R39 { S7_visible := 'false' }: BOOL ;    //Enable Rack 39
+  EN_R40 { S7_visible := 'false' }: BOOL ;    //Enable Rack 40
+  EN_R41 { S7_visible := 'false' }: BOOL ;    //Enable Rack 41
+  EN_R42 { S7_visible := 'false' }: BOOL ;    //Enable Rack 42
+  EN_R43 { S7_visible := 'false' }: BOOL ;    //Enable Rack 43
+  EN_R44 { S7_visible := 'false' }: BOOL ;    //Enable Rack 44
+  EN_R45 { S7_visible := 'false' }: BOOL ;    //Enable Rack 45
+  EN_R46 { S7_visible := 'false' }: BOOL ;    //Enable Rack 46
+  EN_R47 { S7_visible := 'false' }: BOOL ;    //Enable Rack 47
+  EN_R48 { S7_visible := 'false' }: BOOL ;    //Enable Rack 48
+  EN_R49 { S7_visible := 'false' }: BOOL ;    //Enable Rack 49
+  EN_R50 { S7_visible := 'false' }: BOOL ;    //Enable Rack 50
+  EN_R51 { S7_visible := 'false' }: BOOL ;    //Enable Rack 51
+  EN_R52 { S7_visible := 'false' }: BOOL ;    //Enable Rack 52
+  EN_R53 { S7_visible := 'false' }: BOOL ;    //Enable Rack 53
+  EN_R54 { S7_visible := 'false' }: BOOL ;    //Enable Rack 54
+  EN_R55 { S7_visible := 'false' }: BOOL ;    //Enable Rack 55
+  EN_R56 { S7_visible := 'false' }: BOOL ;    //Enable Rack 56
+  EN_R57 { S7_visible := 'false' }: BOOL ;    //Enable Rack 57
+  EN_R58 { S7_visible := 'false' }: BOOL ;    //Enable Rack 58
+  EN_R59 { S7_visible := 'false' }: BOOL ;    //Enable Rack 59
+  EN_R60 { S7_visible := 'false' }: BOOL ;    //Enable Rack 60
+  EN_R61 { S7_visible := 'false' }: BOOL ;    //Enable Rack 61
+  EN_R62 { S7_visible := 'false' }: BOOL ;    //Enable Rack 62
+  EN_R63 { S7_visible := 'false' }: BOOL ;    //Enable Rack 63
+  EN_R64 { S7_visible := 'false' }: BOOL ;    //Enable Rack 64
+  EN_R65 { S7_visible := 'false' }: BOOL ;    //Enable Rack 65
+  EN_R66 { S7_visible := 'false' }: BOOL ;    //Enable Rack 66
+  EN_R67 { S7_visible := 'false' }: BOOL ;    //Enable Rack 67
+  EN_R68 { S7_visible := 'false' }: BOOL ;    //Enable Rack 68
+  EN_R69 { S7_visible := 'false' }: BOOL ;    //Enable Rack 69
+  EN_R70 { S7_visible := 'false' }: BOOL ;    //Enable Rack 70
+  EN_R71 { S7_visible := 'false' }: BOOL ;    //Enable Rack 71
+  EN_R72 { S7_visible := 'false' }: BOOL ;    //Enable Rack 72
+  EN_R73 { S7_visible := 'false' }: BOOL ;    //Enable Rack 73
+  EN_R74 { S7_visible := 'false' }: BOOL ;    //Enable Rack 74
+  EN_R75 { S7_visible := 'false' }: BOOL ;    //Enable Rack 75
+  EN_R76 { S7_visible := 'false' }: BOOL ;    //Enable Rack 76
+  EN_R77 { S7_visible := 'false' }: BOOL ;    //Enable Rack 77
+  EN_R78 { S7_visible := 'false' }: BOOL ;    //Enable Rack 78
+  EN_R79 { S7_visible := 'false' }: BOOL ;    //Enable Rack 79
+  EN_R80 { S7_visible := 'false' }: BOOL ;    //Enable Rack 80
+  EN_R81 { S7_visible := 'false' }: BOOL ;    //Enable Rack 81
+  EN_R82 { S7_visible := 'false' }: BOOL ;    //Enable Rack 82
+  EN_R83 { S7_visible := 'false' }: BOOL ;    //Enable Rack 83
+  EN_R84 { S7_visible := 'false' }: BOOL ;    //Enable Rack 84
+  EN_R85 { S7_visible := 'false' }: BOOL ;    //Enable Rack 85
+  EN_R86 { S7_visible := 'false' }: BOOL ;    //Enable Rack 86
+  EN_R87 { S7_visible := 'false' }: BOOL ;    //Enable Rack 87
+  EN_R88 { S7_visible := 'false' }: BOOL ;    //Enable Rack 88
+  EN_R89 { S7_visible := 'false' }: BOOL ;    //Enable Rack 89
+  EN_R90 { S7_visible := 'false' }: BOOL ;    //Enable Rack 90
+  EN_R91 { S7_visible := 'false' }: BOOL ;    //Enable Rack 91
+  EN_R92 { S7_visible := 'false' }: BOOL ;    //Enable Rack 92
+  EN_R93 { S7_visible := 'false' }: BOOL ;    //Enable Rack 93
+  EN_R94 { S7_visible := 'false' }: BOOL ;    //Enable Rack 94
+  EN_R95 { S7_visible := 'false' }: BOOL ;    //Enable Rack 95
+  EN_R96 { S7_visible := 'false' }: BOOL ;    //Enable Rack 96
+  EN_R97 { S7_visible := 'false' }: BOOL ;    //Enable Rack 97
+  EN_R98 { S7_visible := 'false' }: BOOL ;    //Enable Rack 98
+  EN_R99 { S7_visible := 'false' }: BOOL ;    //Enable Rack 99
+  EN_R100 { S7_visible := 'false' }: BOOL ;    //Enable Rack 100
+  EN_R101 { S7_visible := 'false' }: BOOL ;    //Enable Rack 101
+  EN_R102 { S7_visible := 'false' }: BOOL ;    //Enable Rack 102
+  EN_R103 { S7_visible := 'false' }: BOOL ;    //Enable Rack 103
+  EN_R104 { S7_visible := 'false' }: BOOL ;    //Enable Rack 104
+  EN_R105 { S7_visible := 'false' }: BOOL ;    //Enable Rack 105
+  EN_R106 { S7_visible := 'false' }: BOOL ;    //Enable Rack 106
+  EN_R107 { S7_visible := 'false' }: BOOL ;    //Enable Rack 107
+  EN_R108 { S7_visible := 'false' }: BOOL ;    //Enable Rack 108
+  EN_R109 { S7_visible := 'false' }: BOOL ;    //Enable Rack 109
+  EN_R110 { S7_visible := 'false' }: BOOL ;    //Enable Rack 110
+  EN_R111 { S7_visible := 'false' }: BOOL ;    //Enable Rack 111
+  EN_R112 { S7_visible := 'false' }: BOOL ;    //Enable Rack 112
+  EN_R113 { S7_visible := 'false' }: BOOL ;    //Enable Rack 113
+  EN_R114 { S7_visible := 'false' }: BOOL ;    //Enable Rack 114
+  EN_R115 { S7_visible := 'false' }: BOOL ;    //Enable Rack 115
+  EN_R116 { S7_visible := 'false' }: BOOL ;    //Enable Rack 116
+  EN_R117 { S7_visible := 'false' }: BOOL ;    //Enable Rack 117
+  EN_R118 { S7_visible := 'false' }: BOOL ;    //Enable Rack 118
+  EN_R119 { S7_visible := 'false' }: BOOL ;    //Enable Rack 119
+  EN_R120 { S7_visible := 'false' }: BOOL ;    //Enable Rack 120
+  EN_R121 { S7_visible := 'false' }: BOOL ;    //Enable Rack 121
+  EN_R122 { S7_visible := 'false' }: BOOL ;    //Enable Rack 122
+  EN_R123 { S7_visible := 'false' }: BOOL ;    //Enable Rack 123
+  EN_R124 { S7_visible := 'false' }: BOOL ;    //Enable Rack 124
+  EN_R125 { S7_visible := 'false' }: BOOL ;    //Enable Rack 125
+  EN_R126 { S7_visible := 'false' }: BOOL ;    //Enable Rack 126
+  EN_R127 { S7_visible := 'false' }: BOOL ;    //Enable Rack 127
+  EN_R128 { S7_visible := 'false' }: BOOL ;    //Enable Rack 128
+  EN_R129 { S7_visible := 'false' }: BOOL ;    //Enable Rack 129
+  EN_R130 { S7_visible := 'false' }: BOOL ;    //Enable Rack 130
+  EN_R131 { S7_visible := 'false' }: BOOL ;    //Enable Rack 131
+  EN_R132 { S7_visible := 'false' }: BOOL ;    //Enable Rack 132
+  EN_R133 { S7_visible := 'false' }: BOOL ;    //Enable Rack 133
+  EN_R134 { S7_visible := 'false' }: BOOL ;    //Enable Rack 134
+  EN_R135 { S7_visible := 'false' }: BOOL ;    //Enable Rack 135
+  EN_R136 { S7_visible := 'false' }: BOOL ;    //Enable Rack 136
+  EN_R137 { S7_visible := 'false' }: BOOL ;    //Enable Rack 137
+  EN_R138 { S7_visible := 'false' }: BOOL ;    //Enable Rack 138
+  EN_R139 { S7_visible := 'false' }: BOOL ;    //Enable Rack 139
+  EN_R140 { S7_visible := 'false' }: BOOL ;    //Enable Rack 140
+  EN_R141 { S7_visible := 'false' }: BOOL ;    //Enable Rack 141
+  EN_R142 { S7_visible := 'false' }: BOOL ;    //Enable Rack 142
+  EN_R143 { S7_visible := 'false' }: BOOL ;    //Enable Rack 143
+  EN_R144 { S7_visible := 'false' }: BOOL ;    //Enable Rack 144
+  EN_R145 { S7_visible := 'false' }: BOOL ;    //Enable Rack 145
+  EN_R146 { S7_visible := 'false' }: BOOL ;    //Enable Rack 146
+  EN_R147 { S7_visible := 'false' }: BOOL ;    //Enable Rack 147
+  EN_R148 { S7_visible := 'false' }: BOOL ;    //Enable Rack 148
+  EN_R149 { S7_visible := 'false' }: BOOL ;    //Enable Rack 149
+  EN_R150 { S7_visible := 'false' }: BOOL ;    //Enable Rack 150
+  EN_R151 { S7_visible := 'false' }: BOOL ;    //Enable Rack 151
+  EN_R152 { S7_visible := 'false' }: BOOL ;    //Enable Rack 152
+  EN_R153 { S7_visible := 'false' }: BOOL ;    //Enable Rack 153
+  EN_R154 { S7_visible := 'false' }: BOOL ;    //Enable Rack 154
+  EN_R156 { S7_visible := 'false' }: BOOL ;    //Enable Rack 156
+  EN_R157 { S7_visible := 'false' }: BOOL ;    //Enable Rack 157
+  EN_R158 { S7_visible := 'false' }: BOOL ;    //Enable Rack 158
+  EN_R159 { S7_visible := 'false' }: BOOL ;    //Enable Rack 159
+  EN_R160 { S7_visible := 'false' }: BOOL ;    //Enable Rack 160
+  EN_R161 { S7_visible := 'false' }: BOOL ;    //Enable Rack 161
+  EN_R162 { S7_visible := 'false' }: BOOL ;    //Enable Rack 162
+  EN_R163 { S7_visible := 'false' }: BOOL ;    //Enable Rack 163
+  EN_R164 { S7_visible := 'false' }: BOOL ;    //Enable Rack 164
+  EN_R165 { S7_visible := 'false' }: BOOL ;    //Enable Rack 165
+  EN_R167 { S7_visible := 'false' }: BOOL ;    //Enable Rack 167
+  EN_R168 { S7_visible := 'false' }: BOOL ;    //Enable Rack 168
+  EN_R169 { S7_visible := 'false' }: BOOL ;    //Enable Rack 169
+  EN_R170 { S7_visible := 'false' }: BOOL ;    //Enable Rack 170
+  EN_R171 { S7_visible := 'false' }: BOOL ;    //Enable Rack 171
+  EN_R172 { S7_visible := 'false' }: BOOL ;    //Enable Rack 172
+  EN_R173 { S7_visible := 'false' }: BOOL ;    //Enable Rack 173
+  EN_R174 { S7_visible := 'false' }: BOOL ;    //Enable Rack 174
+  EN_R175 { S7_visible := 'false' }: BOOL ;    //Enable Rack 175
+  EN_R176 { S7_visible := 'false' }: BOOL ;    //Enable Rack 176
+  EN_R177 { S7_visible := 'false' }: BOOL ;    //Enable Rack 177
+  EN_R178 { S7_visible := 'false' }: BOOL ;    //Enable Rack 178
+  EN_R179 { S7_visible := 'false' }: BOOL ;    //Enable Rack 179
+  EN_R180 { S7_visible := 'false' }: BOOL ;    //Enable Rack 180
+  EN_R181 { S7_visible := 'false' }: BOOL ;    //Enable Rack 181
+  EN_R182 { S7_visible := 'false' }: BOOL ;    //Enable Rack 182
+  EN_R183 { S7_visible := 'false' }: BOOL ;    //Enable Rack 183
+  EN_R184 { S7_visible := 'false' }: BOOL ;    //Enable Rack 184
+  EN_R185 { S7_visible := 'false' }: BOOL ;    //Enable Rack 185
+  EN_R186 { S7_visible := 'false' }: BOOL ;    //Enable Rack 186
+  EN_R187 { S7_visible := 'false' }: BOOL ;    //Enable Rack 187
+  EN_R188 { S7_visible := 'false' }: BOOL ;    //Enable Rack 188
+  EN_R189 { S7_visible := 'false' }: BOOL ;    //Enable Rack 189
+  EN_R190 { S7_visible := 'false' }: BOOL ;    //Enable Rack 190
+  EN_R191 { S7_visible := 'false' }: BOOL ;    //Enable Rack 191
+  EN_R192 { S7_visible := 'false' }: BOOL ;    //Enable Rack 192
+  EN_R193 { S7_visible := 'false' }: BOOL ;    //Enable Rack 193
+  EN_R194 { S7_visible := 'false' }: BOOL ;    //Enable Rack 194
+  EN_R195 { S7_visible := 'false' }: BOOL ;    //Enable Rack 195
+  EN_R196 { S7_visible := 'false' }: BOOL ;    //Enable Rack 196
+  EN_R197 { S7_visible := 'false' }: BOOL ;    //Enable Rack 197
+  EN_R198 { S7_visible := 'false' }: BOOL ;    //Enable Rack 198
+  EN_R199 { S7_visible := 'false' }: BOOL ;    //Enable Rack 199
+  EN_R200 { S7_visible := 'false' }: BOOL ;    //Enable Rack 200
+  EN_R201 { S7_visible := 'false' }: BOOL ;    //Enable Rack 201
+  EN_R202 { S7_visible := 'false' }: BOOL ;    //Enable Rack 202
+  EN_R203 { S7_visible := 'false' }: BOOL ;    //Enable Rack 203
+  EN_R204 { S7_visible := 'false' }: BOOL ;    //Enable Rack 204
+  EN_R205 { S7_visible := 'false' }: BOOL ;    //Enable Rack 205
+  EN_R206 { S7_visible := 'false' }: BOOL ;    //Enable Rack 206
+  EN_R207 { S7_visible := 'false' }: BOOL ;    //Enable Rack 207
+  EN_R208 { S7_visible := 'false' }: BOOL ;    //Enable Rack 208
+  EN_R209 { S7_visible := 'false' }: BOOL ;    //Enable Rack 209
+  EN_R210 { S7_visible := 'false' }: BOOL ;    //Enable Rack 210
+  EN_R211 { S7_visible := 'false' }: BOOL ;    //Enable Rack 211
+  EN_R212 { S7_visible := 'false' }: BOOL ;    //Enable Rack 212
+  EN_R213 { S7_visible := 'false' }: BOOL ;    //Enable Rack 213
+  EN_R214 { S7_visible := 'false' }: BOOL ;    //Enable Rack 214
+  EN_R215 { S7_visible := 'false' }: BOOL ;    //Enable Rack 215
+  EN_R216 { S7_visible := 'false' }: BOOL ;    //Enable Rack 216
+  EN_R217 { S7_visible := 'false' }: BOOL ;    //Enable Rack 217
+  EN_R218 { S7_visible := 'false' }: BOOL ;    //Enable Rack 218
+  EN_R219 { S7_visible := 'false' }: BOOL ;    //Enable Rack 219
+  EN_R220 { S7_visible := 'false' }: BOOL ;    //Enable Rack 220
+  EN_R221 { S7_visible := 'false' }: BOOL ;    //Enable Rack 221
+  EN_R222 { S7_visible := 'false' }: BOOL ;    //Enable Rack 222
+  EN_R223 { S7_visible := 'false' }: BOOL ;    //Enable Rack 223
+  EN_R224 { S7_visible := 'false' }: BOOL ;    //Enable Rack 224
+  EN_R225 { S7_visible := 'false' }: BOOL ;    //Enable Rack 225
+  EN_R226 { S7_visible := 'false' }: BOOL ;    //Enable Rack 226
+  EN_R227 { S7_visible := 'false' }: BOOL ;    //Enable Rack 227
+  EN_R228 { S7_visible := 'false' }: BOOL ;    //Enable Rack 228
+  EN_R229 { S7_visible := 'false' }: BOOL ;    //Enable Rack 229
+  EN_R230 { S7_visible := 'false' }: BOOL ;    //Enable Rack 230
+  EN_R231 { S7_visible := 'false' }: BOOL ;    //Enable Rack 231
+  EN_R232 { S7_visible := 'false' }: BOOL ;    //Enable Rack 232
+  EN_R233 { S7_visible := 'false' }: BOOL ;    //Enable Rack 233
+  EN_R234 { S7_visible := 'false' }: BOOL ;    //Enable Rack 234
+  EN_R235 { S7_visible := 'false' }: BOOL ;    //Enable Rack 235
+  EN_R236 { S7_visible := 'false' }: BOOL ;    //Enable Rack 236
+  EN_R237 { S7_visible := 'false' }: BOOL ;    //Enable Rack 237
+  EN_R238 { S7_visible := 'false' }: BOOL ;    //Enable Rack 238
+  EN_R239 { S7_visible := 'false' }: BOOL ;    //Enable Rack 239
+  EN_R240 { S7_visible := 'false' }: BOOL ;    //Enable Rack 240
+  EN_R241 { S7_visible := 'false' }: BOOL ;    //Enable Rack 241
+  EN_R242 { S7_visible := 'false' }: BOOL ;    //Enable Rack 242
+  EN_R243 { S7_visible := 'false' }: BOOL ;    //Enable Rack 243
+  EN_R244 { S7_visible := 'false' }: BOOL ;    //Enable Rack 244
+  EN_R245 { S7_visible := 'false' }: BOOL ;    //Enable Rack 245
+  EN_R246 { S7_visible := 'false' }: BOOL ;    //Enable Rack 246
+  EN_R247 { S7_visible := 'false' }: BOOL ;    //Enable Rack 247
+  EN_R248 { S7_visible := 'false' }: BOOL ;    //Enable Rack 248
+  EN_R249 { S7_visible := 'false' }: BOOL ;    //Enable Rack 249
+  EN_R250 { S7_visible := 'false' }: BOOL ;    //Enable Rack 250
+  EN_R251 { S7_visible := 'false' }: BOOL ;    //Enable Rack 251
+  EN_R252 { S7_visible := 'false' }: BOOL ;    //Enable Rack 252
+  EN_R253 { S7_visible := 'false' }: BOOL ;    //Enable Rack 253
+  EN_R254 { S7_visible := 'false' }: BOOL ;    //Enable Rack 254
+  EN_R255 { S7_visible := 'false' }: BOOL ;    //Enable Rack 255
+  MSG_STAT { S7_visible := 'false' }: WORD ;    //Message Failure
+  MSG_STAT1 { S7_visible := 'false' }: WORD ;    //Message Failure 
+  QMSGER { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+  QMSGER1 { S7_visible := 'false'; S7_dynamic := 'true' }: BOOL ;    //1=Message ERROR
+END_VAR
+VAR_IN_OUT
+  CPU_DIAG_PN : STRUCT    
+   H_MODE : BOOL ;    //1= H-System
+   V1_MODE : BOOL ;    //1= CPU DP V1 Mode
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   OB1_TIME : DINT ;    //OB1_TIME_TCK
+   OB_S : STRUCT    
+    NUM_CNT : INT ;    //Counter Startinfo OB_NR
+    NUM_01 : BYTE ;    //Startinfo OB_NO
+    NUM_02 : BYTE ;    //Startinfo OB_NO
+    NUM_03 : BYTE ;    //Startinfo OB_NO
+    NUM_04 : BYTE ;    //Startinfo OB_NO
+    NUM_05 : BYTE ;    //Startinfo OB_NO
+    NUM_06 : BYTE ;    //Startinfo OB_NO
+    NUM_07 : BYTE ;    //Startinfo OB_NO
+    NUM_08 : BYTE ;    //Startinfo OB_NO
+    NUM_09 : BYTE ;    //Startinfo OB_NO
+    NUM_10 : BYTE ;    //Startinfo OB_NO
+    NUM_11 : BYTE ;    //Startinfo OB_NO
+    NUM_12 : BYTE ;    //Startinfo OB_NO
+    NUM_13 : BYTE ;    //Startinfo OB_NO
+    NUM_14 : BYTE ;    //Startinfo OB_NO
+    NUM_15 : BYTE ;    //Startinfo OB_NO
+    NUM_16 : BYTE ;    //Startinfo OB_NO
+   END_STRUCT ;   
+   OB_72 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+   OB_70 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_82 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     B_TYP_LEN : DWORD ;    //Block type and length
+     VER_ALMTYP : DWORD ;    //Version and alarmtyp
+     APP_PROC_ID : DWORD ;    //API (Application Process Identifier)
+     SLOT_SUBSLOT_NO : DWORD ;    //Slot number
+     MODUL_ID : DWORD ;    //Module identification
+     SUB_MODUL_ID : DWORD ;    //Submodule identification
+     ALARM_SPEC_INFO_0_1 : DWORD ;    //Alarm specifier
+     A_2_3_4_5 : DWORD ;   
+     A_6_7_8_9 : DWORD ;   
+     A_10_11_12_13 : DWORD ;   
+     A_14_15_16_17 : DWORD ;   
+     A_18_19_20_21 : DWORD ;   
+     A_22_23_24_25 : DWORD ;   
+     A_26_27_28_29 : DWORD ;   
+     A_30_31_32_33 : DWORD ;   
+     A_34_35_36_37 : DWORD ;   
+     A_38_39_40_41 : DWORD ;   
+     A_42_43_44_45 : DWORD ;   
+     A_46_47_48_49 : DWORD ;   
+     A_50_51_52_53 : DWORD ;   
+     A_54_55_56_57 : DWORD ;   
+     A_58_59_60_61 : DWORD ;   
+     A_62_63_64_65 : DWORD ;   
+     A_66_67_68_69 : DWORD ;   
+     A_70_71_72_73 : DWORD ;   
+     A_74_75_76_77 : DWORD ;   
+     A_78_79_80_81 : DWORD ;   
+     A_82_83_84_85 : DWORD ;   
+     A_86_87_88_89 : DWORD ;   
+     A_90_91_92_93 : DWORD ;   
+     A_94_95_96_97 : DWORD ;   
+     A_98_99_100_101 : DWORD ;   
+     A_102_103_104_105 : DWORD ;   
+     A_106_107_108_109 : DWORD ;   
+     A_110_111_112_113 : DWORD ;   
+     A_114_115_116_117 : DWORD ;   
+     A_118_119_120_121 : DWORD ;   
+     A_122_123_124_125 : DWORD ;   
+     A_126_127_128_129 : DWORD ;    
+     A_130_131_132_133 : DWORD ;   
+     A_134_135_136_137 : DWORD ;   
+     A_138_139_140_141 : DWORD ;   
+     A_142_143_144_145 : DWORD ;   
+     A_146_147_148_149 : DWORD ;   
+     A_150_151_152_153 : DWORD ;   
+     A_154_155_156_157 : DWORD ;   
+     A_158_159_160_161 : DWORD ;   
+     A_162_163_164_165 : DWORD ;   
+     A_166_167_168_169 : DWORD ;   
+     A_170_171_172_173 : DWORD ;   
+     A_174_175_176_177 : DWORD ;   
+     A_178_179_180_181 : DWORD ;   
+     A_182_183_184_185 : DWORD ;   
+     A_186_187_188_189 : DWORD ;   
+     A_190_191_192_193 : DWORD ;   
+     A_194_195_196_197 : DWORD ;   
+     A_198_199_200_201 : DWORD ;   
+     A_202_203_204_205 : DWORD ;   
+     A_206_207_208_209 : DWORD ;   
+     A_210_211_212_213 : DWORD ;   
+     A_214_215_216_217 : DWORD ;   
+     A_218_219_220_222 : DWORD ;   
+     A_222_223_224_225 : DWORD ;   
+     A_226_227_228_229 : DWORD ;   
+     A_230_231_232_233 : DWORD ;   
+     A_234_235_236_237 : DWORD ;    
+     A_238_239_240_241 : DWORD ;   
+     A_242_243_244_245 : DWORD ;   
+     A_246_247_248_249 : DWORD ;   
+     A_250_251_252_253 : DWORD ;   
+     A_254_255_256_257 : DWORD ;   
+     A_258_259_260_261 : DWORD ;   
+     A_262_263_264_265 : DWORD ;   
+     A_266_267_268_269 : DWORD ;   
+     A_270_271_272_273 : DWORD ;   
+     A_274_275_276_277 : DWORD ;   
+     A_278_279_280_281 : DWORD ;   
+     A_282_283_284_285 : DWORD ;   
+     A_286_287_288_289 : DWORD ;   
+     A_290_291_292_293 : DWORD ;   
+     A_294_295_296_297 : DWORD ;   
+     A_298_299_300_301 : DWORD ;   
+     A_302_303_304_305 : DWORD ;   
+     A_306_307_308_309 : DWORD ;   
+     A_310_311_312_313 : DWORD ;   
+     A_314_315_316_317 : DWORD ;   
+     A_318_319_320_321 : DWORD ;   
+     A_322_323_324_325 : DWORD ;   
+     A_326_327_328_329 : DWORD ;   
+     A_330_331_332_333 : DWORD ;   
+     A_334_335_336_337 : DWORD ;   
+     A_338_339_340_341 : DWORD ;   
+     A_342_343_344_345 : DWORD ;   
+     A_346_347_348_349 : DWORD ;   
+     A_350_351_352_353 : DWORD ;   
+     A_354_355_356_357 : DWORD ;   
+     A_358_359_360_361 : DWORD ;   
+     A_363_363_364_365 : DWORD ;   
+     A_366_367_368_369 : DWORD ;   
+     A_370_371_372_373 : DWORD ;   
+     A_374_375_376_377 : DWORD ;   
+     A_378_379_380_381 : DWORD ;   
+     A_382_383_384_385 : DWORD ;   
+     A_386_387_388_389 : DWORD ;   
+     A_390_391_392_393 : DWORD ;   
+     A_394_395_396_397 : DWORD ;   
+     A_398_399_400_401 : DWORD ;   
+     A_402_403_404_405 : DWORD ;   
+     A_406_407_408_409 : DWORD ;   
+     A_410_411_412_413 : DWORD ;   
+     A_414_415_416_417 : DWORD ;   
+     A_418_419_420_421 : DWORD ;   
+     A_422_423_424_425 : DWORD ;   
+     A_426_427_428_429 : DWORD ;   
+     A_430_431_432_433 : DWORD ;   
+     A_434_435_436_437 : DWORD ;   
+     A_438_439_440_441 : DWORD ;   
+     A_442_443_444_445 : DWORD ;   
+     A_446_447_448_449 : DWORD ;   
+     A_450_451_452_453 : DWORD ;   
+     A_454_455_456_457 : DWORD ;   
+     A_458_459_460_461 : DWORD ;   
+     A_462_463_464_465 : DWORD ;   
+     A_466_467_468_469 : DWORD ;   
+     A_470_471_472_473 : DWORD ;   
+     A_474_475_476_477 : DWORD ;   
+     A_478_479_480_481 : DWORD ;    
+     A_482_483_484_485 : DWORD ;   
+     A_486_487_488_489 : DWORD ;   
+     A_490_491_492_493 : DWORD ;   
+     A_494_495_496_497 : DWORD ;   
+     A_498_499_500_501 : DWORD ;   
+     A_502_503_504_505 : DWORD ;   
+     A_506_507_508_509 : DWORD ;   
+     A_510_511_512_513 : DWORD ;   
+     A_514_515_516_517 : DWORD ;   
+     A_518_519_520_521 : DWORD ;   
+     A_522_523_524_525 : DWORD ;   
+     A_526_527_528_529 : DWORD ;   
+     A_530_531_532_533 : DWORD ;   
+     A_534_535_536_537 : DWORD ;   
+     A_538_539_540_541 : DWORD ;   
+     A_542_543_544_545 : DWORD ;   
+     A_546_547_548_549 : DWORD ;   
+     A_550_551_552_553 : DWORD ;   
+     A_554_555_556_557 : DWORD ;   
+     A_558_559_560_561 : DWORD ;   
+     A_562_563_564_565 : DWORD ;   
+     A_566_567_568_569 : DWORD ;   
+     A_570_571_572_573 : DWORD ;   
+     A_574_575_576_577 : DWORD ;   
+     A_578_579_580_581 : DWORD ;   
+     A_582_583_584_585 : DWORD ;   
+     A_586_587_588_589 : DWORD ;    
+     A_590_591_592_593 : DWORD ;   
+     A_594_595_596_597 : DWORD ;   
+     A_598_599_600_601 : DWORD ;   
+     A_602_603_604_605 : DWORD ;   
+     A_606_607_608_609 : DWORD ;   
+     A_610_611_612_613 : DWORD ;   
+     A_614_615_616_617 : DWORD ;   
+     A_618_619_620_621 : DWORD ;   
+     A_622_623_624_625 : DWORD ;   
+     A_626_627_628_629 : DWORD ;   
+     A_630_631_632_633 : DWORD ;   
+     A_634_635_636_637 : DWORD ;   
+     A_638_639_640_641 : DWORD ;   
+     A_642_643_644_645 : DWORD ;   
+     A_646_647_648_649 : DWORD ;   
+     A_650_651_652_653 : DWORD ;   
+     A_654_655_656_657 : DWORD ;   
+     A_658_659_660_661 : DWORD ;   
+     A_662_663_664_665 : DWORD ;   
+     A_666_667_668_669 : DWORD ;   
+     A_670_671_672_673 : DWORD ;   
+     A_674_675_676_677 : DWORD ;   
+     A_678_679_680_681 : DWORD ;   
+     A_682_683_684_685 : DWORD ;   
+     A_686_687_688_689 : DWORD ;   
+     A_690_691_692_693 : DWORD ;   
+     A_694_695_696_697 : DWORD ;   
+     A_698_699_700_701 : DWORD ;   
+     A_702_703_704_705 : DWORD ;   
+     A_706_707_708_709 : DWORD ;   
+     A_710_711_712_713 : DWORD ;   
+     A_714_715_716_717 : DWORD ;   
+     A_718_719_720_721 : DWORD ;   
+     A_722_723_724_725 : DWORD ;   
+     A_726_727_728_729 : DWORD ;   
+     A_730_731_732_733 : DWORD ;   
+     A_734_735_736_737 : DWORD ;   
+     A_738_739_740_741 : DWORD ;   
+     A_742_743_744_745 : DWORD ;   
+     A_746_747_748_749 : DWORD ;   
+     A_750_751_752_753 : DWORD ;    
+     A_754_755_756_757 : DWORD ;   
+     A_758_759_760_761 : DWORD ;   
+     A_762_763_764_765 : DWORD ;   
+     A_766_767_768_769 : DWORD ;   
+     A_770_771_772_773 : DWORD ;   
+     A_774_775_776_777 : DWORD ;   
+     A_778_779_780_781 : DWORD ;   
+     A_782_783_784_785 : DWORD ;   
+     A_786_787_788_789 : DWORD ;   
+     A_790_791_792_793 : DWORD ;   
+     A_794_795_796_797 : DWORD ;   
+     A_798_799_800_801 : DWORD ;   
+     A_802_803_804_805 : DWORD ;   
+     A_806_807_808_809 : DWORD ;   
+     A_810_811_812_813 : DWORD ;   
+     A_814_815_816_817 : DWORD ;   
+     A_818_819_820_821 : DWORD ;   
+     A_822_823_824_825 : DWORD ;   
+     A_826_827_828_829 : DWORD ;   
+     A_830_831_832_833 : DWORD ;   
+     A_834_835_836_837 : DWORD ;   
+     A_838_839_840_841 : DWORD ;   
+     A_842_843_844_845 : DWORD ;   
+     A_846_847_848_849 : DWORD ;   
+     A_850_851_852_853 : DWORD ;   
+     A_854_855_856_857 : DWORD ;   
+     A_858_859_860_861 : DWORD ;   
+     A_862_863_864_865 : DWORD ;   
+     A_866_867_868_869 : DWORD ;   
+     A_870_871_872_873 : DWORD ;   
+     A_874_875_876_877 : DWORD ;   
+     A_878_879_880_881 : DWORD ;   
+     A_882_883_884_885 : DWORD ;   
+     A_886_887_888_889 : DWORD ;   
+     A_890_891_892_893 : DWORD ;   
+     A_894_895_896_897 : DWORD ;   
+     A_898_899_900_901 : DWORD ;   
+     A_902_903_904_905 : DWORD ;   
+     A_906_907_908_909 : DWORD ;   
+     A_910_911_912_913 : DWORD ;   
+     A_914_915_916_917 : DWORD ;    
+     A_918_919_920_921 : DWORD ;   
+     A_922_923_924_925 : DWORD ;   
+     A_926_927_928_929 : DWORD ;   
+     A_930_931_932_933 : DWORD ;   
+     A_934_935_936_937 : DWORD ;   
+     A_938_939_940_941 : DWORD ;   
+     A_942_943_944_945 : DWORD ;   
+     A_946_947_948_949 : DWORD ;   
+     A_950_951_952_953 : DWORD ;   
+     A_954_955_956_957 : DWORD ;   
+     A_958_959_960_961 : DWORD ;   
+     A_962_963_964_965 : DWORD ;   
+     A_966_967_968_969 : DWORD ;   
+     A_970_971_972_973 : DWORD ;   
+     A_974_975_976_977 : DWORD ;   
+     A_978_979_980_981 : DWORD ;   
+     A_982_983_984_985 : DWORD ;   
+     A_986_987_988_989 : DWORD ;   
+     A_990_991_992_993 : DWORD ;   
+     A_994_995_996_997 : DWORD ;   
+     A_998_999_1000_1001 : DWORD ;   
+     A_1002_1003_1004_1005 : DWORD ;   
+     A_1006_1007_1008_1009 : DWORD ;   
+     A_1010_1011_1012_1013 : DWORD ;   
+     A_1014_1015_1016_1017 : DWORD ;   
+     A_1018_1019_1020_1021 : DWORD ;   
+     A_1022_1023_1024_1025 : DWORD ;   
+     A_1026_1027_1028_1029 : DWORD ;   
+     A_1030_1031_1032_1033 : DWORD ;   
+     A_1034_1035_1036_1037 : DWORD ;   
+     A_1038_1039_1040_1041 : DWORD ;   
+     A_1042_1043_1044_1045 : DWORD ;   
+     A_1046_1047_1048_1049 : DWORD ;   
+     A_1050_1051_1052_1053 : DWORD ;   
+     A_1054_1055_1056_1057 : DWORD ;   
+     A_1058_1059_1060_1061 : DWORD ;   
+     A_1062_1063_1064_1065 : DWORD ;   
+     A_1066_1067_1068_1069 : DWORD ;   
+     A_1070_1071_1072_1073 : DWORD ;   
+     A_1074_1075_1076_1077 : DWORD ;   
+     A_1078_1079_1080_1081 : DWORD ;   
+     A_1082_1083_1084_1085 : DWORD ;   
+     A_1086_1087_1088_1089 : DWORD ;   
+     A_1090_1091_1092_1093 : DWORD ;   
+     A_1094_1095_1096_1097 : DWORD ;    
+     A_1098_1099_1100_1101 : DWORD ;   
+     A_1102_1103_1104_1105 : DWORD ;   
+     A_1106_1107_1108_1109 : DWORD ;   
+     A_1110_1111_1112_1113 : DWORD ;   
+     A_1114_1115_1116_1117 : DWORD ;   
+     A_1118_1119_1120_1121 : DWORD ;   
+     A_1122_1123_1124_1125 : DWORD ;   
+     A_1126_1127_1128_1129 : DWORD ;   
+     A_1130_1131_1132_1133 : DWORD ;   
+     A_1134_1135_1136_1137 : DWORD ;   
+     A_1138_1139_1140_1141 : DWORD ;   
+     A_1142_1143_1144_1145 : DWORD ;   
+     A_1146_1147_1148_1149 : DWORD ;   
+     A_1150_1151_1152_1153 : DWORD ;   
+     A_1154_1155_1156_1157 : DWORD ;   
+     A_1158_1159_1160_1161 : DWORD ;   
+     A_1162_1163_1164_1165 : DWORD ;   
+     A_1166_1167_1168_1169 : DWORD ;   
+     A_1170_1171_1172_1173 : DWORD ;   
+     A_1174_1175_1176_1177 : DWORD ;   
+     A_1178_1179_1180_1181 : DWORD ;   
+     A_1182_1183_1184_1185 : DWORD ;   
+     A_1186_1187_1188_1189 : DWORD ;   
+     A_1190_1191_1192_1193 : DWORD ;   
+     A_1194_1195_1196_1197 : DWORD ;   
+     A_1198_1199_1200_1201 : DWORD ;   
+     A_1202_1203_1204_1205 : DWORD ;   
+     A_1206_1207_1208_1209 : DWORD ;   
+     A_1210_1211_1212_1213 : DWORD ;   
+     A_1214_1215_1216_1217 : DWORD ;   
+     A_1218_1219_1220_1221 : DWORD ;   
+     A_1222_1223_1224_1225 : DWORD ;   
+     A_1226_1227_1228_1229 : DWORD ;   
+     A_1230_1231_1232_1233 : DWORD ;   
+     A_1234_1235_1236_1237 : DWORD ;   
+     A_1238_1239_1240_1241 : DWORD ;   
+     A_1242_1243_1244_1245 : DWORD ;   
+     A_1246_1247_1248_1249 : DWORD ;   
+     A_1250_1251_1252_1253 : DWORD ;   
+     A_1254_1255_1256_1257 : DWORD ;   
+     A_1258_1259_1260_1261 : DWORD ;   
+     A_1262_1263_1264_1265 : DWORD ;   
+     A_1266_1267_1268_1269 : DWORD ;    
+     A_1270_1271_1272_1273 : DWORD ;   
+     A_1274_1275_1276_1277 : DWORD ;   
+     A_1278_1279_1280_1281 : DWORD ;   
+     A_1282_1283_1284_1285 : DWORD ;   
+     A_1286_1287_1288_1289 : DWORD ;   
+     A_1290_1291_1292_1293 : DWORD ;   
+     A_1294_1295_1296_1297 : DWORD ;   
+     A_1298_1299_1300_1301 : DWORD ;   
+     A_1302_1303_1304_1305 : DWORD ;   
+     A_1306_1307_1308_1309 : DWORD ;   
+     A_1310_1311_1312_1313 : DWORD ;   
+     A_1314_1315_1316_1317 : DWORD ;   
+     A_1318_1319_1320_1321 : DWORD ;   
+     A_1322_1323_1324_1325 : DWORD ;   
+     A_1326_1327_1328_1329 : DWORD ;   
+     A_1330_1331_1332_1333 : DWORD ;   
+     A_1334_1335_1336_1337 : DWORD ;   
+     A_1338_1339_1340_1341 : DWORD ;   
+     A_1342_1343_1344_1345 : DWORD ;   
+     A_1346_1347_1348_1349 : DWORD ;   
+     A_1350_1351_1352_1353 : DWORD ;   
+     A_1354_1355_1356_1357 : DWORD ;   
+     A_1358_1359_1360_1361 : DWORD ;   
+     A_1362_1363_1364_1365 : DWORD ;   
+     A_1366_1367_1368_1369 : DWORD ;   
+     A_1370_1371_1372_1373 : DWORD ;   
+     A_1374_1375_1376_1377 : DWORD ;   
+     A_1378_1379_1380_1381 : DWORD ;   
+     A_1382_1383_1384_1385 : DWORD ;   
+     A_1386_1387_1388_1389 : DWORD ;   
+     A_1390_1391_1392_1393 : DWORD ;   
+     A_1394_1395_1396_1397 : DWORD ;   
+     A_1398_1399_1400_1401 : DWORD ;   
+     A_1402_1403_1404_1405 : DWORD ;   
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_83 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SLOT : WORD ;    //Slot Number
+    SUBSL_NO : WORD ;    //Subslot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_85 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SLOT : WORD ;    //Slot Number
+    SUBSL_NO : WORD ;    //Subslot Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_86 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_81 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+   END_STRUCT ;   
+  END_STRUCT ;   
+  CPU_OB_5X { S7_visible := 'false' }: STRUCT    
+   OB_55 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     B_TYP_LEN : DWORD ;    //Block type and length
+     VER_ALMTYP : DWORD ;    //Version and alarmtyp
+     APP_PROC_ID : DWORD ;    //API (Application Process Identifier)
+     SLOT_SUBSLOT_NO : DWORD ;    //Slot number
+     MODUL_ID : DWORD ;    //Module identification
+     SUB_MODUL_ID : DWORD ;    //Submodule identification
+     ALARM_SPEC_INFO_0_1 : DWORD ;    //Alarm specifier
+     A_2_3_4_5 : DWORD ;   
+     A_6_7_8_9 : DWORD ;   
+     A_10_11_12_13 : DWORD ;   
+     A_14_15_16_17 : DWORD ;   
+     A_18_19_20_21 : DWORD ;   
+     A_22_23_24_25 : DWORD ;   
+     A_26_27_28_29 : DWORD ;   
+     A_30_31_32_33 : DWORD ;   
+     A_34_35_36_37 : DWORD ;   
+     A_38_39_40_41 : DWORD ;   
+     A_42_43_44_45 : DWORD ;   
+     A_46_47_48_49 : DWORD ;   
+     A_50_51_52_53 : DWORD ;   
+     A_54_55_56_57 : DWORD ;   
+     A_58_59_60_61 : DWORD ;   
+     A_62_63_64_65 : DWORD ;   
+     A_66_67_68_69 : DWORD ;   
+     A_70_71_72_73 : DWORD ;   
+     A_74_75_76_77 : DWORD ;   
+     A_78_79_80_81 : DWORD ;   
+     A_82_83_84_85 : DWORD ;   
+     A_86_87_88_89 : DWORD ;   
+     A_90_91_92_93 : DWORD ;   
+     A_94_95_96_97 : DWORD ;   
+     A_98_99_100_101 : DWORD ;   
+     A_102_103_104_105 : DWORD ;   
+     A_106_107_108_109 : DWORD ;   
+     A_110_111_112_113 : DWORD ;   
+     A_114_115_116_117 : DWORD ;   
+     A_118_119_120_121 : DWORD ;   
+     A_122_123_124_125 : DWORD ;   
+     A_126_127_128_129 : DWORD ;   
+     A_130_131_132_133 : DWORD ;   
+     A_134_135_136_137 : DWORD ;   
+     A_138_139_140_141 : DWORD ;   
+     A_142_143_144_145 : DWORD ;   
+     A_146_147_148_149 : DWORD ;   
+     A_150_151_152_153 : DWORD ;   
+     A_154_155_156_157 : DWORD ;   
+     A_158_159_160_161 : DWORD ;   
+     A_162_163_164_165 : DWORD ;   
+     A_166_167_168_169 : DWORD ;   
+     A_170_171_172_173 : DWORD ;   
+     A_174_175_176_177 : DWORD ;   
+     A_178_179_180_181 : DWORD ;   
+     A_182_183_184_185 : DWORD ;   
+     A_186_187_188_189 : DWORD ;   
+     A_190_191_192_193 : DWORD ;   
+     A_194_195_196_197 : DWORD ;   
+     A_198_199_200_201 : DWORD ;    
+     A_202_203_204_205 : DWORD ;   
+     A_206_207_208_209 : DWORD ;   
+     A_210_211_212_213 : DWORD ;   
+     A_214_215_216_217 : DWORD ;   
+     A_218_219_220_222 : DWORD ;   
+     A_222_223_224_225 : DWORD ;   
+     A_226_227_228_229 : DWORD ;   
+     A_230_231_232_233 : DWORD ;   
+     A_234_235_236_237 : DWORD ;   
+     A_238_239_240_241 : DWORD ;   
+     A_242_243_244_245 : DWORD ;   
+     A_246_247_248_249 : DWORD ;   
+     A_250_251_252_253 : DWORD ;   
+     A_254_255_256_257 : DWORD ;   
+     A_258_259_260_261 : DWORD ;   
+     A_262_263_264_265 : DWORD ;   
+     A_266_267_268_269 : DWORD ;   
+     A_270_271_272_273 : DWORD ;   
+     A_274_275_276_277 : DWORD ;   
+     A_278_279_280_281 : DWORD ;   
+     A_282_283_284_285 : DWORD ;   
+     A_286_287_288_289 : DWORD ;   
+     A_290_291_292_293 : DWORD ;   
+     A_294_295_296_297 : DWORD ;   
+     A_298_299_300_301 : DWORD ;   
+     A_302_303_304_305 : DWORD ;   
+     A_306_307_308_309 : DWORD ;   
+     A_310_311_312_313 : DWORD ;   
+     A_314_315_316_317 : DWORD ;   
+     A_318_319_320_321 : DWORD ;   
+     A_322_323_324_325 : DWORD ;   
+     A_326_327_328_329 : DWORD ;   
+     A_330_331_332_333 : DWORD ;   
+     A_334_335_336_337 : DWORD ;    
+     A_338_339_340_341 : DWORD ;   
+     A_342_343_344_345 : DWORD ;   
+     A_346_347_348_349 : DWORD ;   
+     A_350_351_352_353 : DWORD ;   
+     A_354_355_356_357 : DWORD ;   
+     A_358_359_360_361 : DWORD ;   
+     A_363_363_364_365 : DWORD ;   
+     A_366_367_368_369 : DWORD ;   
+     A_370_371_372_373 : DWORD ;   
+     A_374_375_376_377 : DWORD ;   
+     A_378_379_380_381 : DWORD ;   
+     A_382_383_384_385 : DWORD ;   
+     A_386_387_388_389 : DWORD ;   
+     A_390_391_392_393 : DWORD ;   
+     A_394_395_396_397 : DWORD ;   
+     A_398_399_400_401 : DWORD ;   
+     A_402_403_404_405 : DWORD ;   
+     A_406_407_408_409 : DWORD ;   
+     A_410_411_412_413 : DWORD ;   
+     A_414_415_416_417 : DWORD ;   
+     A_418_419_420_421 : DWORD ;   
+     A_422_423_424_425 : DWORD ;   
+     A_426_427_428_429 : DWORD ;   
+     A_430_431_432_433 : DWORD ;   
+     A_434_435_436_437 : DWORD ;   
+     A_438_439_440_441 : DWORD ;   
+     A_442_443_444_445 : DWORD ;   
+     A_446_447_448_449 : DWORD ;   
+     A_450_451_452_453 : DWORD ;   
+     A_454_455_456_457 : DWORD ;   
+     A_458_459_460_461 : DWORD ;   
+     A_462_463_464_465 : DWORD ;   
+     A_466_467_468_469 : DWORD ;   
+     A_470_471_472_473 : DWORD ;   
+     A_474_475_476_477 : DWORD ;   
+     A_478_479_480_481 : DWORD ;   
+     A_482_483_484_485 : DWORD ;   
+     A_486_487_488_489 : DWORD ;   
+     A_490_491_492_493 : DWORD ;   
+     A_494_495_496_497 : DWORD ;   
+     A_498_499_500_501 : DWORD ;   
+     A_502_503_504_505 : DWORD ;   
+     A_506_507_508_509 : DWORD ;   
+     A_510_511_512_513 : DWORD ;   
+     A_514_515_516_517 : DWORD ;   
+     A_518_519_520_521 : DWORD ;   
+     A_522_523_524_525 : DWORD ;   
+     A_526_527_528_529 : DWORD ;   
+     A_530_531_532_533 : DWORD ;   
+     A_534_535_536_537 : DWORD ;   
+     A_538_539_540_541 : DWORD ;   
+     A_542_543_544_545 : DWORD ;   
+     A_546_547_548_549 : DWORD ;   
+     A_550_551_552_553 : DWORD ;    
+     A_554_555_556_557 : DWORD ;   
+     A_558_559_560_561 : DWORD ;   
+     A_562_563_564_565 : DWORD ;   
+     A_566_567_568_569 : DWORD ;   
+     A_570_571_572_573 : DWORD ;   
+     A_574_575_576_577 : DWORD ;   
+     A_578_579_580_581 : DWORD ;   
+     A_582_583_584_585 : DWORD ;   
+     A_586_587_588_589 : DWORD ;   
+     A_590_591_592_593 : DWORD ;   
+     A_594_595_596_597 : DWORD ;   
+     A_598_599_600_601 : DWORD ;   
+     A_602_603_604_605 : DWORD ;   
+     A_606_607_608_609 : DWORD ;   
+     A_610_611_612_613 : DWORD ;   
+     A_614_615_616_617 : DWORD ;   
+     A_618_619_620_621 : DWORD ;   
+     A_622_623_624_625 : DWORD ;   
+     A_626_627_628_629 : DWORD ;   
+     A_630_631_632_633 : DWORD ;   
+     A_634_635_636_637 : DWORD ;   
+     A_638_639_640_641 : DWORD ;   
+     A_642_643_644_645 : DWORD ;   
+     A_646_647_648_649 : DWORD ;   
+     A_650_651_652_653 : DWORD ;   
+     A_654_655_656_657 : DWORD ;   
+     A_658_659_660_661 : DWORD ;   
+     A_662_663_664_665 : DWORD ;   
+     A_666_667_668_669 : DWORD ;   
+     A_670_671_672_673 : DWORD ;   
+     A_674_675_676_677 : DWORD ;   
+     A_678_679_680_681 : DWORD ;   
+     A_682_683_684_685 : DWORD ;   
+     A_686_687_688_689 : DWORD ;   
+     A_690_691_692_693 : DWORD ;   
+     A_694_695_696_697 : DWORD ;   
+     A_698_699_700_701 : DWORD ;   
+     A_702_703_704_705 : DWORD ;   
+     A_706_707_708_709 : DWORD ;   
+     A_710_711_712_713 : DWORD ;   
+     A_714_715_716_717 : DWORD ;   
+     A_718_719_720_721 : DWORD ;   
+     A_722_723_724_725 : DWORD ;   
+     A_726_727_728_729 : DWORD ;   
+     A_730_731_732_733 : DWORD ;   
+     A_734_735_736_737 : DWORD ;   
+     A_738_739_740_741 : DWORD ;   
+     A_742_743_744_745 : DWORD ;    
+     A_746_747_748_749 : DWORD ;   
+     A_750_751_752_753 : DWORD ;   
+     A_754_755_756_757 : DWORD ;   
+     A_758_759_760_761 : DWORD ;   
+     A_762_763_764_765 : DWORD ;   
+     A_766_767_768_769 : DWORD ;   
+     A_770_771_772_773 : DWORD ;   
+     A_774_775_776_777 : DWORD ;   
+     A_778_779_780_781 : DWORD ;   
+     A_782_783_784_785 : DWORD ;   
+     A_786_787_788_789 : DWORD ;   
+     A_790_791_792_793 : DWORD ;   
+     A_794_795_796_797 : DWORD ;   
+     A_798_799_800_801 : DWORD ;   
+     A_802_803_804_805 : DWORD ;   
+     A_806_807_808_809 : DWORD ;   
+     A_810_811_812_813 : DWORD ;   
+     A_814_815_816_817 : DWORD ;   
+     A_818_819_820_821 : DWORD ;   
+     A_822_823_824_825 : DWORD ;   
+     A_826_827_828_829 : DWORD ;   
+     A_830_831_832_833 : DWORD ;   
+     A_834_835_836_837 : DWORD ;   
+     A_838_839_840_841 : DWORD ;   
+     A_842_843_844_845 : DWORD ;   
+     A_846_847_848_849 : DWORD ;   
+     A_850_851_852_853 : DWORD ;    
+     A_854_855_856_857 : DWORD ;   
+     A_858_859_860_861 : DWORD ;   
+     A_862_863_864_865 : DWORD ;   
+     A_866_867_868_869 : DWORD ;   
+     A_870_871_872_873 : DWORD ;   
+     A_874_875_876_877 : DWORD ;   
+     A_878_879_880_881 : DWORD ;   
+     A_882_883_884_885 : DWORD ;   
+     A_886_887_888_889 : DWORD ;   
+     A_890_891_892_893 : DWORD ;   
+     A_894_895_896_897 : DWORD ;   
+     A_898_899_900_901 : DWORD ;   
+     A_902_903_904_905 : DWORD ;   
+     A_906_907_908_909 : DWORD ;   
+     A_910_911_912_913 : DWORD ;   
+     A_914_915_916_917 : DWORD ;   
+     A_918_919_920_921 : DWORD ;   
+     A_922_923_924_925 : DWORD ;   
+     A_926_927_928_929 : DWORD ;   
+     A_930_931_932_933 : DWORD ;   
+     A_934_935_936_937 : DWORD ;   
+     A_938_939_940_941 : DWORD ;   
+     A_942_943_944_945 : DWORD ;   
+     A_946_947_948_949 : DWORD ;   
+     A_950_951_952_953 : DWORD ;   
+     A_954_955_956_957 : DWORD ;   
+     A_958_959_960_961 : DWORD ;   
+     A_962_963_964_965 : DWORD ;   
+     A_966_967_968_969 : DWORD ;   
+     A_970_971_972_973 : DWORD ;   
+     A_974_975_976_977 : DWORD ;   
+     A_978_979_980_981 : DWORD ;   
+     A_982_983_984_985 : DWORD ;   
+     A_986_987_988_989 : DWORD ;   
+     A_990_991_992_993 : DWORD ;   
+     A_994_995_996_997 : DWORD ;   
+     A_998_999_1000_1001 : DWORD ;   
+     A_1002_1003_1004_1005 : DWORD ;   
+     A_1006_1007_1008_1009 : DWORD ;   
+     A_1010_1011_1012_1013 : DWORD ;   
+     A_1014_1015_1016_1017 : DWORD ;   
+     A_1018_1019_1020_1021 : DWORD ;   
+     A_1022_1023_1024_1025 : DWORD ;   
+     A_1026_1027_1028_1029 : DWORD ;   
+     A_1030_1031_1032_1033 : DWORD ;   
+     A_1034_1035_1036_1037 : DWORD ;   
+     A_1038_1039_1040_1041 : DWORD ;   
+     A_1042_1043_1044_1045 : DWORD ;   
+     A_1046_1047_1048_1049 : DWORD ;   
+     A_1050_1051_1052_1053 : DWORD ;   
+     A_1054_1055_1056_1057 : DWORD ;   
+     A_1058_1059_1060_1061 : DWORD ;   
+     A_1062_1063_1064_1065 : DWORD ;   
+     A_1066_1067_1068_1069 : DWORD ;   
+     A_1070_1071_1072_1073 : DWORD ;   
+     A_1074_1075_1076_1077 : DWORD ;   
+     A_1078_1079_1080_1081 : DWORD ;   
+     A_1082_1083_1084_1085 : DWORD ;   
+     A_1086_1087_1088_1089 : DWORD ;    
+     A_1090_1091_1092_1093 : DWORD ;   
+     A_1094_1095_1096_1097 : DWORD ;   
+     A_1098_1099_1100_1101 : DWORD ;   
+     A_1102_1103_1104_1105 : DWORD ;   
+     A_1106_1107_1108_1109 : DWORD ;   
+     A_1110_1111_1112_1113 : DWORD ;   
+     A_1114_1115_1116_1117 : DWORD ;   
+     A_1118_1119_1120_1121 : DWORD ;   
+     A_1122_1123_1124_1125 : DWORD ;   
+     A_1126_1127_1128_1129 : DWORD ;   
+     A_1130_1131_1132_1133 : DWORD ;   
+     A_1134_1135_1136_1137 : DWORD ;   
+     A_1138_1139_1140_1141 : DWORD ;   
+     A_1142_1143_1144_1145 : DWORD ;   
+     A_1146_1147_1148_1149 : DWORD ;   
+     A_1150_1151_1152_1153 : DWORD ;   
+     A_1154_1155_1156_1157 : DWORD ;   
+     A_1158_1159_1160_1161 : DWORD ;   
+     A_1162_1163_1164_1165 : DWORD ;   
+     A_1166_1167_1168_1169 : DWORD ;   
+     A_1170_1171_1172_1173 : DWORD ;   
+     A_1174_1175_1176_1177 : DWORD ;   
+     A_1178_1179_1180_1181 : DWORD ;   
+     A_1182_1183_1184_1185 : DWORD ;   
+     A_1186_1187_1188_1189 : DWORD ;   
+     A_1190_1191_1192_1193 : DWORD ;   
+     A_1194_1195_1196_1197 : DWORD ;   
+     A_1198_1199_1200_1201 : DWORD ;   
+     A_1202_1203_1204_1205 : DWORD ;   
+     A_1206_1207_1208_1209 : DWORD ;   
+     A_1210_1211_1212_1213 : DWORD ;   
+     A_1214_1215_1216_1217 : DWORD ;   
+     A_1218_1219_1220_1221 : DWORD ;   
+     A_1222_1223_1224_1225 : DWORD ;   
+     A_1226_1227_1228_1229 : DWORD ;   
+     A_1230_1231_1232_1233 : DWORD ;   
+     A_1234_1235_1236_1237 : DWORD ;   
+     A_1238_1239_1240_1241 : DWORD ;   
+     A_1242_1243_1244_1245 : DWORD ;   
+     A_1246_1247_1248_1249 : DWORD ;   
+     A_1250_1251_1252_1253 : DWORD ;   
+     A_1254_1255_1256_1257 : DWORD ;   
+     A_1258_1259_1260_1261 : DWORD ;    
+     A_1262_1263_1264_1265 : DWORD ;   
+     A_1266_1267_1268_1269 : DWORD ;   
+     A_1270_1271_1272_1273 : DWORD ;   
+     A_1274_1275_1276_1277 : DWORD ;   
+     A_1278_1279_1280_1281 : DWORD ;   
+     A_1282_1283_1284_1285 : DWORD ;   
+     A_1286_1287_1288_1289 : DWORD ;   
+     A_1290_1291_1292_1293 : DWORD ;   
+     A_1294_1295_1296_1297 : DWORD ;   
+     A_1298_1299_1300_1301 : DWORD ;   
+     A_1302_1303_1304_1305 : DWORD ;   
+     A_1306_1307_1308_1309 : DWORD ;   
+     A_1310_1311_1312_1313 : DWORD ;   
+     A_1314_1315_1316_1317 : DWORD ;   
+     A_1318_1319_1320_1321 : DWORD ;   
+     A_1322_1323_1324_1325 : DWORD ;   
+     A_1326_1327_1328_1329 : DWORD ;   
+     A_1330_1331_1332_1333 : DWORD ;   
+     A_1334_1335_1336_1337 : DWORD ;   
+     A_1338_1339_1340_1341 : DWORD ;   
+     A_1342_1343_1344_1345 : DWORD ;   
+     A_1346_1347_1348_1349 : DWORD ;   
+     A_1350_1351_1352_1353 : DWORD ;   
+     A_1354_1355_1356_1357 : DWORD ;   
+     A_1358_1359_1360_1361 : DWORD ;   
+     A_1362_1363_1364_1365 : DWORD ;   
+     A_1366_1367_1368_1369 : DWORD ;   
+     A_1370_1371_1372_1373 : DWORD ;   
+     A_1374_1375_1376_1377 : DWORD ;   
+     A_1378_1379_1380_1381 : DWORD ;   
+     A_1382_1383_1384_1385 : DWORD ;   
+     A_1386_1387_1388_1389 : DWORD ;   
+     A_1390_1391_1392_1393 : DWORD ;   
+     A_1394_1395_1396_1397 : DWORD ;   
+     A_1398_1399_1400_1401 : DWORD ;   
+     A_1402_1403_1404_1405 : DWORD ;   
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_56 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     B_TYP_LEN : DWORD ;    //Block type and length
+     VER_ALMTYP : DWORD ;    //Version and alarmtyp
+     APP_PROC_ID : DWORD ;    //API (Application Process Identifier)
+     SLOT_SUBSLOT_NO : DWORD ;    //Slot number
+     MODUL_ID : DWORD ;    //Module identification
+     SUB_MODUL_ID : DWORD ;    //Submodule identification
+     ALARM_SPEC_INFO_0_1 : DWORD ;    //Alarm specifier
+     A_2_3_4_5 : DWORD ;   
+     A_6_7_8_9 : DWORD ;   
+     A_10_11_12_13 : DWORD ;   
+     A_14_15_16_17 : DWORD ;   
+     A_18_19_20_21 : DWORD ;   
+     A_22_23_24_25 : DWORD ;   
+     A_26_27_28_29 : DWORD ;   
+     A_30_31_32_33 : DWORD ;   
+     A_34_35_36_37 : DWORD ;   
+     A_38_39_40_41 : DWORD ;   
+     A_42_43_44_45 : DWORD ;   
+     A_46_47_48_49 : DWORD ;   
+     A_50_51_52_53 : DWORD ;   
+     A_54_55_56_57 : DWORD ;   
+     A_58_59_60_61 : DWORD ;   
+     A_62_63_64_65 : DWORD ;   
+     A_66_67_68_69 : DWORD ;   
+     A_70_71_72_73 : DWORD ;   
+     A_74_75_76_77 : DWORD ;   
+     A_78_79_80_81 : DWORD ;   
+     A_82_83_84_85 : DWORD ;   
+     A_86_87_88_89 : DWORD ;   
+     A_90_91_92_93 : DWORD ;   
+     A_94_95_96_97 : DWORD ;   
+     A_98_99_100_101 : DWORD ;   
+     A_102_103_104_105 : DWORD ;   
+     A_106_107_108_109 : DWORD ;   
+     A_110_111_112_113 : DWORD ;   
+     A_114_115_116_117 : DWORD ;   
+     A_118_119_120_121 : DWORD ;   
+     A_122_123_124_125 : DWORD ;   
+     A_126_127_128_129 : DWORD ;   
+     A_130_131_132_133 : DWORD ;   
+     A_134_135_136_137 : DWORD ;   
+     A_138_139_140_141 : DWORD ;   
+     A_142_143_144_145 : DWORD ;   
+     A_146_147_148_149 : DWORD ;   
+     A_150_151_152_153 : DWORD ;   
+     A_154_155_156_157 : DWORD ;   
+     A_158_159_160_161 : DWORD ;   
+     A_162_163_164_165 : DWORD ;   
+     A_166_167_168_169 : DWORD ;   
+     A_170_171_172_173 : DWORD ;   
+     A_174_175_176_177 : DWORD ;   
+     A_178_179_180_181 : DWORD ;   
+     A_182_183_184_185 : DWORD ;   
+     A_186_187_188_189 : DWORD ;   
+     A_190_191_192_193 : DWORD ;   
+     A_194_195_196_197 : DWORD ;   
+     A_198_199_200_201 : DWORD ;   
+     A_202_203_204_205 : DWORD ;   
+     A_206_207_208_209 : DWORD ;   
+     A_210_211_212_213 : DWORD ;   
+     A_214_215_216_217 : DWORD ;   
+     A_218_219_220_222 : DWORD ;   
+     A_222_223_224_225 : DWORD ;   
+     A_226_227_228_229 : DWORD ;   
+     A_230_231_232_233 : DWORD ;   
+     A_234_235_236_237 : DWORD ;   
+     A_238_239_240_241 : DWORD ;   
+     A_242_243_244_245 : DWORD ;   
+     A_246_247_248_249 : DWORD ;   
+     A_250_251_252_253 : DWORD ;   
+     A_254_255_256_257 : DWORD ;   
+     A_258_259_260_261 : DWORD ;   
+     A_262_263_264_265 : DWORD ;   
+     A_266_267_268_269 : DWORD ;   
+     A_270_271_272_273 : DWORD ;   
+     A_274_275_276_277 : DWORD ;    
+     A_278_279_280_281 : DWORD ;   
+     A_282_283_284_285 : DWORD ;   
+     A_286_287_288_289 : DWORD ;   
+     A_290_291_292_293 : DWORD ;   
+     A_294_295_296_297 : DWORD ;   
+     A_298_299_300_301 : DWORD ;   
+     A_302_303_304_305 : DWORD ;   
+     A_306_307_308_309 : DWORD ;   
+     A_310_311_312_313 : DWORD ;   
+     A_314_315_316_317 : DWORD ;   
+     A_318_319_320_321 : DWORD ;   
+     A_322_323_324_325 : DWORD ;   
+     A_326_327_328_329 : DWORD ;   
+     A_330_331_332_333 : DWORD ;   
+     A_334_335_336_337 : DWORD ;   
+     A_338_339_340_341 : DWORD ;   
+     A_342_343_344_345 : DWORD ;   
+     A_346_347_348_349 : DWORD ;   
+     A_350_351_352_353 : DWORD ;   
+     A_354_355_356_357 : DWORD ;   
+     A_358_359_360_361 : DWORD ;   
+     A_363_363_364_365 : DWORD ;   
+     A_366_367_368_369 : DWORD ;   
+     A_370_371_372_373 : DWORD ;   
+     A_374_375_376_377 : DWORD ;   
+     A_378_379_380_381 : DWORD ;   
+     A_382_383_384_385 : DWORD ;   
+     A_386_387_388_389 : DWORD ;   
+     A_390_391_392_393 : DWORD ;   
+     A_394_395_396_397 : DWORD ;   
+     A_398_399_400_401 : DWORD ;   
+     A_402_403_404_405 : DWORD ;   
+     A_406_407_408_409 : DWORD ;   
+     A_410_411_412_413 : DWORD ;   
+     A_414_415_416_417 : DWORD ;   
+     A_418_419_420_421 : DWORD ;   
+     A_422_423_424_425 : DWORD ;   
+     A_426_427_428_429 : DWORD ;   
+     A_430_431_432_433 : DWORD ;   
+     A_434_435_436_437 : DWORD ;   
+     A_438_439_440_441 : DWORD ;    
+     A_442_443_444_445 : DWORD ;   
+     A_446_447_448_449 : DWORD ;   
+     A_450_451_452_453 : DWORD ;   
+     A_454_455_456_457 : DWORD ;   
+     A_458_459_460_461 : DWORD ;   
+     A_462_463_464_465 : DWORD ;   
+     A_466_467_468_469 : DWORD ;   
+     A_470_471_472_473 : DWORD ;   
+     A_474_475_476_477 : DWORD ;   
+     A_478_479_480_481 : DWORD ;   
+     A_482_483_484_485 : DWORD ;   
+     A_486_487_488_489 : DWORD ;   
+     A_490_491_492_493 : DWORD ;   
+     A_494_495_496_497 : DWORD ;   
+     A_498_499_500_501 : DWORD ;   
+     A_502_503_504_505 : DWORD ;   
+     A_506_507_508_509 : DWORD ;   
+     A_510_511_512_513 : DWORD ;   
+     A_514_515_516_517 : DWORD ;   
+     A_518_519_520_521 : DWORD ;   
+     A_522_523_524_525 : DWORD ;   
+     A_526_527_528_529 : DWORD ;   
+     A_530_531_532_533 : DWORD ;   
+     A_534_535_536_537 : DWORD ;   
+     A_538_539_540_541 : DWORD ;   
+     A_542_543_544_545 : DWORD ;   
+     A_546_547_548_549 : DWORD ;    
+     A_550_551_552_553 : DWORD ;   
+     A_554_555_556_557 : DWORD ;   
+     A_558_559_560_561 : DWORD ;   
+     A_562_563_564_565 : DWORD ;   
+     A_566_567_568_569 : DWORD ;   
+     A_570_571_572_573 : DWORD ;   
+     A_574_575_576_577 : DWORD ;   
+     A_578_579_580_581 : DWORD ;   
+     A_582_583_584_585 : DWORD ;   
+     A_586_587_588_589 : DWORD ;   
+     A_590_591_592_593 : DWORD ;   
+     A_594_595_596_597 : DWORD ;   
+     A_598_599_600_601 : DWORD ;   
+     A_602_603_604_605 : DWORD ;   
+     A_606_607_608_609 : DWORD ;   
+     A_610_611_612_613 : DWORD ;   
+     A_614_615_616_617 : DWORD ;   
+     A_618_619_620_621 : DWORD ;   
+     A_622_623_624_625 : DWORD ;   
+     A_626_627_628_629 : DWORD ;   
+     A_630_631_632_633 : DWORD ;   
+     A_634_635_636_637 : DWORD ;   
+     A_638_639_640_641 : DWORD ;   
+     A_642_643_644_645 : DWORD ;   
+     A_646_647_648_649 : DWORD ;   
+     A_650_651_652_653 : DWORD ;   
+     A_654_655_656_657 : DWORD ;    
+     A_658_659_660_661 : DWORD ;   
+     A_662_663_664_665 : DWORD ;   
+     A_666_667_668_669 : DWORD ;   
+     A_670_671_672_673 : DWORD ;   
+     A_674_675_676_677 : DWORD ;   
+     A_678_679_680_681 : DWORD ;   
+     A_682_683_684_685 : DWORD ;   
+     A_686_687_688_689 : DWORD ;   
+     A_690_691_692_693 : DWORD ;   
+     A_694_695_696_697 : DWORD ;   
+     A_698_699_700_701 : DWORD ;   
+     A_702_703_704_705 : DWORD ;   
+     A_706_707_708_709 : DWORD ;   
+     A_710_711_712_713 : DWORD ;   
+     A_714_715_716_717 : DWORD ;   
+     A_718_719_720_721 : DWORD ;   
+     A_722_723_724_725 : DWORD ;   
+     A_726_727_728_729 : DWORD ;   
+     A_730_731_732_733 : DWORD ;   
+     A_734_735_736_737 : DWORD ;   
+     A_738_739_740_741 : DWORD ;   
+     A_742_743_744_745 : DWORD ;   
+     A_746_747_748_749 : DWORD ;   
+     A_750_751_752_753 : DWORD ;   
+     A_754_755_756_757 : DWORD ;   
+     A_758_759_760_761 : DWORD ;   
+     A_762_763_764_765 : DWORD ;   
+     A_766_767_768_769 : DWORD ;   
+     A_770_771_772_773 : DWORD ;   
+     A_774_775_776_777 : DWORD ;   
+     A_778_779_780_781 : DWORD ;   
+     A_782_783_784_785 : DWORD ;   
+     A_786_787_788_789 : DWORD ;   
+     A_790_791_792_793 : DWORD ;    
+     A_794_795_796_797 : DWORD ;   
+     A_798_799_800_801 : DWORD ;   
+     A_802_803_804_805 : DWORD ;   
+     A_806_807_808_809 : DWORD ;   
+     A_810_811_812_813 : DWORD ;   
+     A_814_815_816_817 : DWORD ;   
+     A_818_819_820_821 : DWORD ;   
+     A_822_823_824_825 : DWORD ;   
+     A_826_827_828_829 : DWORD ;   
+     A_830_831_832_833 : DWORD ;   
+     A_834_835_836_837 : DWORD ;   
+     A_838_839_840_841 : DWORD ;   
+     A_842_843_844_845 : DWORD ;   
+     A_846_847_848_849 : DWORD ;   
+     A_850_851_852_853 : DWORD ;   
+     A_854_855_856_857 : DWORD ;   
+     A_858_859_860_861 : DWORD ;   
+     A_862_863_864_865 : DWORD ;   
+     A_866_867_868_869 : DWORD ;   
+     A_870_871_872_873 : DWORD ;   
+     A_874_875_876_877 : DWORD ;   
+     A_878_879_880_881 : DWORD ;   
+     A_882_883_884_885 : DWORD ;   
+     A_886_887_888_889 : DWORD ;   
+     A_890_891_892_893 : DWORD ;   
+     A_894_895_896_897 : DWORD ;   
+     A_898_899_900_901 : DWORD ;    
+     A_902_903_904_905 : DWORD ;   
+     A_906_907_908_909 : DWORD ;   
+     A_910_911_912_913 : DWORD ;   
+     A_914_915_916_917 : DWORD ;   
+     A_918_919_920_921 : DWORD ;   
+     A_922_923_924_925 : DWORD ;   
+     A_926_927_928_929 : DWORD ;   
+     A_930_931_932_933 : DWORD ;   
+     A_934_935_936_937 : DWORD ;   
+     A_938_939_940_941 : DWORD ;   
+     A_942_943_944_945 : DWORD ;   
+     A_946_947_948_949 : DWORD ;   
+     A_950_951_952_953 : DWORD ;   
+     A_954_955_956_957 : DWORD ;   
+     A_958_959_960_961 : DWORD ;   
+     A_962_963_964_965 : DWORD ;   
+     A_966_967_968_969 : DWORD ;   
+     A_970_971_972_973 : DWORD ;   
+     A_974_975_976_977 : DWORD ;   
+     A_978_979_980_981 : DWORD ;   
+     A_982_983_984_985 : DWORD ;   
+     A_986_987_988_989 : DWORD ;   
+     A_990_991_992_993 : DWORD ;   
+     A_994_995_996_997 : DWORD ;   
+     A_998_999_1000_1001 : DWORD ;   
+     A_1002_1003_1004_1005 : DWORD ;   
+     A_1006_1007_1008_1009 : DWORD ;   
+     A_1010_1011_1012_1013 : DWORD ;   
+     A_1014_1015_1016_1017 : DWORD ;   
+     A_1018_1019_1020_1021 : DWORD ;   
+     A_1022_1023_1024_1025 : DWORD ;   
+     A_1026_1027_1028_1029 : DWORD ;   
+     A_1030_1031_1032_1033 : DWORD ;   
+     A_1034_1035_1036_1037 : DWORD ;   
+     A_1038_1039_1040_1041 : DWORD ;   
+     A_1042_1043_1044_1045 : DWORD ;   
+     A_1046_1047_1048_1049 : DWORD ;   
+     A_1050_1051_1052_1053 : DWORD ;   
+     A_1054_1055_1056_1057 : DWORD ;   
+     A_1058_1059_1060_1061 : DWORD ;   
+     A_1062_1063_1064_1065 : DWORD ;   
+     A_1066_1067_1068_1069 : DWORD ;   
+     A_1070_1071_1072_1073 : DWORD ;   
+     A_1074_1075_1076_1077 : DWORD ;   
+     A_1078_1079_1080_1081 : DWORD ;   
+     A_1082_1083_1084_1085 : DWORD ;   
+     A_1086_1087_1088_1089 : DWORD ;   
+     A_1090_1091_1092_1093 : DWORD ;   
+     A_1094_1095_1096_1097 : DWORD ;   
+     A_1098_1099_1100_1101 : DWORD ;   
+     A_1102_1103_1104_1105 : DWORD ;   
+     A_1106_1107_1108_1109 : DWORD ;   
+     A_1110_1111_1112_1113 : DWORD ;   
+     A_1114_1115_1116_1117 : DWORD ;   
+     A_1118_1119_1120_1121 : DWORD ;   
+     A_1122_1123_1124_1125 : DWORD ;   
+     A_1126_1127_1128_1129 : DWORD ;   
+     A_1130_1131_1132_1133 : DWORD ;   
+     A_1134_1135_1136_1137 : DWORD ;   
+     A_1138_1139_1140_1141 : DWORD ;   
+     A_1142_1143_1144_1145 : DWORD ;   
+     A_1146_1147_1148_1149 : DWORD ;   
+     A_1150_1151_1152_1153 : DWORD ;   
+     A_1154_1155_1156_1157 : DWORD ;   
+     A_1158_1159_1160_1161 : DWORD ;   
+     A_1162_1163_1164_1165 : DWORD ;   
+     A_1166_1167_1168_1169 : DWORD ;   
+     A_1170_1171_1172_1173 : DWORD ;   
+     A_1174_1175_1176_1177 : DWORD ;   
+     A_1178_1179_1180_1181 : DWORD ;   
+     A_1182_1183_1184_1185 : DWORD ;   
+     A_1186_1187_1188_1189 : DWORD ;   
+     A_1190_1191_1192_1193 : DWORD ;   
+     A_1194_1195_1196_1197 : DWORD ;   
+     A_1198_1199_1200_1201 : DWORD ;   
+     A_1202_1203_1204_1205 : DWORD ;   
+     A_1206_1207_1208_1209 : DWORD ;   
+     A_1210_1211_1212_1213 : DWORD ;   
+     A_1214_1215_1216_1217 : DWORD ;   
+     A_1218_1219_1220_1221 : DWORD ;   
+     A_1222_1223_1224_1225 : DWORD ;   
+     A_1226_1227_1228_1229 : DWORD ;   
+     A_1230_1231_1232_1233 : DWORD ;   
+     A_1234_1235_1236_1237 : DWORD ;   
+     A_1238_1239_1240_1241 : DWORD ;   
+     A_1242_1243_1244_1245 : DWORD ;   
+     A_1246_1247_1248_1249 : DWORD ;   
+     A_1250_1251_1252_1253 : DWORD ;   
+     A_1254_1255_1256_1257 : DWORD ;   
+     A_1258_1259_1260_1261 : DWORD ;   
+     A_1262_1263_1264_1265 : DWORD ;   
+     A_1266_1267_1268_1269 : DWORD ;   
+     A_1270_1271_1272_1273 : DWORD ;   
+     A_1274_1275_1276_1277 : DWORD ;   
+     A_1278_1279_1280_1281 : DWORD ;   
+     A_1282_1283_1284_1285 : DWORD ;   
+     A_1286_1287_1288_1289 : DWORD ;   
+     A_1290_1291_1292_1293 : DWORD ;   
+     A_1294_1295_1296_1297 : DWORD ;   
+     A_1298_1299_1300_1301 : DWORD ;   
+     A_1302_1303_1304_1305 : DWORD ;   
+     A_1306_1307_1308_1309 : DWORD ;   
+     A_1310_1311_1312_1313 : DWORD ;   
+     A_1314_1315_1316_1317 : DWORD ;   
+     A_1318_1319_1320_1321 : DWORD ;   
+     A_1322_1323_1324_1325 : DWORD ;   
+     A_1326_1327_1328_1329 : DWORD ;   
+     A_1330_1331_1332_1333 : DWORD ;   
+     A_1334_1335_1336_1337 : DWORD ;   
+     A_1338_1339_1340_1341 : DWORD ;   
+     A_1342_1343_1344_1345 : DWORD ;   
+     A_1346_1347_1348_1349 : DWORD ;   
+     A_1350_1351_1352_1353 : DWORD ;   
+     A_1354_1355_1356_1357 : DWORD ;   
+     A_1358_1359_1360_1361 : DWORD ;   
+     A_1362_1363_1364_1365 : DWORD ;   
+     A_1366_1367_1368_1369 : DWORD ;   
+     A_1370_1371_1372_1373 : DWORD ;   
+     A_1374_1375_1376_1377 : DWORD ;   
+     A_1378_1379_1380_1381 : DWORD ;   
+     A_1382_1383_1384_1385 : DWORD ;   
+     A_1386_1387_1388_1389 : DWORD ;   
+     A_1390_1391_1392_1393 : DWORD ;   
+     A_1394_1395_1396_1397 : DWORD ;   
+     A_1398_1399_1400_1401 : DWORD ;   
+     A_1402_1403_1404_1405 : DWORD ;    
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+   OB_57 : STRUCT    
+    TOP_SI : STRUCT    
+     EV_CLASS : BYTE ;    //Event class
+     EV_NUM : BYTE ;    //Event number
+     PRIORITY : BYTE ;    //Priority
+     NUM : BYTE ;    //OB-Number
+     TYP2_3 : BYTE ;    //Reserved
+     TYP1 : BYTE ;    //Reserved
+     ZI1 : WORD ;    //Reserved
+     ZI2_3 : DWORD ;    //Reserved
+    END_STRUCT ;   
+    SUBNET : WORD ;    //SUBNET ID
+    RACK : WORD ;    //Rack Number
+    SL_TYP : BYTE ;    //Slave-/Profiltyp
+    A_INF : BYTE ;    //Alarm-Info-Type
+    ET_CR_FL : BYTE ;    //ET-CR-Flags
+    ET_ER_FL : BYTE ;    //ET-ER-Flags
+    PNO_ID : WORD ;    //PROFIBUS Ident Number
+    AINFO : STRUCT    
+     B_TYP_LEN : DWORD ;    //Block type and length
+     VER_ALMTYP : DWORD ;    //Version and alarmtyp
+     APP_PROC_ID : DWORD ;    //API (Application Process Identifier)
+     SLOT_SUBSLOT_NO : DWORD ;    //Slot number
+     MODUL_ID : DWORD ;    //Module identification
+     SUB_MODUL_ID : DWORD ;    //Submodule identification
+     ALARM_SPEC_INFO_0_1 : DWORD ;    //Alarm specifier
+     A_2_3_4_5 : DWORD ;   
+     A_6_7_8_9 : DWORD ;   
+     A_10_11_12_13 : DWORD ;   
+     A_14_15_16_17 : DWORD ;   
+     A_18_19_20_21 : DWORD ;   
+     A_22_23_24_25 : DWORD ;   
+     A_26_27_28_29 : DWORD ;   
+     A_30_31_32_33 : DWORD ;   
+     A_34_35_36_37 : DWORD ;   
+     A_38_39_40_41 : DWORD ;   
+     A_42_43_44_45 : DWORD ;   
+     A_46_47_48_49 : DWORD ;   
+     A_50_51_52_53 : DWORD ;   
+     A_54_55_56_57 : DWORD ;   
+     A_58_59_60_61 : DWORD ;   
+     A_62_63_64_65 : DWORD ;   
+     A_66_67_68_69 : DWORD ;   
+     A_70_71_72_73 : DWORD ;   
+     A_74_75_76_77 : DWORD ;   
+     A_78_79_80_81 : DWORD ;   
+     A_82_83_84_85 : DWORD ;   
+     A_86_87_88_89 : DWORD ;   
+     A_90_91_92_93 : DWORD ;   
+     A_94_95_96_97 : DWORD ;   
+     A_98_99_100_101 : DWORD ;   
+     A_102_103_104_105 : DWORD ;   
+     A_106_107_108_109 : DWORD ;   
+     A_110_111_112_113 : DWORD ;   
+     A_114_115_116_117 : DWORD ;   
+     A_118_119_120_121 : DWORD ;   
+     A_122_123_124_125 : DWORD ;   
+     A_126_127_128_129 : DWORD ;   
+     A_130_131_132_133 : DWORD ;   
+     A_134_135_136_137 : DWORD ;   
+     A_138_139_140_141 : DWORD ;   
+     A_142_143_144_145 : DWORD ;   
+     A_146_147_148_149 : DWORD ;   
+     A_150_151_152_153 : DWORD ;   
+     A_154_155_156_157 : DWORD ;   
+     A_158_159_160_161 : DWORD ;    
+     A_162_163_164_165 : DWORD ;   
+     A_166_167_168_169 : DWORD ;   
+     A_170_171_172_173 : DWORD ;   
+     A_174_175_176_177 : DWORD ;   
+     A_178_179_180_181 : DWORD ;   
+     A_182_183_184_185 : DWORD ;   
+     A_186_187_188_189 : DWORD ;   
+     A_190_191_192_193 : DWORD ;   
+     A_194_195_196_197 : DWORD ;   
+     A_198_199_200_201 : DWORD ;   
+     A_202_203_204_205 : DWORD ;   
+     A_206_207_208_209 : DWORD ;   
+     A_210_211_212_213 : DWORD ;   
+     A_214_215_216_217 : DWORD ;   
+     A_218_219_220_222 : DWORD ;   
+     A_222_223_224_225 : DWORD ;   
+     A_226_227_228_229 : DWORD ;   
+     A_230_231_232_233 : DWORD ;   
+     A_234_235_236_237 : DWORD ;   
+     A_238_239_240_241 : DWORD ;   
+     A_242_243_244_245 : DWORD ;   
+     A_246_247_248_249 : DWORD ;   
+     A_250_251_252_253 : DWORD ;   
+     A_254_255_256_257 : DWORD ;   
+     A_258_259_260_261 : DWORD ;   
+     A_262_263_264_265 : DWORD ;   
+     A_266_267_268_269 : DWORD ;   
+     A_270_271_272_273 : DWORD ;   
+     A_274_275_276_277 : DWORD ;   
+     A_278_279_280_281 : DWORD ;   
+     A_282_283_284_285 : DWORD ;   
+     A_286_287_288_289 : DWORD ;   
+     A_290_291_292_293 : DWORD ;   
+     A_294_295_296_297 : DWORD ;   
+     A_298_299_300_301 : DWORD ;   
+     A_302_303_304_305 : DWORD ;   
+     A_306_307_308_309 : DWORD ;   
+     A_310_311_312_313 : DWORD ;   
+     A_314_315_316_317 : DWORD ;   
+     A_318_319_320_321 : DWORD ;   
+     A_322_323_324_325 : DWORD ;    
+     A_326_327_328_329 : DWORD ;   
+     A_330_331_332_333 : DWORD ;   
+     A_334_335_336_337 : DWORD ;   
+     A_338_339_340_341 : DWORD ;   
+     A_342_343_344_345 : DWORD ;   
+     A_346_347_348_349 : DWORD ;   
+     A_350_351_352_353 : DWORD ;   
+     A_354_355_356_357 : DWORD ;   
+     A_358_359_360_361 : DWORD ;   
+     A_363_363_364_365 : DWORD ;   
+     A_366_367_368_369 : DWORD ;   
+     A_370_371_372_373 : DWORD ;   
+     A_374_375_376_377 : DWORD ;   
+     A_378_379_380_381 : DWORD ;   
+     A_382_383_384_385 : DWORD ;   
+     A_386_387_388_389 : DWORD ;   
+     A_390_391_392_393 : DWORD ;   
+     A_394_395_396_397 : DWORD ;   
+     A_398_399_400_401 : DWORD ;   
+     A_402_403_404_405 : DWORD ;   
+     A_406_407_408_409 : DWORD ;   
+     A_410_411_412_413 : DWORD ;   
+     A_414_415_416_417 : DWORD ;   
+     A_418_419_420_421 : DWORD ;   
+     A_422_423_424_425 : DWORD ;   
+     A_426_427_428_429 : DWORD ;   
+     A_430_431_432_433 : DWORD ;   
+     A_434_435_436_437 : DWORD ;   
+     A_438_439_440_441 : DWORD ;   
+     A_442_443_444_445 : DWORD ;   
+     A_446_447_448_449 : DWORD ;   
+     A_450_451_452_453 : DWORD ;   
+     A_454_455_456_457 : DWORD ;   
+     A_458_459_460_461 : DWORD ;   
+     A_462_463_464_465 : DWORD ;   
+     A_466_467_468_469 : DWORD ;   
+     A_470_471_472_473 : DWORD ;   
+     A_474_475_476_477 : DWORD ;   
+     A_478_479_480_481 : DWORD ;   
+     A_482_483_484_485 : DWORD ;   
+     A_486_487_488_489 : DWORD ;   
+     A_490_491_492_493 : DWORD ;   
+     A_494_495_496_497 : DWORD ;   
+     A_498_499_500_501 : DWORD ;   
+     A_502_503_504_505 : DWORD ;   
+     A_506_507_508_509 : DWORD ;   
+     A_510_511_512_513 : DWORD ;   
+     A_514_515_516_517 : DWORD ;   
+     A_518_519_520_521 : DWORD ;   
+     A_522_523_524_525 : DWORD ;   
+     A_526_527_528_529 : DWORD ;   
+     A_530_531_532_533 : DWORD ;   
+     A_534_535_536_537 : DWORD ;   
+     A_538_539_540_541 : DWORD ;   
+     A_542_543_544_545 : DWORD ;   
+     A_546_547_548_549 : DWORD ;   
+     A_550_551_552_553 : DWORD ;   
+     A_554_555_556_557 : DWORD ;   
+     A_558_559_560_561 : DWORD ;   
+     A_562_563_564_565 : DWORD ;   
+     A_566_567_568_569 : DWORD ;   
+     A_570_571_572_573 : DWORD ;   
+     A_574_575_576_577 : DWORD ;   
+     A_578_579_580_581 : DWORD ;   
+     A_582_583_584_585 : DWORD ;   
+     A_586_587_588_589 : DWORD ;   
+     A_590_591_592_593 : DWORD ;   
+     A_594_595_596_597 : DWORD ;    
+     A_598_599_600_601 : DWORD ;   
+     A_602_603_604_605 : DWORD ;   
+     A_606_607_608_609 : DWORD ;   
+     A_610_611_612_613 : DWORD ;   
+     A_614_615_616_617 : DWORD ;   
+     A_618_619_620_621 : DWORD ;   
+     A_622_623_624_625 : DWORD ;   
+     A_626_627_628_629 : DWORD ;   
+     A_630_631_632_633 : DWORD ;   
+     A_634_635_636_637 : DWORD ;   
+     A_638_639_640_641 : DWORD ;   
+     A_642_643_644_645 : DWORD ;   
+     A_646_647_648_649 : DWORD ;   
+     A_650_651_652_653 : DWORD ;   
+     A_654_655_656_657 : DWORD ;   
+     A_658_659_660_661 : DWORD ;   
+     A_662_663_664_665 : DWORD ;   
+     A_666_667_668_669 : DWORD ;   
+     A_670_671_672_673 : DWORD ;   
+     A_674_675_676_677 : DWORD ;   
+     A_678_679_680_681 : DWORD ;   
+     A_682_683_684_685 : DWORD ;   
+     A_686_687_688_689 : DWORD ;   
+     A_690_691_692_693 : DWORD ;   
+     A_694_695_696_697 : DWORD ;   
+     A_698_699_700_701 : DWORD ;   
+     A_702_703_704_705 : DWORD ;   
+     A_706_707_708_709 : DWORD ;   
+     A_710_711_712_713 : DWORD ;   
+     A_714_715_716_717 : DWORD ;   
+     A_718_719_720_721 : DWORD ;   
+     A_722_723_724_725 : DWORD ;   
+     A_726_727_728_729 : DWORD ;   
+     A_730_731_732_733 : DWORD ;   
+     A_734_735_736_737 : DWORD ;   
+     A_738_739_740_741 : DWORD ;   
+     A_742_743_744_745 : DWORD ;   
+     A_746_747_748_749 : DWORD ;   
+     A_750_751_752_753 : DWORD ;   
+     A_754_755_756_757 : DWORD ;   
+     A_758_759_760_761 : DWORD ;   
+     A_762_763_764_765 : DWORD ;   
+     A_766_767_768_769 : DWORD ;   
+     A_770_771_772_773 : DWORD ;   
+     A_774_775_776_777 : DWORD ;   
+     A_778_779_780_781 : DWORD ;   
+     A_782_783_784_785 : DWORD ;   
+     A_786_787_788_789 : DWORD ;   
+     A_790_791_792_793 : DWORD ;   
+     A_794_795_796_797 : DWORD ;   
+     A_798_799_800_801 : DWORD ;   
+     A_802_803_804_805 : DWORD ;   
+     A_806_807_808_809 : DWORD ;   
+     A_810_811_812_813 : DWORD ;   
+     A_814_815_816_817 : DWORD ;   
+     A_818_819_820_821 : DWORD ;   
+     A_822_823_824_825 : DWORD ;   
+     A_826_827_828_829 : DWORD ;   
+     A_830_831_832_833 : DWORD ;   
+     A_834_835_836_837 : DWORD ;   
+     A_838_839_840_841 : DWORD ;   
+     A_842_843_844_845 : DWORD ;   
+     A_846_847_848_849 : DWORD ;   
+     A_850_851_852_853 : DWORD ;   
+     A_854_855_856_857 : DWORD ;   
+     A_858_859_860_861 : DWORD ;   
+     A_862_863_864_865 : DWORD ;   
+     A_866_867_868_869 : DWORD ;    
+     A_870_871_872_873 : DWORD ;   
+     A_874_875_876_877 : DWORD ;   
+     A_878_879_880_881 : DWORD ;   
+     A_882_883_884_885 : DWORD ;   
+     A_886_887_888_889 : DWORD ;   
+     A_890_891_892_893 : DWORD ;   
+     A_894_895_896_897 : DWORD ;   
+     A_898_899_900_901 : DWORD ;   
+     A_902_903_904_905 : DWORD ;   
+     A_906_907_908_909 : DWORD ;   
+     A_910_911_912_913 : DWORD ;   
+     A_914_915_916_917 : DWORD ;   
+     A_918_919_920_921 : DWORD ;   
+     A_922_923_924_925 : DWORD ;   
+     A_926_927_928_929 : DWORD ;   
+     A_930_931_932_933 : DWORD ;   
+     A_934_935_936_937 : DWORD ;   
+     A_938_939_940_941 : DWORD ;   
+     A_942_943_944_945 : DWORD ;   
+     A_946_947_948_949 : DWORD ;   
+     A_950_951_952_953 : DWORD ;   
+     A_954_955_956_957 : DWORD ;   
+     A_958_959_960_961 : DWORD ;   
+     A_962_963_964_965 : DWORD ;   
+     A_966_967_968_969 : DWORD ;   
+     A_970_971_972_973 : DWORD ;   
+     A_974_975_976_977 : DWORD ;   
+     A_978_979_980_981 : DWORD ;   
+     A_982_983_984_985 : DWORD ;   
+     A_986_987_988_989 : DWORD ;   
+     A_990_991_992_993 : DWORD ;   
+     A_994_995_996_997 : DWORD ;   
+     A_998_999_1000_1001 : DWORD ;   
+     A_1002_1003_1004_1005 : DWORD ;   
+     A_1006_1007_1008_1009 : DWORD ;   
+     A_1010_1011_1012_1013 : DWORD ;   
+     A_1014_1015_1016_1017 : DWORD ;   
+     A_1018_1019_1020_1021 : DWORD ;   
+     A_1022_1023_1024_1025 : DWORD ;   
+     A_1026_1027_1028_1029 : DWORD ;    
+     A_1030_1031_1032_1033 : DWORD ;   
+     A_1034_1035_1036_1037 : DWORD ;   
+     A_1038_1039_1040_1041 : DWORD ;   
+     A_1042_1043_1044_1045 : DWORD ;   
+     A_1046_1047_1048_1049 : DWORD ;   
+     A_1050_1051_1052_1053 : DWORD ;   
+     A_1054_1055_1056_1057 : DWORD ;   
+     A_1058_1059_1060_1061 : DWORD ;   
+     A_1062_1063_1064_1065 : DWORD ;   
+     A_1066_1067_1068_1069 : DWORD ;   
+     A_1070_1071_1072_1073 : DWORD ;   
+     A_1074_1075_1076_1077 : DWORD ;   
+     A_1078_1079_1080_1081 : DWORD ;   
+     A_1082_1083_1084_1085 : DWORD ;   
+     A_1086_1087_1088_1089 : DWORD ;   
+     A_1090_1091_1092_1093 : DWORD ;   
+     A_1094_1095_1096_1097 : DWORD ;   
+     A_1098_1099_1100_1101 : DWORD ;   
+     A_1102_1103_1104_1105 : DWORD ;   
+     A_1106_1107_1108_1109 : DWORD ;   
+     A_1110_1111_1112_1113 : DWORD ;   
+     A_1114_1115_1116_1117 : DWORD ;   
+     A_1118_1119_1120_1121 : DWORD ;   
+     A_1122_1123_1124_1125 : DWORD ;   
+     A_1126_1127_1128_1129 : DWORD ;   
+     A_1130_1131_1132_1133 : DWORD ;   
+     A_1134_1135_1136_1137 : DWORD ;   
+     A_1138_1139_1140_1141 : DWORD ;   
+     A_1142_1143_1144_1145 : DWORD ;   
+     A_1146_1147_1148_1149 : DWORD ;   
+     A_1150_1151_1152_1153 : DWORD ;   
+     A_1154_1155_1156_1157 : DWORD ;   
+     A_1158_1159_1160_1161 : DWORD ;   
+     A_1162_1163_1164_1165 : DWORD ;   
+     A_1166_1167_1168_1169 : DWORD ;   
+     A_1170_1171_1172_1173 : DWORD ;   
+     A_1174_1175_1176_1177 : DWORD ;   
+     A_1178_1179_1180_1181 : DWORD ;   
+     A_1182_1183_1184_1185 : DWORD ;   
+     A_1186_1187_1188_1189 : DWORD ;   
+     A_1190_1191_1192_1193 : DWORD ;   
+     A_1194_1195_1196_1197 : DWORD ;   
+     A_1198_1199_1200_1201 : DWORD ;   
+     A_1202_1203_1204_1205 : DWORD ;   
+     A_1206_1207_1208_1209 : DWORD ;   
+     A_1210_1211_1212_1213 : DWORD ;   
+     A_1214_1215_1216_1217 : DWORD ;   
+     A_1218_1219_1220_1221 : DWORD ;   
+     A_1222_1223_1224_1225 : DWORD ;   
+     A_1226_1227_1228_1229 : DWORD ;   
+     A_1230_1231_1232_1233 : DWORD ;   
+     A_1234_1235_1236_1237 : DWORD ;   
+     A_1238_1239_1240_1241 : DWORD ;   
+     A_1242_1243_1244_1245 : DWORD ;   
+     A_1246_1247_1248_1249 : DWORD ;   
+     A_1250_1251_1252_1253 : DWORD ;   
+     A_1254_1255_1256_1257 : DWORD ;   
+     A_1258_1259_1260_1261 : DWORD ;   
+     A_1262_1263_1264_1265 : DWORD ;   
+     A_1266_1267_1268_1269 : DWORD ;   
+     A_1270_1271_1272_1273 : DWORD ;   
+     A_1274_1275_1276_1277 : DWORD ;   
+     A_1278_1279_1280_1281 : DWORD ;   
+     A_1282_1283_1284_1285 : DWORD ;   
+     A_1286_1287_1288_1289 : DWORD ;   
+     A_1290_1291_1292_1293 : DWORD ;   
+     A_1294_1295_1296_1297 : DWORD ;    
+     A_1298_1299_1300_1301 : DWORD ;   
+     A_1302_1303_1304_1305 : DWORD ;   
+     A_1306_1307_1308_1309 : DWORD ;   
+     A_1310_1311_1312_1313 : DWORD ;   
+     A_1314_1315_1316_1317 : DWORD ;   
+     A_1318_1319_1320_1321 : DWORD ;   
+     A_1322_1323_1324_1325 : DWORD ;   
+     A_1326_1327_1328_1329 : DWORD ;   
+     A_1330_1331_1332_1333 : DWORD ;   
+     A_1334_1335_1336_1337 : DWORD ;   
+     A_1338_1339_1340_1341 : DWORD ;   
+     A_1342_1343_1344_1345 : DWORD ;   
+     A_1346_1347_1348_1349 : DWORD ;   
+     A_1350_1351_1352_1353 : DWORD ;   
+     A_1354_1355_1356_1357 : DWORD ;   
+     A_1358_1359_1360_1361 : DWORD ;   
+     A_1362_1363_1364_1365 : DWORD ;   
+     A_1366_1367_1368_1369 : DWORD ;   
+     A_1370_1371_1372_1373 : DWORD ;   
+     A_1374_1375_1376_1377 : DWORD ;   
+     A_1378_1379_1380_1381 : DWORD ;   
+     A_1382_1383_1384_1385 : DWORD ;   
+     A_1386_1387_1388_1389 : DWORD ;   
+     A_1390_1391_1392_1393 : DWORD ;   
+     A_1394_1395_1396_1397 : DWORD ;   
+     A_1398_1399_1400_1401 : DWORD ;   
+     A_1402_1403_1404_1405 : DWORD ;   
+    END_STRUCT ;   
+    STATUS : DWORD ;    //Status SFB 54
+   END_STRUCT ;   
+  END_STRUCT ;   
+  SZL_71 { S7_visible := 'false' }: STRUCT    
+   REDINF : WORD ;    //16#11= Single H-CPU, 16#12 =1v2 H-System
+   MW_RES0 : BOOL ;    //Reserved
+   MW_RES1 : BOOL ;    //Reserved
+   MW_RES2 : BOOL ;    //Reserved
+   MW_RES3 : BOOL ;    //Reserved
+   MASTER_0 : BOOL ;    //1=Master CPU in Rack0
+   MASTER_1 : BOOL ;    //1=Master CPU in Rack1
+   MW_RES6 : BOOL ;    //Reserved
+   MW_RES7 : BOOL ;    //Reserved
+   MW2_SYN : BOOL ;    //Reserved
+   MW2_RES1 : BOOL ;    //Reserved
+   MW2_RES2 : BOOL ;    //Reserved
+   MW2_RES3 : BOOL ;    //Reserved
+   CPU_RAC0 : BOOL ;    //1=CPU  in Rack0 (solo mode)
+   CPU_RAC1 : BOOL ;    //1=CPU  in Rack1 (solo mode)
+   MW2_RES6 : BOOL ;    //Reserved
+   MW2_RES7 : BOOL ;    //Reserved
+   HSFCINFO : WORD ;    //Info word for SFC90 "H_CTRL"
+   CPU_ERR0 : BOOL ;    //1=CPU Error in Rack0
+   CPU_ERR1 : BOOL ;    //1=CPU Error in Rack1
+   S_RES2 : BOOL ;    //Reserved
+   S_RES3 : BOOL ;    //Reserved
+   FO_ERROR : BOOL ;    //1= FO cable link up error
+   S_RES5 : BOOL ;    //Reserved
+   S_RES6 : BOOL ;    //Reserved
+   S_RES7 : BOOL ;    //Reserved
+   S_RES : BYTE ;    //Reserved
+   BZ_CPU_0 : WORD ;    //Mode of CPU in Rack 0
+   BZ_CPU_1 : WORD ;    //Mode of CPU in Rack 1
+   BZ_CPU_2 : WORD ;    //Reserved
+   CPU_VALID : BYTE ;    //1=BZ_CPU_0 valid, 2=BZ_CPU_1 valid, 3=BZ_CPU_0 + BZ_CPU_1 valid
+   CPU_RES : BYTE ;    //Reserved
+  END_STRUCT ;   
+  ACC_ID { S7_link := 'false' }: BOOL ;    //1=Accept New ID Settings
+END_VAR
+VAR
+  sdwRESERVE : DWORD ;    //Reserve fьr zukьnftige Дnderungen
+  sdwRESERVE_bool AT sdwRESERVE : ARRAY[0..31] OF BOOL;
+  OB86_CNT : INT ;    //OB86 Aufrufzдhler
+  LOCK_86_TM : DINT ;    //Wartezeit OB86
+  sbRESTART : BOOL  := TRUE;    //Erstlauf Merker
+  OB1_ALRM : BOOL ;    //ALARM_8P aufruf im OB1
+  M1ERR : BOOL ;    //1=Fehler in Master 1
+  M2ERR : BOOL ;    //1=Fehler in Master 2
+  M1REDF : BOOL ;    //1=Master 2 verfьgbar
+  M2REDF : BOOL ;    //1=Master 1 verfьgbar
+  s_ir : BOOL ;    //Unterbrechung eines OB durch einen anderen ( Merker Ablaufebenenwechsel ) 7.8.2
+  ASIG0 : BYTE ;
+  ASIG0_bool AT ASIG0 : ARRAY[0..7] OF BOOL; 
+  sbASIG0 : BYTE ;
+  sbASIG0_bool AT sbASIG0 : ARRAY[0..7] OF BOOL; 
+  ASIG1 : BYTE ; 
+  ASIG1_bool AT ASIG1 : ARRAY[0..7] OF BOOL; 
+  sbASIG1 : BYTE ;   
+  sbASIG1_bool AT sbASIG1 : ARRAY[0..7] OF BOOL; 
+  DUMMY : DWORD ;   
+  SUBN_ID : WORD ;    //BYTE;
+  CPU_RACK : BYTE ;   
+  ALARM_8P_1 : SFB35;    //Multiinstanzierte _8P
+  ALARM_8P_2 : SFB35;    //Multiinstanzierte _8P
+END_VAR
+VAR_TEMP
+  EN_ALRM : BOOL ;    //Freigabe des ALARM_8P
+  EN_ALRM1 : BOOL ;    //Freigabe des Notify_8P
+  RETURN_CODE : INT ;    //SZL-Returnwert bzw. Fehlercode und Zдhlervariable
+  PER_ADR : WORD ; 
+  PER_ADR_byte AT PER_ADR : ARRAY[0..1] OF BYTE; 
+  OB_START : WORD ;   
+  OB_START_bool AT OB_START : ARRAY[0..15] OF BOOL;
+  pbEN_Rxx : ARRAY  [0 .. 255 ] OF //Temporдre SUBNET Ausgдnge: EN_Rxx
+  BOOL ;    //Temporдre SUBNET Ausgдnge: EN_Rxx
+  pbEN_Rxx_dw AT pbEN_Rxx : ARRAY[0..7] OF DWORD;
+  pbEN_ALT : BOOL ;    //Flag: Instanz EN_xx ьbernehmen
+  CPU_ERR0 : BOOL ;   
+  CPU_ERR1 : BOOL ;   
+  H_MODE : BOOL ;   
+  ZI2_3 : DWORD ;   
+  SZL_HEADER : STRUCT    
+   LENTHDR : WORD ;   
+   N_DR : WORD ;   
+  END_STRUCT ;   
+  GEO : STRUCT    
+   SUBNET : BYTE ;   
+   RACK : BYTE ;   
+   SLOT : BYTE ;   
+   RESERVE : ARRAY  [0 .. 12 ] OF BYTE ;   
+  END_STRUCT ;   
+  GEO_PN : STRUCT    
+   SUBNET : WORD ;    //INT;
+   RACK : WORD ;    //INT;
+   SLOT : WORD ;    //INT;
+   SUBSLOT : WORD ;    //INT;
+   OFFSET : WORD ;    //INT;
+  END_STRUCT ;   
+  MASTER_INF : STRUCT    
+   dp_m_id : BYTE ;   
+   rack_dp_m : BYTE ;   
+   slot_dp_m : BYTE ;   
+   subm_dp_m : BYTE ;   
+   logadr : WORD ;   
+   dp_m_sys_cpu : WORD ;   
+   dp_m_sys_dpm : WORD ;   
+   dp_m_state : ARRAY  [0 .. 7 ] OF BOOL ;   
+   dp_address : BYTE ;   
+   reserve1 : WORD ;   
+   tsal_ob : BYTE ;   
+   reserve2 : BYTE ;   
+   baudrate : DWORD ;   
+   dp_iso_takt : DWORD ;   
+   reserve : ARRAY  [0 .. 15 ] OF BYTE ;   
+  END_STRUCT ;   
+  TOP_SI : STRUCT     
+   EV_CLASS : BYTE ;   
+   EV_NUM : BYTE ;   
+   PRIORITY : BYTE ;   
+   NUM : BYTE ;   
+   TYP2_3 : BYTE ;   
+   TYP1 : BYTE ;   
+   ZI1 : WORD ;   
+   ZI2_3 : DWORD ;   
+  END_STRUCT ;   
+  DEL_CNT : DINT ;   
+  MS_AS : DWORD ;    //Maintenance State AS
+  STAT_ZUST0 : ARRAY  [0 .. 3 ] OF //Stationszustand des PN Masters 0 ermittlen bei Neustart oder ReduRьckkehr
+  DWORD ;    //Stationszustand des PN Masters 0 ermittlen bei Neustart oder ReduRьckkehr
+  STAT_ZUST1 : ARRAY  [0 .. 3 ] OF //Stationszustand des PN Masters 1 ermittlen bei Neustart oder ReduRьckkehr
+  DWORD ;    //Stationszustand des PN Masters 1 ermittlen bei Neustart oder ReduRьckkehr
+  tmpRACKRelease : BOOL ;   
+  BGR_ZUST : STRUCT    
+   logadr : WORD ;    //Bits 0 bis 14: Adresse der Baugruppe Bit 15: 0 = Eingang, 1 = Ausgang
+   System : WORD ;    //Kennung fьr zentrale Baugruppe / DP-Mastersystem-ID / PROFINET IO-System ID  
+   API_1 : WORD ;    //Application Process Instance
+   API_2 : WORD ;    //Application Process Instance
+   Station : WORD ;    //Baugruppentrдger-Nr./Stationsnummer/Gerдtenummer      
+   Slot : WORD ;    //Steckplatz-Nr.
+   Subslot : WORD ;    //Submodulsteckplatz (falls kein Submodul gesteckt werden kann, ist hier 0 anzuge
+   Offset : WORD ;    //Offset im Nutzdatenadressraum der zugehцrigen Baugruppe
+   Solltyp_1 : WORD ;    //Herstellernummer oder Profilidentifikation
+   Solltyp_2 : WORD ;    //Gerдt   
+   Solltyp_3 : WORD ;    //Laufende Nummer oder Profilindex   
+   Solltyp_4 : WORD ;    //1. Wort des Doppelwortes Modul Identifikation
+   Solltyp_5 : WORD ;    //2. Wort des Doppelwortes Modul Identifikation
+   Solltyp_6 : WORD ;    //1. Wort des Doppelwortes Submodul Identifikation
+   Solltyp_7 : WORD ;    //2. Wort des Doppelwortes Submodul Identifikation
+   Soll_ungleic_Ist_typ : WORD ;    //Kennung Soll/Ist
+   reserve : WORD ;   
+   Eastat : WORD ;    //E/A-Status
+   Ber_bgbr : WORD ;    //Bereichskennung/Baugruppenbreite
+   reserve_bgr_zust : ARRAY  [0 .. 4 ] OF WORD ;   
+  END_STRUCT ;   
+  tPORT1_CONNECT : BOOL ;   
+  tPORT2_CONNECT : BOOL ;   
+  tPORT1_CONNECT_1 : BOOL ;   
+  tPORT2_CONNECT_1 : BOOL ;   
+  tPNIO_ADR : BOOL ;   
+  tPNIO_ADR_1 : BOOL ;   
+  tRackFrei : BOOL ;   
+END_VAR
+BEGIN
+OB_START:=W#16#0;
+pbEN_ALT:=OK;
+ 
+CASE CPU_DIAG_PN.OB_S.NUM_CNT OF
+    1 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_01;
+        IF CPU_DIAG_PN.OB_S.NUM_01=1 THEN
+            pbEN_ALT:=false;
+        END_IF;
+    2 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_02;
+        IF CPU_DIAG_PN.OB_S.NUM_01=1 THEN
+            pbEN_ALT:=false;
+        END_IF;
+    3 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_03;
+    4 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_04;
+    5 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_05;
+    6 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_06;
+    7 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_07;
+    8 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_08;
+    9 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_09;
+    10 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_10;
+    11 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_11;
+    12 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_12;
+    13 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_13;
+    14 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_14;
+    15 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_15;
+    16 :
+        TOP_SI.NUM:=CPU_DIAG_PN.OB_S.NUM_16;
+ELSE;       
+END_CASE; 
+ 
+IF TOP_SI.NUM=B#16#1 THEN
+    OB_START_bool[6]:=true;
+ELSIF TOP_SI.NUM=B#16#55 THEN
+    OB_START_bool[4]:=true;   
+    GEO_PN.SUBNET:=CPU_DIAG_PN.OB_85.SUBNET;
+    GEO_PN.RACK:=CPU_DIAG_PN.OB_85.RACK;
+ELSIF TOP_SI.NUM=B#16#52 THEN
+    OB_START_bool[2]:=true;   
+    GEO_PN.SUBNET:=CPU_DIAG_PN.OB_82.SUBNET;
+    GEO_PN.RACK:=CPU_DIAG_PN.OB_82.RACK;
+    TOP_SI.ZI1:=CPU_DIAG_PN.OB_82.TOP_SI.ZI1;
+    TOP_SI.ZI2_3:=CPU_DIAG_PN.OB_82.TOP_SI.ZI2_3;
+    TOP_SI.EV_NUM:=CPU_DIAG_PN.OB_82.TOP_SI.EV_NUM;
+    TOP_SI.EV_CLASS:=CPU_DIAG_PN.OB_82.TOP_SI.EV_CLASS;
+ELSIF TOP_SI.NUM=B#16#56 THEN
+    OB_START_bool[5]:=true;   
+    GEO_PN.SUBNET:=CPU_DIAG_PN.OB_86.SUBNET;
+    GEO_PN.RACK:=CPU_DIAG_PN.OB_86.RACK;
+    ZI2_3:=CPU_DIAG_PN.OB_86.TOP_SI.ZI2_3;
+    TOP_SI.EV_NUM:=CPU_DIAG_PN.OB_86.TOP_SI.EV_NUM;
+    TOP_SI.EV_CLASS:=CPU_DIAG_PN.OB_86.TOP_SI.EV_CLASS;
+    CPU_ERR0:=CPU_DIAG_PN.CPU_ERR0;
+    CPU_ERR1:=CPU_DIAG_PN.CPU_ERR1;
+ELSIF TOP_SI.NUM=B#16#53 THEN
+    OB_START_bool[3]:=true;   
+    GEO_PN.SUBNET:=CPU_DIAG_PN.OB_83.SUBNET;
+    GEO_PN.RACK:=CPU_DIAG_PN.OB_83.RACK;
+ELSIF TOP_SI.NUM=B#16#64 THEN
+    OB_START_bool[7]:=true;   
+ELSIF TOP_SI.NUM=B#16#46 THEN
+    OB_START_bool[0]:=true;   
+    GEO_PN.SUBNET:=CPU_DIAG_PN.OB_70.SUBNET;
+    GEO_PN.RACK:=CPU_DIAG_PN.OB_70.RACK;
+    TOP_SI.EV_NUM:=CPU_DIAG_PN.OB_70.TOP_SI.EV_NUM;
+    TOP_SI.EV_CLASS:=CPU_DIAG_PN.OB_70.TOP_SI.EV_CLASS;
+    CPU_ERR0:=CPU_DIAG_PN.CPU_ERR0;
+    CPU_ERR1:=CPU_DIAG_PN.CPU_ERR1;
+ELSIF TOP_SI.NUM=B#16#48 THEN
+    OB_START_bool[1]:=true;   
+    CPU_ERR0:=CPU_DIAG_PN.CPU_ERR0;
+    CPU_ERR1:=CPU_DIAG_PN.CPU_ERR1;
+    H_MODE:=CPU_DIAG_PN.H_MODE;
+ELSIF TOP_SI.NUM=B#16#51 THEN
+    OB_START_bool[8]:=true;   
+    GEO_PN.SUBNET:=0;
+    IF BYTE_TO_INT(CPU_DIAG_PN.OB_81.TOP_SI.EV_NUM)<48 THEN
+        IF BYTE_TO_INT(CPU_DIAG_PN.OB_81.TOP_SI.EV_NUM)<37 THEN
+            GEO_PN.RACK:=0;
+        ELSE
+            IF (CPU_DIAG_PN.OB_81.TOP_SI.ZI1 AND W#16#100) = W#16#0 THEN
+                GEO_PN.RACK:=0;
+            ELSE
+                GEO_PN.RACK:=1;
+            END_IF;
+        END_IF;   
+    ELSE       
+        GEO_PN.RACK:=B#16#FF;
+        ZI2_3:=CPU_DIAG_PN.OB_81.TOP_SI.ZI2_3;
+    END_IF;
+ELSIF TOP_SI.NUM=B#16#37 THEN
+    OB_START_bool[2]:=true;   
+    GEO_PN.SUBNET:=CPU_OB_5X.OB_55.SUBNET;
+    GEO_PN.RACK:=CPU_OB_5X.OB_55.RACK;
+   
+ELSIF TOP_SI.NUM=B#16#38 THEN
+    OB_START_bool[2]:=true;   
+    GEO_PN.SUBNET:=CPU_OB_5X.OB_56.SUBNET;
+    GEO_PN.RACK:=CPU_OB_5X.OB_56.RACK;
+   
+ELSIF TOP_SI.NUM=B#16#39 THEN
+    OB_START_bool[2]:=true;   
+    GEO_PN.SUBNET:=CPU_OB_5X.OB_57.SUBNET;
+    GEO_PN.RACK:=CPU_OB_5X.OB_57.RACK;
+   
+ELSE;
+END_IF;     
+ 
+IF sbRESTART THEN
+    OB_START_bool[7]:=true;
+    sbRESTART:=false;
+END_IF;
+MS_AS:=MS AND DW#16#FF010000;
+ 
+IF     OB_START_bool[6] OR OB_START_bool[7] THEN  //ob1,ob100
+    IF ACC_ID OR OB_START_bool[7] THEN
+        ACC_ID:=false;
+        IF OB_START_bool[7] THEN //ob100
+            sdwRESERVE_bool[24]:=true;
+            sdwRESERVE_bool[25]:=true;
+            IF SUBN1_ID<>B#16#FF THEN
+                PER_ADR_byte[1]:=SUBN1_ID;
+            ELSE
+                PER_ADR_byte[1]:=SUBN2_ID;
+            END_IF;
+            IF SUBN1_ID=B#16#0 AND SUBN2_ID=B#16#0 THEN
+                IF CPU_DIAG_PN.H_MODE THEN
+                    MS_AS:=MS_AS OR DW#16#10000;
+                ELSE
+                    MS_AS:=MS_AS AND DW#16#FFFEFFFF;
+                END_IF;   
+            ELSE
+                IF SUBN1_ID<>B#16#FF AND SUBN2_ID<>B#16#FF THEN
+                    MS_AS:=MS_AS OR DW#16#10000;
+                ELSE
+                    MS_AS:=MS_AS AND DW#16#FFFEFFFF;
+                END_IF;   
+            END_IF;
+            PER_ADR_byte[0]:=B#16#0;
+            pbEN_ALT:=false;
+            REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                        ,SZL_ID :=  W#16#195 //Extended information on a DPmaster system/PROFINET IO system
+                        ,INDEX :=  PER_ADR
+                        ,BUSY :=  pbEN_ALT
+                        ,SZL_HEADER :=  SZL_HEADER
+                        ,DR := MASTER_INF
+                        );
+            UNTIL NOT pbEN_ALT
+            END_REPEAT;     
+            CPU_DIAG_PN.V1_MODE:=true;
+            SUB_DIAG.V1_MODE:=true;
+        END_IF;
+        SUB_DIAG.SUBN_TYP:=SUBN_TYP;
+        SUB_DIAG.SUBN1_ID:=SUBN1_ID;
+        SUB_DIAG.SUBN2_ID:=SUBN2_ID;
+        M1ERR:=false;
+        M2ERR:=false;
+        M1REDF:=false;
+        M2REDF:=false;
+        ASIG1:=B#16#0;
+        EN_ALRM:=true;
+        EN_ALRM1:=true;
+    ELSE;
+    END_IF;
+    IF OB_START_bool[6] THEN //ob1
+        OB86_CNT:=0;
+        IF ASIG0_bool[4] THEN
+            DEL_CNT:=CPU_DIAG_PN.OB1_TIME-LOCK_86_TM;
+            IF DEL_CNT<0 THEN
+                DEL_CNT:=DEL_CNT+1879048192;
+                DEL_CNT:=DEL_CNT+268435456;
+            END_IF;
+            ASIG0_bool[4]:=DEL_CNT<=10000;
+        END_IF;
+        ACC_ID:=ASIG0_bool[4]<>sbASIG0_bool[4] OR ACC_ID;
+    END_IF;
+    pbEN_Rxx_dw[0]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[1]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[2]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[3]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[4]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[5]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[6]:=DW#16#FFFFFFFF;
+    pbEN_Rxx_dw[7]:=DW#16#FFFFFFFF;
+   
+    IF NOT CPU_DIAG_PN.CPU_ERR0 AND sdwRESERVE_bool[24] AND SUBN1_ID<>0 AND SUBN1_ID<>B#16#FF THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#294 //Actual status of the rack in the central configuration/the stations of a DP master
+                                        //system/IO controller system that is connected via an integrated DP/PN interface module.
+                    ,INDEX :=  BYTE_TO_WORD(SUBN1_ID)
+                    ,BUSY :=  sdwRESERVE_bool[24]
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  STAT_ZUST0
+                    );
+        UNTIL NOT OB_START_bool[7] OR NOT sdwRESERVE_bool[24]
+        END_REPEAT;     
+        IF NOT sdwRESERVE_bool[24] THEN
+            IF RETURN_CODE=0 THEN
+                IF (STAT_ZUST0[0] OR
+                    STAT_ZUST0[1] OR
+                    STAT_ZUST0[2] OR
+                    STAT_ZUST0[3]) =  DW#16#0
+                THEN
+                    M1ERR:=true;
+                    M1REDF:= NOT (M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                    IF NOT (SUB_DIAG.SUBN1_ID=B#16#0 OR SUB_DIAG.SUBN2_ID=B#16#0) THEN
+                        ASIG0_bool[0]:=M1ERR AND M1REDF AND NOT M2ERR;
+                        ASIG0_bool[2]:=NOT M1REDF AND M1ERR;
+                        ASIG0_bool[1]:=M2ERR AND M2REDF AND NOT M1ERR;
+                        ASIG0_bool[3]:=NOT M2REDF AND M2ERR;
+                    END_IF;
+                    EN_ALRM:=ASIG0<>sbASIG0;
+                ELSE
+                    M1ERR:=false;
+                    IF NOT
+                       (SUB_DIAG.SUBN1_ID=B#16#0 OR
+                        SUB_DIAG.SUBN2_ID=B#16#0)
+                    THEN
+                        ASIG0_bool[0]:=M1ERR AND M1REDF AND NOT M2ERR;
+                        ASIG0_bool[2]:=NOT M1REDF AND M1ERR;
+                        ASIG0_bool[1]:=M2ERR AND M2REDF AND NOT M1ERR;
+                        ASIG0_bool[3]:=NOT M2REDF AND M2ERR;
+                    END_IF;
+                    EN_ALRM:=ASIG0<>sbASIG0;
+                END_IF;
+            ELSE
+                IF RETURN_CODE=-32635 THEN
+                    sdwRESERVE_bool[24]:=true;
+                END_IF;   
+            END_IF;
+        END_IF;
+    END_IF;
+    IF NOT CPU_DIAG_PN.CPU_ERR1 AND
+         sdwRESERVE_bool[25] AND
+         SUBN2_ID<>0 AND
+         SUBN2_ID<>B#16#FF AND
+         NOT sdwRESERVE_bool[24]
+    THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#294 //Actual status of the rack in the central configuration/the stations of a DP master
+                                        //system/IO controller system that is connected via an integrated DP/PN interface module.
+                    ,INDEX :=  BYTE_TO_WORD(SUBN2_ID)
+                    ,BUSY :=  sdwRESERVE_bool[25]
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  STAT_ZUST1
+                    );
+        UNTIL NOT OB_START_bool[7] OR NOT sdwRESERVE_bool[25]
+        END_REPEAT;     
+        IF NOT sdwRESERVE_bool[25] THEN
+            IF RETURN_CODE=0 THEN
+                IF (STAT_ZUST1[0] OR
+                    STAT_ZUST1[1] OR
+                    STAT_ZUST1[2] OR
+                    STAT_ZUST1[3]) =  DW#16#0
+                THEN
+                    M2ERR:=true;
+                    M2REDF:= NOT (M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                    IF NOT (SUB_DIAG.SUBN1_ID=B#16#0 OR SUB_DIAG.SUBN2_ID=B#16#0) THEN
+                        ASIG0_bool[0]:=M1ERR AND M1REDF AND NOT M2ERR;
+                        ASIG0_bool[2]:=NOT M1REDF AND M1ERR;
+                        ASIG0_bool[1]:=M2ERR AND M2REDF AND NOT M1ERR;
+                        ASIG0_bool[3]:=NOT M2REDF AND M2ERR;
+                    END_IF;
+                    EN_ALRM:=ASIG0<>sbASIG0;
+                ELSE
+                    M2ERR:=false;
+                    IF NOT
+                       (SUB_DIAG.SUBN1_ID=B#16#0 OR
+                        SUB_DIAG.SUBN2_ID=B#16#0)
+                    THEN
+                        ASIG0_bool[0]:=M1ERR AND M1REDF AND NOT M2ERR;
+                        ASIG0_bool[2]:=NOT M1REDF AND M1ERR;
+                        ASIG0_bool[1]:=M2ERR AND M2REDF AND NOT M1ERR;
+                        ASIG0_bool[3]:=NOT M2REDF AND M2ERR;
+                    END_IF;
+                    EN_ALRM:=ASIG0<>sbASIG0;
+                END_IF;
+            ELSE
+                IF RETURN_CODE=-32635 THEN
+                    sdwRESERVE_bool[25]:=true;
+                END_IF;   
+            END_IF;
+        END_IF;
+    END_IF;
+    IF PORT1_CONNECT=B#16#1 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PORT1_ADR)
+                    ,BUSY :=  tPORT1_CONNECT
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPORT1_CONNECT
+        END_REPEAT;
+        IF NOT tPORT1_CONNECT THEN
+            IF RETURN_CODE=0 THEN
+                IF BGR_ZUST.Eastat=W#16#2 THEN
+                    ASIG1_bool[0]:=false;
+                END_IF;
+                IF BGR_ZUST.Eastat=W#16#4 OR BGR_ZUST.Eastat=W#16#3 THEN
+                    ASIG1_bool[0]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR0 THEN
+                    tPORT1_CONNECT:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPORT1_CONNECT THEN ASIG1_bool[0]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+    IF PORT2_CONNECT=B#16#1 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PORT2_ADR)
+                    ,BUSY :=  tPORT2_CONNECT
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPORT2_CONNECT
+        END_REPEAT;
+        IF NOT tPORT2_CONNECT THEN
+            IF RETURN_CODE=0 THEN
+                IF BGR_ZUST.Eastat=W#16#2 THEN
+                    ASIG1_bool[1]:=false;
+                END_IF;
+                IF BGR_ZUST.Eastat=W#16#4 OR BGR_ZUST.Eastat=W#16#3 THEN
+                    ASIG1_bool[1]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR1 THEN
+                    tPORT2_CONNECT:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPORT2_CONNECT THEN ASIG1_bool[1]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+    IF PORT1_CONNECT_1=B#16#1 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PORT1_ADR_1)
+                    ,BUSY :=  tPORT1_CONNECT_1
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPORT1_CONNECT_1
+        END_REPEAT;
+        IF NOT tPORT1_CONNECT_1 THEN
+            IF RETURN_CODE=0 THEN
+                IF BGR_ZUST.Eastat=W#16#2 THEN
+                    ASIG1_bool[4]:=false;
+                END_IF;
+                IF BGR_ZUST.Eastat=W#16#4 OR BGR_ZUST.Eastat=W#16#3 THEN
+                    ASIG1_bool[4]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR0 THEN
+                    tPORT1_CONNECT_1:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPORT1_CONNECT_1 THEN ASIG1_bool[4]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+    IF PORT2_CONNECT_1=B#16#1 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PORT2_ADR_1)
+                    ,BUSY :=  tPORT2_CONNECT_1
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPORT2_CONNECT_1
+        END_REPEAT;
+        IF NOT tPORT2_CONNECT_1 THEN
+            IF RETURN_CODE=0 THEN
+                IF BGR_ZUST.Eastat=W#16#2 THEN
+                    ASIG1_bool[5]:=false;
+                END_IF;
+                IF BGR_ZUST.Eastat=W#16#4 OR BGR_ZUST.Eastat=W#16#3 THEN
+                    ASIG1_bool[5]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR1 THEN
+                    tPORT2_CONNECT_1:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPORT2_CONNECT_1 THEN ASIG1_bool[5]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+    IF PNIO_ADR<>0 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PNIO_ADR)
+                    ,BUSY :=  tPNIO_ADR
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPNIO_ADR
+        END_REPEAT;
+        IF NOT tPNIO_ADR THEN
+            IF RETURN_CODE=0 THEN
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#200)=W#16#0 THEN
+                    ASIG1_bool[2]:=false;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#200)=W#16#200 THEN
+                    ASIG1_bool[2]:=true;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#100)=W#16#0 THEN
+                    ASIG1_bool[3]:=false;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#100)=W#16#100 THEN
+                    ASIG1_bool[3]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR0 THEN
+                    tPNIO_ADR:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPNIO_ADR THEN ASIG1_bool[3]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+    IF PNIO_ADR_1<>0 THEN
+        REPEAT
+            RETURN_CODE:=RDSYSST(REQ :=  true 
+ 
+                    ,SZL_ID := W#16#C96 //Module status information centrally or at a PROFIBUS DP/PROFINET
+                    ,INDEX :=  INT_TO_WORD(PNIO_ADR_1)
+                    ,BUSY :=  tPNIO_ADR_1
+                    ,SZL_HEADER :=  SZL_HEADER
+                    ,DR :=  BGR_ZUST
+                    );
+        UNTIL NOT OB_START_bool[7] OR     NOT tPNIO_ADR_1
+        END_REPEAT;
+        IF NOT tPNIO_ADR_1 THEN
+            IF RETURN_CODE=0 THEN
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#200)=W#16#0 THEN
+                    ASIG1_bool[6]:=false;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#200)=W#16#200 THEN
+                    ASIG1_bool[6]:=true;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#100)=W#16#0 THEN
+                    ASIG1_bool[7]:=false;
+                END_IF;
+                IF (BGR_ZUST.Eastat AND W#16#2)=W#16#2 AND (BGR_ZUST.Eastat AND W#16#100)=W#16#100 THEN
+                    ASIG1_bool[7]:=true;
+                END_IF;
+            ELSE
+                IF NOT CPU_DIAG_PN.CPU_ERR1 THEN
+                    tPNIO_ADR_1:=RETURN_CODE=-32635 OR
+                                    RETURN_CODE=-32604 OR
+                                    RETURN_CODE=-32605 OR
+                                    RETURN_CODE=-32606 OR
+                                    RETURN_CODE=-32571;
+                    IF NOT tPNIO_ADR_1 THEN ASIG1_bool[7]:=true; END_IF;
+                END_IF;
+            END_IF;
+        END_IF;     
+    END_IF;
+ELSE
+    EN_ALRM:=false;
+    FOR RETURN_CODE:=0 TO 154 BY 1 DO
+        IF pbEN_ALT THEN
+            pbEN_Rxx[RETURN_CODE]:=EN_R0_ar[RETURN_CODE];
+        ELSE
+            pbEN_Rxx[RETURN_CODE]:=false;
+        END_IF;   
+    END_FOR;   
+    FOR RETURN_CODE:=156 TO 165 BY 1 DO
+        IF pbEN_ALT THEN
+            pbEN_Rxx[RETURN_CODE]:=EN_R0_ar[RETURN_CODE-1];
+        ELSE
+            pbEN_Rxx[RETURN_CODE]:=false;
+        END_IF;   
+    END_FOR;   
+    FOR RETURN_CODE:=167 TO 255 BY 1 DO
+        IF pbEN_ALT THEN
+            pbEN_Rxx[RETURN_CODE]:=EN_R0_ar[RETURN_CODE-2];
+        ELSE
+            pbEN_Rxx[RETURN_CODE]:=false;
+        END_IF;   
+    END_FOR;   
+   
+    IF OB_START_bool[8] THEN  // ob81
+        IF GEO_PN.SUBNET=SUBN1_ID OR GEO_PN.SUBNET=SUBN2_ID THEN
+            IF GEO_PN.RACK=B#16#FF THEN
+                FOR RETURN_CODE:=1 TO 21 BY 1 DO
+                    ZI2_3:=SHR(IN:=ZI2_3,N:=1);
+                    pbEN_Rxx[RETURN_CODE]:=(ZI2_3  AND DW#16#1) <>DW#16#0;
+                END_FOR;
+            ELSE
+                pbEN_Rxx[WORD_TO_INT(GEO_PN.RACK)]:=true;
+            END_IF;
+        ELSE;   
+        END_IF;
+    ELSE
+        IF OB_START_bool[1] THEN // ob72
+            IF CPU_DIAG_PN.OB_72.TOP_SI.EV_NUM=B#16#3 THEN
+                sdwRESERVE_bool[24]:=true;
+                sdwRESERVE_bool[25]:=true;
+            END_IF;   
+            IF SUB_DIAG.SUBN2_ID=B#16#FF OR SUB_DIAG.SUBN1_ID=B#16#0 THEN
+                M1ERR:=CPU_ERR0;
+                M1REDF:=false;
+            ELSE
+                M1REDF:= NOT CPU_ERR1;
+            END_IF;
+            IF SUB_DIAG.SUBN1_ID=B#16#FF OR SUB_DIAG.SUBN2_ID=B#16#0 THEN
+                M2ERR:=CPU_ERR1;
+                M2REDF:=false;
+            ELSE
+                M2REDF:= NOT CPU_ERR0;
+            END_IF;
+            IF SUB_DIAG.SUBN1_ID=B#16#0 AND SUB_DIAG.SUBN2_ID=B#16#0 AND H_MODE THEN
+                IF CPU_ERR0 THEN
+                    CPU_RACK:=B#16#0;
+                ELSE
+                    IF CPU_ERR1 THEN
+                        CPU_RACK:=B#16#1;
+                    END_IF;
+                END_IF;
+                ASIG0_bool[5]:=CPU_ERR0 OR CPU_ERR1;
+            END_IF;
+            FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                pbEN_Rxx[RETURN_CODE]:=true;
+            END_FOR;
+        ELSE
+            IF GEO_PN.SUBNET=SUBN1_ID OR GEO_PN.SUBNET=SUBN2_ID THEN
+                IF OB_START_bool[4] THEN  // ob85
+                    FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                        pbEN_Rxx[RETURN_CODE]:=false;
+                    END_FOR;
+                    pbEN_Rxx[WORD_TO_INT(GEO_PN.RACK)]:=true;
+                ELSE
+                    IF OB_START_bool[2] THEN // ob82,ob55,ob56,ob57
+                        IF TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR_1) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR_1)
+                        THEN
+                            IF TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR) AND
+                                PORT1_ADR<>0
+                            THEN   
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[0]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[0]:=false;
+                                END_IF;
+                            END_IF;
+                       
+                            IF TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR_1) AND
+                               PORT1_ADR_1<>0 
+                            THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[4]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[4]:=false;
+                                END_IF;
+                            END_IF;
+                            IF PORT1_CONNECT=B#16#1 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               SUBN1_ID<>0 AND
+                               SUBN2_ID=B#16#FF AND
+                               (PORT2_CONNECT=B#16#0 AND
+                               PORT2_CONNECT_1=B#16#0) AND
+                               ASIG1_bool[0]
+                            THEN
+                                M1ERR:=ASIG1_bool[0];
+                                M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#0 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               SUBN1_ID=B#16#FF AND
+                               SUBN2_ID<>B#16#00 AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#0) AND
+                               ASIG1_bool[4]
+                            THEN
+                                M2ERR:=ASIG1_bool[4];
+                                M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#1 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               SUBN1_ID<>B#16#00 AND
+                               SUBN2_ID=B#16#FF AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#0) AND
+                               ASIG1_bool[0] AND
+                               ASIG1_bool[4]
+                            THEN
+                                M1ERR:=ASIG1_bool[0];
+                                M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#1 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               SUBN1_ID=B#16#FF AND
+                               SUBN2_ID<>B#16#00 AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#0) AND
+                               ASIG1_bool[4] AND
+                               ASIG1_bool[0]
+                            THEN
+                                M2ERR:=ASIG1_bool[4];
+                                M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#1 AND
+                               PORT1_CONNECT_1=B#16#1 AND
+                               SUBN1_ID<>B#16#00 AND
+                               SUBN2_ID<>B#16#00 AND
+                               (PORT2_CONNECT=B#16#0 AND
+                               PORT2_CONNECT_1=B#16#0)
+                            THEN
+                                M1ERR:=ASIG1_bool[0];
+                                M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#1 AND
+                               PORT1_CONNECT_1=B#16#1 AND
+                               SUBN1_ID<>B#16#00 AND
+                               SUBN2_ID<>B#16#00 AND
+                               (PORT2_CONNECT=B#16#0 AND
+                               PORT2_CONNECT_1=B#16#0)
+                            THEN
+                                M2ERR:=ASIG1_bool[4];
+                                M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                            END_IF;   
+                            IF TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR) AND
+                               PORT2_ADR<>0 
+                            THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[1]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[1]:=false;
+                                END_IF;
+                            END_IF;
+                            IF TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR_1) AND
+                               PORT2_ADR_1<>0 
+                            THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[5]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[5]:=false;
+                                END_IF;
+                            END_IF;
+                            IF PORT1_CONNECT=B#16#0 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#0 AND
+                               SUBN1_ID<>0 AND
+                               SUBN2_ID=B#16#FF) AND
+                               ASIG1_bool[1]
+                            THEN
+                                M1ERR:=ASIG1_bool[1];
+                                M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#0 AND
+                               PORT1_CONNECT_1=B#16#0 AND
+                               (PORT2_CONNECT=B#16#0 AND
+                               PORT2_CONNECT_1=B#16#1 AND
+                               SUBN1_ID=B#16#FF AND
+                               SUBN2_ID<>0) AND
+                               ASIG1_bool[5]
+                            THEN
+                                M2ERR:=ASIG1_bool[5];
+                                M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                            END_IF;   
+                            IF PORT1_CONNECT=B#16#0 OR
+                               PORT1_CONNECT_1=B#16#0 AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#1 AND
+                               SUBN1_ID<>0 AND
+                               SUBN2_ID<>0)
+                            THEN
+                                M1ERR:=ASIG1_bool[1];
+                                M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                            END_IF;   
+                            IF (PORT1_CONNECT=B#16#0 OR
+                               PORT1_CONNECT_1=B#16#0) AND
+                               (PORT2_CONNECT=B#16#1 AND
+                               PORT2_CONNECT_1=B#16#1 AND
+                               SUBN1_ID<>0 AND
+                               SUBN2_ID<>0) AND
+                               ASIG1_bool[1] AND
+                               ASIG1_bool[5]
+                            THEN
+                                M2ERR:=ASIG1_bool[5];
+                                M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                            END_IF;   
+                        END_IF;   
+                        IF TOP_SI.ZI1=INT_TO_WORD(PNIO_ADR) AND
+                           PNIO_ADR<>0 
+                        THEN
+                            IF (TOP_SI.ZI2_3 AND DW#16#8000) = DW#16#8000 THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[2]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[2]:=false;
+                                END_IF;
+                            END_IF;   
+                       
+                            IF (TOP_SI.ZI2_3 AND DW#16#800000) = DW#16#800000 THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[3]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[3]:=false;
+                                END_IF;
+                            END_IF;   
+                        END_IF;   
+                        IF TOP_SI.ZI1=INT_TO_WORD(PNIO_ADR_1) AND
+                           PNIO_ADR_1<>0 
+                        THEN
+                            IF (TOP_SI.ZI2_3 AND DW#16#8000) = DW#16#8000 THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[6]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[6]:=false;
+                                END_IF;
+                            END_IF;   
+                       
+                            IF (TOP_SI.ZI2_3 AND DW#16#800000) = DW#16#800000 THEN
+                                IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                    ASIG1_bool[7]:=true;
+                                ELSIF TOP_SI.EV_CLASS=B#16#38 THEN
+                                    ASIG1_bool[7]:=false;
+                                END_IF;
+                            END_IF;   
+                        END_IF;   
+                        SUBN_ID:=GEO_PN.SUBNET;
+                        IF NOT(TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR)) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT1_ADR_1) OR
+                           TOP_SI.ZI1=INT_TO_WORD(PORT2_ADR_1)
+                        THEN
+                            pbEN_Rxx[WORD_TO_INT(GEO_PN.RACK)]:=true;
+                        END_IF;
+                    ELSE   
+                        IF OB_START_bool[5] THEN //ob86
+                            FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                                pbEN_Rxx[RETURN_CODE]:=false;
+                            END_FOR;
+                   
+                            CASE BYTE_TO_INT(TOP_SI.EV_NUM) OF
+                                193,194,198:
+                                    FOR RETURN_CODE:=1 To 21 BY 1 DO
+                                        ZI2_3:=SHR(IN:=ZI2_3,N:=1);
+                                        pbEN_Rxx[RETURN_CODE]:=(ZI2_3 AND DW#16#1)<>0;
+                                    END_FOR;
+                                202 :
+                                    OB86_CNT:=OB86_CNT+1;
+                                    IF OB86_CNT<5 THEN
+                                        FOR RETURN_CODE:=0 To 255 BY 1 DO
+                                            pbEN_Rxx[RETURN_CODE]:=true;
+                                        END_FOR;
+                                       
+                                        IF GEO_PN.SUBNET=SUB_DIAG.SUBN1_ID THEN
+                                            M1ERR:=true;
+                                            M1REDF:= NOT (M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                                        ELSE
+                                            M2ERR:=true;
+                                            M2REDF:=NOT (M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                                        END_IF;
+                                    ELSE   
+                                        ASIG0_bool[4]:=true;
+                                        LOCK_86_TM:=CPU_DIAG_PN.OB1_TIME;
+                                        SUBN_ID:=GEO_PN.SUBNET;
+                                    END_IF;       
+                                   
+                                203,204,205,206 :
+                                    IF TOP_SI.EV_CLASS=B#16#38 THEN
+                                        FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                                            pbEN_Rxx[RETURN_CODE]:=true;
+                                        END_FOR;
+                                        IF GEO_PN.SUBNET=SUB_DIAG.SUBN1_ID AND M1ERR THEN
+                                            M1ERR:=false;
+                                            M2REDF:=M2ERR;
+                                        END_IF;   
+                                        IF GEO_PN.SUBNET=SUB_DIAG.SUBN2_ID AND M2ERR THEN
+                                            M2ERR:=false;
+                                            M1REDF:=M1ERR;
+                                        END_IF;   
+ 
+                                    ELSE
+                                        IF TOP_SI.EV_CLASS=B#16#39 THEN
+                                            FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                                                pbEN_Rxx[RETURN_CODE]:=true;
+                                            END_FOR;
+                                        END_IF;   
+                                    END_IF;
+                            END_CASE;
+                        ELSE;       
+                            IF OB_START_bool[3] THEN  // ob83
+                                pbEN_Rxx[WORD_TO_INT(GEO_PN.RACK)]:=true;
+                            ELSE
+                                IF OB_START_bool[0] THEN  // OB70
+                                    IF TOP_SI.EV_NUM=B#16#A2 THEN
+                                        IF GEO_PN.SUBNET=SUB_DIAG.SUBN1_ID THEN
+                                            M1ERR:=true;
+                                            M1REDF:=NOT(M2ERR OR CPU_ERR1) AND SUB_DIAG.SUBN2_ID<>B#16#FF;
+                                        ELSE
+                                            M2ERR:=true;
+                                            M2REDF:=NOT(M1ERR OR CPU_ERR0) AND SUB_DIAG.SUBN1_ID<>B#16#FF;
+                                        END_IF;
+                                   
+                                    ELSE
+                                        IF TOP_SI.EV_NUM=B#16#A5 THEN
+                                            IF GEO_PN.SUBNET=SUB_DIAG.SUBN1_ID THEN
+                                                IF M1ERR THEN
+                                                    IF TOP_SI.EV_CLASS=B#16#72 THEN
+                                                        M1ERR:=false;
+                                                        FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                                                            pbEN_Rxx[RETURN_CODE]:=true;
+                                                        END_FOR;
+                                                    END_IF;
+                                                    M2REDF:=M2ERR;
+                                                END_IF;
+                                                IF     TOP_SI.EV_CLASS<>B#16#72 THEN
+                                                    sdwRESERVE_bool[24]:=true;
+                                                END_IF;
+                                            END_IF;   
+                                            IF GEO_PN.SUBNET=SUB_DIAG.SUBN2_ID THEN
+                                                IF M2ERR THEN
+                                                    IF TOP_SI.EV_CLASS=B#16#72 THEN
+                                                        M2ERR:=false;
+                                                        FOR RETURN_CODE:=0 TO 255 BY 1 DO
+                                                            pbEN_Rxx[RETURN_CODE]:=true;
+                                                        END_FOR;
+                                                    END_IF;
+                                                    M1REDF:=M1ERR;
+                                                END_IF;   
+                                                IF     TOP_SI.EV_CLASS<>B#16#72 THEN
+                                                    sdwRESERVE_bool[25]:=true;
+                                                END_IF;
+                                            END_IF;
+                                        END_IF;
+                                    END_IF;       
+                                END_IF;
+                            END_IF;   
+                        END_IF;   
+                    END_IF;
+                END_IF;
+            ELSE;   
+            END_IF;
+        END_IF;
+        IF NOT (SUB_DIAG.SUBN1_ID=B#16#0 OR SUB_DIAG.SUBN2_ID=B#16#0) THEN
+            ASIG0_bool[0]:=M1ERR AND M1REDF AND NOT M2ERR;
+            ASIG0_bool[2]:=NOT M1REDF AND M1ERR;
+            ASIG0_bool[3]:=NOT M2REDF AND M2ERR;
+            ASIG0_bool[1]:=M2ERR AND M2REDF AND NOT M1ERR;           
+        END_IF;
+        EN_ALRM:=ASIG0<>sbASIG0;
+    END_IF;   
+END_IF;     
+REPEAT
+    s_ir:=0;
+    FOR RETURN_CODE:=0 TO 154 BY 1 DO
+        EN_R0_ar[RETURN_CODE]:=pbEN_Rxx[RETURN_CODE];
+    END_FOR;
+    FOR RETURN_CODE:=156 TO 165 BY 1 DO
+        EN_R0_ar[RETURN_CODE-1]:=pbEN_Rxx[RETURN_CODE];
+    END_FOR;
+    FOR RETURN_CODE:=167 TO 255 BY 1 DO
+        EN_R0_ar[RETURN_CODE-2]:=pbEN_Rxx[RETURN_CODE];
+    END_FOR;
+   
+UNTIL NOT s_ir
+END_REPEAT;
+s_ir:=true;
+SUBN1ERR:=M1ERR    OR CPU_DIAG_PN.CPU_ERR0;
+SUBN2ERR:=M2ERR OR CPU_DIAG_PN.CPU_ERR1;
+SUB_DIAG.SUB0_ERR:=SUBN1ERR;
+SUB_DIAG.SUB1_ERR:=SUBN2ERR;
+MASTER_0:=SZL_71.MASTER_0;
+MASTER_1:=SZL_71.MASTER_1;
+IF MASTER_1 THEN
+    MS_AS:=MS_AS OR DW#16#20000;
+END_IF;
+EN_ALRM:=ASIG0<>sbASIG0;
+EN_ALRM1:=ASIG1<>sbASIG1;
+sdwRESERVE_bool[27]:=sdwRESERVE_bool[27] OR EN_ALRM;
+sdwRESERVE_bool[28]:=sdwRESERVE_bool[28] OR EN_ALRM1;
+IF EN_MSG THEN
+    IF (sdwRESERVE_bool[27] OR OB_START_bool[7]) THEN
+        ALARM_8P_1(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID :=  EV_ID
+                   ,SIG_1 :=  ASIG0_bool[0]
+                   ,SIG_2 :=  ASIG0_bool[1]
+                   ,SIG_3 :=  ASIG0_bool[2]
+                   ,SIG_4 :=  ASIG0_bool[3]
+                   ,SIG_5 :=  ASIG0_bool[4]
+                   ,SIG_6 :=  ASIG0_bool[5]
+                   ,SIG_7 :=  false
+                   ,SIG_8 :=  false
+                   ,SD_1 :=  SUB_DIAG.SUBN1_ID
+                   ,SD_2 :=  SUB_DIAG.SUBN2_ID
+                   ,SD_3 :=  SUBN_ID
+                   ,SD_4 :=  CPU_RACK
+                   );
+        sbASIG0:=ASIG0;
+        QMSGER:=ALARM_8P_1.ERROR;
+        MSG_STAT:=ALARM_8P_1.STATUS;
+        IF NOT ALARM_8P_1.DONE AND
+           NOT ALARM_8P_1.ERROR AND
+           ALARM_8P_1.STATUS<> W#16#B AND
+           ALARM_8P_1.STATUS<>W#16#14
+        THEN
+            sdwRESERVE_bool[27]:=false;
+        END_IF;   
+    END_IF; 
+ 
+    IF (NOT sdwRESERVE_bool[27] AND sdwRESERVE_bool[28]) OR OB_START_bool[7] THEN
+        ALARM_8P_2(EN_R :=  true
+                   ,ID :=  W#16#EEEE
+                   ,EV_ID :=  EV_ID1
+                   ,SIG_1 :=  ASIG1_bool[0]
+                   ,SIG_2 :=  ASIG1_bool[1]
+                   ,SIG_3 :=  ASIG1_bool[2]
+                   ,SIG_4 :=  ASIG1_bool[3]
+                   ,SIG_5 :=  ASIG1_bool[4]
+                   ,SIG_6 :=  ASIG1_bool[5]
+                   ,SIG_7 :=  ASIG1_bool[6]
+                   ,SIG_8 :=  ASIG1_bool[7]
+                   ,SD_1 :=  SUB_DIAG.SUBN1_ID
+                   ,SD_2 :=  SUB_DIAG.SUBN2_ID
+                   ,SD_3 :=  SUBN_ID
+                   );
+        sbASIG1:=ASIG1;
+        QMSGER:=ALARM_8P_2.ERROR;
+        MSG_STAT:=ALARM_8P_2.STATUS;
+        IF NOT ALARM_8P_2.DONE AND
+           NOT ALARM_8P_2.ERROR AND
+           ALARM_8P_2.STATUS<> W#16#B AND
+           ALARM_8P_2.STATUS<>W#16#14
+        THEN
+            sdwRESERVE_bool[28]:=false;
+        END_IF;   
+    END_IF; 
+ 
+END_IF;   
+IF EN_MSG THEN
+    IF ASIG0<>B#16#0 OR ASIG1<>B#16#0 THEN
+        IF NOT CPU_DIAG_PN.CPU_ERR0 AND ASIG0_bool[0] THEN
+            MS_AS:=MS_AS OR DW#16#6;
+        END_IF;   
+        IF NOT CPU_DIAG_PN.CPU_ERR1 AND ASIG0_bool[1] THEN
+            MS_AS:=MS_AS OR DW#16#600;
+        END_IF;   
+        IF ASIG1_bool[2] OR ASIG1_bool[3] OR ASIG1_bool[2] OR ASIG1_bool[4] THEN
+            MS_AS:=MS_AS OR DW#16#606;
+        END_IF;
+        IF ASIG0_bool[2] OR ASIG0_bool[3] OR ASIG0_bool[4] OR ASIG1_bool[3] OR ASIG1_bool[7] THEN
+            MS_AS:=MS_AS OR DW#16#707;
+        END_IF;
+        IF ASIG0_bool[5] THEN
+            IF CPU_RACK=B#16#0 THEN
+                MS_AS:=MS_AS OR DW#16#7;
+            ELSE
+                MS_AS:=MS_AS OR DW#16#700;
+            END_IF;   
+        END_IF;   
+    END_IF;   
+    IF CPU_DIAG_PN.CPU_ERR0 THEN
+        MS_AS:=MS_AS AND DW#16#FFFFFFF0;
+        IF SUBN1_ID=B#16#0 AND SUBN2_ID=B#16#0 THEN
+            MS_AS:=MS_AS OR DW#16#7;
+        ELSE
+            MS_AS:=MS_AS OR DW#16#8;
+        END_IF;   
+    END_IF;   
+    IF CPU_DIAG_PN.CPU_ERR1 THEN
+        MS_AS:=MS_AS AND DW#16#FFFFF0FF;
+        IF SUBN1_ID=B#16#0 AND SUBN2_ID=B#16#0 THEN
+            MS_AS:=MS_AS OR DW#16#700;
+        ELSE
+            MS_AS:=MS_AS OR DW#16#800;
+        END_IF;   
+    END_IF;   
+ELSE
+    MS_AS:=MS_AS OR DW#16#808;
+END_IF;     
+ 
+MS:=MS_AS;
+O_MS:=MS_AS;
+     
+END_FUNCTION_BLOCK

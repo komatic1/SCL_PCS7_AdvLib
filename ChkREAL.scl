@@ -1,0 +1,68 @@
+// Name: FC260
+// Symbolic Name: ChkREAL
+// Symbol Comment: Check infinite values
+// Family: @SYSTEM
+// Version: 5.0
+// Author: DRIVER80
+// Last modified: 02/08/2011
+
+{
+Scl_ResetOptions ;
+Scl_OverwriteBlocks:=           'y' ;
+Scl_GenerateReferenceData :=    'y' ;
+Scl_S7ServerActive:=            'n' ;
+Scl_CreateObjectCode:=          'y' ;
+Scl_OptimizeObjectCode:=        'y' ;
+Scl_MonitorArrayLimits:=        'n' ;
+Scl_CreateDebugInfo :=          'n' ;
+Scl_SetOKFlag:=                 'n' ;
+Scl_SetMaximumStringLength:=    '254'
+}
+FUNCTION FC1260 : REAL
+TITLE ='Check infinite values'
+AUTHOR  : DRIVER80
+FAMILY  : '@SYSTEM'
+NAME    : ChkREAL
+VERSION : '5.0'
+//reversed
+ 
+VAR_INPUT
+  In            : REAL;        //The real value to be checked
+END_VAR
+VAR_OUTPUT
+  ErrNum        : INT;         //error number: 0=no error/1=infinity/2=denormal/3=NaN
+END_VAR
+VAR_TEMP
+  theREAL       : REAL;  
+  theREAL_dw AT theREAL : DWORD;
+  exponent      : DWORD;       //Bit 23 - 30,
+  fraction_1    : DWORD;       //Bit 22, most significant bit
+  fraction_2    : DWORD;       //Bit  0 - 21
+END_VAR
+BEGIN
+ 
+ErrNum:=0;
+theREAL:=In;
+exponent:=theREAL_dw AND DW#16#7F800000;
+fraction_1:=theREAL_dw AND DW#16#400000;
+fraction_2:=theREAL_dw AND DW#16#3FFFFF;
+FC1260:=theREAL;
+ 
+IF exponent = DW#16#7F800000
+THEN
+    IF (fraction_1<>DW#16#0) OR ((fraction_1 = DW#16#0) AND (fraction_2 <> DW#16#0))
+    THEN
+        ErrNum:=3;              //3=NaN
+        OK:=false;
+    ELSIF (fraction_1 = DW#16#0) AND (fraction_2 = DW#16#0)
+    THEN
+        ErrNum:=1;          //1=infinity
+        IF theREAL > 0.000000e+000 THEN FC1260:=3.402822e+038; ELSE FC1260:=-3.402822e+038; END_IF;
+    END_IF;
+ELSIF (exponent = DW#16#0) AND ((fraction_1 <> DW#16#0) OR (fraction_2 <> DW#16#0))
+THEN
+    ErrNum:=2;              //2=denormal
+    FC1260:=0.000000e+000; 
+END_IF;
+ 
+END_FUNCTION
